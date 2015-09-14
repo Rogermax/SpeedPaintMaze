@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 public abstract class Figura {
 

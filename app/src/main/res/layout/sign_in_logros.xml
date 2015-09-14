@@ -9,7 +9,7 @@
 
 
 
-    <com.gmail.rogermoreta.speedpaint.LogrosView
+    <com.gmail.rogermoreta.speedpaintmaze.LogrosView
         android:id="@+id/logrosView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"        

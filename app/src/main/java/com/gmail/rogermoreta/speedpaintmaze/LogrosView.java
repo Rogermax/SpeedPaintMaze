@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 import android.content.Context;
 import android.content.SharedPreferences;

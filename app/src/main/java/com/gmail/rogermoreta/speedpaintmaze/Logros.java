@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 import android.os.Bundle;
 import android.util.Log;

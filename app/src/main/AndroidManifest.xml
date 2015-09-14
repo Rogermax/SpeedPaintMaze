@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.gmail.rogermoreta.speedpaint">
+    package="com.gmail.rogermoreta.speedpaintmaze">
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Optional, but without them, you might get less ads and tracking could be less accurate -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -12,37 +12,37 @@
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.Game"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.Game"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.MainActivity"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.MainActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.Menu"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.Menu"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.Points"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.Points"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.Logros"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.Logros"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaint.SplashScreenActivity"
+            android:name="com.gmail.rogermoreta.speedpaintmaze.SplashScreenActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >

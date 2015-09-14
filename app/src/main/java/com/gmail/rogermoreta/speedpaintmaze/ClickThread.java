@@ -1,15 +1,15 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
-public class DragAndDropThread extends Thread {
+public class ClickThread extends Thread {
 
 	private final SurfaceHolder sh;
-	private DragAndDropView view;
+	private MenuView view;
 	private boolean run;
 
-	public DragAndDropThread(SurfaceHolder sh, DragAndDropView view) {
+	public ClickThread(SurfaceHolder sh, MenuView view) {
 		this.sh = sh;
 		this.view = view;
 		run = false;

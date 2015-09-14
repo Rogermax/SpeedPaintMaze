@@ -9,7 +9,7 @@
 
 
 
-    <com.gmail.rogermoreta.speedpaint.PointsView
+    <com.gmail.rogermoreta.speedpaintmaze.PointsView
         android:id="@+id/pointsView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

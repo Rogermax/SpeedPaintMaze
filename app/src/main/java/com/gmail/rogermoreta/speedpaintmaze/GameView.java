@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.SystemClock;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaint;
+package com.gmail.rogermoreta.speedpaintmaze;
 
 import java.util.Timer;
 import java.util.TimerTask;
