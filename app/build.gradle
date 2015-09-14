@@ -1,0 +1,40 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        claveSpeedPaint {
+            storeFile file('G:/Users/Roger/keystore/claveSpeedPaint')
+            storePassword 'Oigy5j47'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+    defaultConfig {
+        applicationId "com.gmail.rogermoreta.speedpaint"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 5
+        versionName "1.4"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFile 'E:/Workspace/Android/AndroidStudio/SpeedPaint/proguard-project.txt'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile project(':libraries:BaseGameUtils')
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.purplebrain.adbuddiz.sdk:AdBuddiz-Java:3.+'
+}
+
+
+repositories {
+    maven {
+        url 'http://repository.adbuddiz.com/maven'
+    }
+}
