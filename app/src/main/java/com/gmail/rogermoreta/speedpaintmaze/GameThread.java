@@ -1,7 +1,5 @@
 package com.gmail.rogermoreta.speedpaintmaze;
 
-import java.text.DecimalFormat;
-
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -20,8 +18,6 @@ public class GameThread extends Thread {
 	// the frame period
 	private final static int FRAME_PERIOD = 1000 / MAX_FPS;
 
-	/* Stuff for stats */
-	private DecimalFormat df = new DecimalFormat("0.##"); // 2 dp
 	// we'll be reading the stats every second
 	private final static int STAT_INTERVAL = 1000; // ms
 	// the average will be calculated by storing
@@ -152,20 +148,6 @@ public class GameThread extends Thread {
 			// increase the number of times statistics was calculated
 			statsCount++;
 
-			double totalFps = 0.0;
-			// sum up the stored fps values
-			for (int i = 0; i < FPS_HISTORY_NR; i++) {
-				totalFps += fpsStore[i];
-			}
-
-			// obtain the average
-			double averageFps;
-			if (statsCount < FPS_HISTORY_NR) {
-				// in case of the first 10 triggers
-				averageFps = totalFps / statsCount;
-			} else {
-				averageFps = totalFps / FPS_HISTORY_NR;
-			}
 			// saving the number of total frames skipped
 			totalFramesSkipped += framesSkippedPerStatCycle;
 			// resetting the counters after a status record (1 sec)

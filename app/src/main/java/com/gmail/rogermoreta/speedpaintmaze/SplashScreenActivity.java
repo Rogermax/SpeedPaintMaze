@@ -31,8 +31,7 @@ public class SplashScreenActivity extends Activity {
 		};
 
 		Timer timer = new Timer();
-		long splashDelay = 3000;
-		timer.schedule(task, splashDelay);// Pasado los 5 segundos dispara la
+		timer.schedule(task, 3000);// Pasado los 3 segundos dispara la
 											// tarea
 	}
 

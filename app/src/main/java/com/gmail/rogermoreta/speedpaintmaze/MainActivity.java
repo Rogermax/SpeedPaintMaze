@@ -19,7 +19,6 @@ public class MainActivity extends BaseGameActivity implements OnClickListener {
 
 	@Override
 	public void onSignInFailed() {
-		// TODO Auto-generated method stub
 		Log.i("MainActivity", "SigInFailed");
 
 	    findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
@@ -27,7 +26,6 @@ public class MainActivity extends BaseGameActivity implements OnClickListener {
 
 	@Override
 	public void onSignInSucceeded() {
-		// TODO Auto-generated method stub
 		Log.i("MainActivity", "SigInSucced");
 	    findViewById(R.id.sign_in_button).setVisibility(View.GONE);
 		Intent mainIntent = new Intent().setClass(

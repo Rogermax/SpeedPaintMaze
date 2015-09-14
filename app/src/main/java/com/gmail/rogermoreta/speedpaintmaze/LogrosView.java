@@ -2,6 +2,7 @@ package com.gmail.rogermoreta.speedpaintmaze;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -9,8 +10,6 @@ import android.view.SurfaceView;
 
 public class LogrosView extends SurfaceView implements SurfaceHolder.Callback {
 
-	int width;
-	int height;
 	SharedPreferences sharedPref;
 
 	public LogrosView(Context context) {
@@ -25,11 +24,6 @@ public class LogrosView extends SurfaceView implements SurfaceHolder.Callback {
 				.getSharedPreferences(
 						getContext().getString(R.string.sharedPoints),
 						Context.MODE_PRIVATE);
-	}
-	
-	public void Init(int width, int height) {
-		this.width = width;
-		this.height = height;
 	}
 
 	@Override
@@ -47,7 +41,7 @@ public class LogrosView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 	
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
+	public boolean onTouchEvent(@NonNull MotionEvent event) {
 		// int x = (int) event.getX();
 		// int y = (int) event.getY();
 

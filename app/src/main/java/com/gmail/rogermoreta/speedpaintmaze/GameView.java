@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
@@ -112,10 +113,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 						getContext().getString(R.string.sharedPoints),
 						Context.MODE_PRIVATE);
 		editor = sharedPref.edit();
+		editor.apply();
 		tiempo_regeneracion = tiempo;
 		total_pixels = 10 * (width /11) * 213 * (height / 280);
 		pixels = 0;
-		cola_click = new ArrayList<Pair<Integer, Integer>>();
+		cola_click = new ArrayList<>();
 		this.width = width;
 		this.height = height;
 		this.mask_paint = new boolean[width][height];
@@ -253,15 +255,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 				thread.join();
 				retry = false;
 			} catch (InterruptedException e) {
-
+				e.printStackTrace();
 			}
 		}
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		Pair<Integer, Integer> aux = new Pair<Integer, Integer>(
+	public boolean onTouchEvent(@NonNull MotionEvent event) {
+		Pair<Integer, Integer> aux = new Pair<>(
 				(int) event.getX(), (int) event.getY());
 
 		switch (event.getAction()) {
@@ -352,9 +354,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	private void pinta_level(Canvas canvas) {
-		int dig1 = (int) (level/100);
-		int dig2 = (int) ((level-(dig1)*100)/10);
-		int dig3 = (int) (level-dig1*100-dig2*10);
+		int dig1 = level/100;
+		int dig2 = (level-(dig1)*100)/10;
+		int dig3 = level-dig1*100-dig2*10;
 		int posx = 7*width/20;
 		int posy = 4*height/32;
 		if (dig1 != 0) dibuja_digito(canvas, dig1,posx,posy);
@@ -366,9 +368,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
 	private void pinta_porcentaje(Canvas canvas) {
 		int px = pixels*100/total_pixels;
-		int dig1 = (int) (px/100);
-		int dig2 = (int) ((px-(dig1)*100)/10);
-		int dig3 = (int) (px-dig1*100-dig2*10);
+		int dig1 = px/100;
+		int dig2 = (px-(dig1)*100)/10;
+		int dig3 = px-dig1*100-dig2*10;
 		int posx = 16*width/40;
 		int posy = 51*height/128;
 		if (dig2 != 0) dibuja_digito(canvas, dig2,posx,posy);
@@ -380,11 +382,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private void pinta_puntos(Canvas canvas) {
 		int puntos = (int) (level * 100 + (pixels * 100)	/ (0.9 * total_pixels));
-		int dig1 = (int) (puntos/10000);
-		int dig2 = (int) ((puntos-dig1*10000)/1000);
-		int dig3 = (int) ((puntos-dig1*10000-dig2*1000)/100);
-		int dig4 = (int) ((puntos-dig1*10000-dig2*1000-dig3*100)/10);
-		int dig5 = (int) (puntos-dig1*10000-dig2*1000-dig3*100-dig4*10);
+		int dig1 = puntos/10000;
+		int dig2 = (puntos-dig1*10000)/1000;
+		int dig3 = (puntos-dig1*10000-dig2*1000)/100;
+		int dig4 = (puntos-dig1*10000-dig2*1000-dig3*100)/10;
+		int dig5 = puntos-dig1*10000-dig2*1000-dig3*100-dig4*10;
 		int posx = 6*width/20;
 		int posy = 21*height/32;
 		if (dig1 != 0) dibuja_digito(canvas, dig1,posx,posy);
@@ -613,11 +615,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 							}
 						}
 					}
-					lastPair = new Pair<Integer, Integer>(cola_click.get(ii).first,
+					lastPair = new Pair<>(cola_click.get(ii).first,
 							cola_click.get(ii).second);
 	
 				}
-				cola_click = new ArrayList<Pair<Integer, Integer>>();
+				cola_click = new ArrayList<>();
 				if (pixels >= 0.9 * total_pixels) {
 					pixels = 0;
 					lienzo = Bitmap.createBitmap(width, 6 * height / 7,
@@ -811,9 +813,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 		//	canvas.drawText(level, this.getWidth() / 18, 6 * height / 7 - 100,
 		//			paint);
 		//}
-		int dig1 = (int) (level/100);
-		int dig2 = (int) ((level-(dig1)*100)/10);
-		int dig3 = (int) (level-dig1*100-dig2*10);
+		int dig1 = level/100;
+		int dig2 = (level-(dig1)*100)/10;
+		int dig3 = level-dig1*100-dig2*10;
 		int posx = 13*width/16-width/128;
 		int posy = 13*height/14+height/128;
 		if (dig1 != 0) 

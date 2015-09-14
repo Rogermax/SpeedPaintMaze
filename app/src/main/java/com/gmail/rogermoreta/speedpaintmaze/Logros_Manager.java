@@ -18,7 +18,6 @@ public class Logros_Manager  {
 	private GoogleApiClient GAP;
 	private BaseGameActivity BGA;
 	private ResultCallback<Achievements.LoadAchievementsResult> callback;
-	private boolean first_time;
 	SharedPreferences sharedPref;
 	SharedPreferences.Editor editor;
 	
@@ -33,7 +32,7 @@ public class Logros_Manager  {
 				int i1=0,i2=0,i3=0,i4=0,i5=0,level_logros, levels_a_subir;
 				int j3=0,j4=0;
 				int jj1=0,jj2=0,jj3=0,jj4=0;
-				for (int i = 0; i < ab.getCount(); ++i) {
+				/*for (int i = 0; i < ab.getCount(); ++i) {
 					//partidas normal temporal
 					if (ab.get(i).getAchievementId().equals(BGA.getString(R.string.achievement_1000_matches)))
 						jj1=i;
@@ -63,28 +62,28 @@ public class Logros_Manager  {
 					//partidas normal temporal
 					level_logros = ab.get(jj1).getCurrentSteps();
 					editor.putInt(BGA.getString(R.string.pn), level_logros);
-					Log.i("Logros_Manager_create_pnt", ab.get(jj1).getName()+": "+level_logros);
+					Log.i("Logros_create_pnt", ab.get(jj1).getName()+": "+level_logros);
 					
 					//level maximo normal temporal
 					level_logros = ab.get(jj3).getCurrentSteps();
 					levels_a_subir = sharedPref.getInt(BGA.getString(R.string.lmnt), 0);
 					editor.putInt(BGA.getString(R.string.lmn), level_logros);
 					editor.putInt(BGA.getString(R.string.lmnt), Math.max(levels_a_subir,level_logros));
-					Log.i("Logros_Manager_create_lmnt",  ab.get(jj3).getName()+": "+level_logros);
+					Log.i("Logros_create_lmnt",  ab.get(jj3).getName()+": "+level_logros);
 				}
 				if (ab.get(j4).getState() == Achievement.STATE_UNLOCKED)
 				{
 					//partidas resistencia temporal
 					level_logros = ab.get(jj2).getCurrentSteps();
 					editor.putInt(BGA.getString(R.string.pr), level_logros);
-					Log.i("Logros_Manager_create_prt",  ab.get(jj2).getName()+": "+level_logros);
+					Log.i("Logros_create_prt",  ab.get(jj2).getName()+": "+level_logros);
 					
 					//level maximo resistencia temporal
 					level_logros = ab.get(jj4).getCurrentSteps();
 					levels_a_subir = sharedPref.getInt(BGA.getString(R.string.lmrt), 0);
 					editor.putInt(BGA.getString(R.string.lmr), level_logros);
 					editor.putInt(BGA.getString(R.string.lmrt), Math.max(levels_a_subir,level_logros));
-					Log.i("Logros_Manager_create_lmrt",  ab.get(jj4).getName()+": "+level_logros);
+					Log.i("Logros_create_lmrt",  ab.get(jj4).getName()+": "+level_logros);
 				}
 				//lienzo_rapido
 				if (ab.get(i1).getState() == Achievement.STATE_UNLOCKED)
@@ -109,7 +108,7 @@ public class Logros_Manager  {
 				}
 				else level_logros = Integer.MAX_VALUE;
 				editor.putInt(BGA.getString(R.string.lrt), Math.min(sharedPref.getInt(BGA.getString(R.string.lrt), Integer.MAX_VALUE), level_logros));
-				Log.i("Logros_Manager_create_lrt", ""+Math.min(sharedPref.getInt(BGA.getString(R.string.lrt), Integer.MAX_VALUE), level_logros));
+				Log.i("Logros_create_lrt", ""+Math.min(sharedPref.getInt(BGA.getString(R.string.lrt), Integer.MAX_VALUE), level_logros));
 				
 
 				editor.putInt(BGA.getString(R.string.dsj), 0);
@@ -119,38 +118,39 @@ public class Logros_Manager  {
 				//	Log.i("Logros_Manager","El elemento "+i+": "+ab.get(i).getName());
 				//}
 
-				editor.commit();
+				editor.apply();
 				Incrementa_y_desbloquea_logros();
 				BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
+				*/
 			}
 		};
-		sharedPref = BGA.getSharedPreferences(BGA.getString(R.string.sharedPoints),	Context.MODE_PRIVATE);
-		editor = sharedPref.edit();
-		first_time = isFirstTime();
+		//sharedPref = BGA.getSharedPreferences(BGA.getString(R.string.sharedPoints),	Context.MODE_PRIVATE);
+		//editor = sharedPref.edit();
+		boolean first_time = isFirstTime();
 		if (first_time) {
 			//Games.Achievements.increment(GAP, BGA.getString(R.string.achievement_1000_matches), 0);
 			//Games.Achievements.increment(GAP, BGA.getString(R.string.achievement_1000_resistance_matches), 0);
 			//Games.Achievements.increment(GAP, BGA.getString(R.string.achievement_maximum_level_in_resistance), 0);
 			//Games.Achievements.increment(GAP, BGA.getString(R.string.achievement_level_6), 0);
-			Lee_datos_online();
-			editor.putBoolean("first_time", false);
-			editor.commit();
+			//Lee_datos_online();
+			//editor.putBoolean("first_time", false);
+			//editor.apply();
 		}
 		else 
 		{
 			Incrementa_y_desbloquea_logros();
-			BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
+			//BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
 		}
 	}
 
 	private void Incrementa_y_desbloquea_logros() {
-		trata_logros_partidas_normales_jugadas();
+		/*trata_logros_partidas_normales_jugadas();
 		trata_logros_partidas_resistencia_jugadas();
 		trata_logros_lienzo_rapido();
 		trata_logros_partidas_seguidas_jugadas();
 		trata_logros_level_maximo_normal();
 		trata_logros_level_maximo_resistencia();
-		editor.commit();
+		editor.commit();*/
 	}
 
 	private void trata_logros_partidas_seguidas_jugadas() {
@@ -176,7 +176,7 @@ public class Logros_Manager  {
 	}
 
 	//Levels, es el level subido en internet;
-	//levels a subir es el level para subir a levels, despues incrementar todo.
+	//levels a subir es el level para subir a levels, despues incrementar to do.
 	private void trata_logros_level_maximo_normal() {
 		int level_al_qual_subir = sharedPref.getInt(BGA.getString(R.string.lmnt), 0);
 		int level_anterior = sharedPref.getInt(BGA.getString(R.string.lmn), 0);
@@ -205,7 +205,7 @@ public class Logros_Manager  {
 	}
 	
 	//Levels, es el level subido en internet;
-	//levels a subir es el level para subir a levels, despues incrementar todo.
+	//levels a subir es el level para subir a levels, despues incrementar to do.
 	private void trata_logros_level_maximo_resistencia() {
 		int level_al_qual_subir = sharedPref.getInt(BGA.getString(R.string.lmrt), 0);
 		int level_anterior = sharedPref.getInt(BGA.getString(R.string.lmr), 0);
@@ -316,6 +316,6 @@ public class Logros_Manager  {
 	}
 
 	private void Lee_datos_online() {
-		Games.Achievements.load(GAP, true).setResultCallback(callback);
+		//Games.Achievements.load(GAP, true).setResultCallback(callback);
 	}
 }
