@@ -153,7 +153,7 @@ public class Logros_Manager  {
 		editor.commit();*/
 	}
 
-	private void trata_logros_partidas_seguidas_jugadas() {
+	/*private void trata_logros_partidas_seguidas_jugadas() {
 		int days_submited = sharedPref.getInt(BGA.getString(R.string.dsj), 0);
 		int days_que_lleva_ahora = sharedPref.getInt(BGA.getString(R.string.dsjt), 0);
 		int days_a_subir = days_que_lleva_ahora-days_submited;
@@ -309,10 +309,11 @@ public class Logros_Manager  {
 			editor.putInt(BGA.getString(R.string.pr), partidas+partidas_a_subir);
 			editor.putInt(BGA.getString(R.string.prt), 0);
 		}
-	}
+	}*/
 
 	private boolean isFirstTime() {
-		return sharedPref.getBoolean("first_time", true);
+		//return sharedPref.getBoolean("first_time", true);
+		return true;
 	}
 
 	private void Lee_datos_online() {

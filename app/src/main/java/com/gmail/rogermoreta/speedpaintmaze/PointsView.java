@@ -255,12 +255,12 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
 		int best = sharedPref.getInt("puntos_normal_best", 0);
 		int actual = sharedPref.getInt("puntos_normal_aux", 0);
 		if (best < actual) {
-			Games.Leaderboards.submitScore(GAP,  getContext().getString(R.string.leaderboard_10_seconds_ranking), actual);
+			//Games.Leaderboards.submitScore(GAP,  getContext().getString(R.string.leaderboard_10_seconds_ranking), actual);
 			editor.putInt("puntos_normal_best", actual); 
 			editor.commit();
 			Log.i("PointsView","metera en normal actual:"+actual);
 		}
-		BGA.startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GAP, getContext().getString(R.string.leaderboard_10_seconds_ranking)), 1);
+		//BGA.startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GAP, getContext().getString(R.string.leaderboard_10_seconds_ranking)), 1);
 	}
 	
 	private void muestra_ranking_resistencia()
@@ -268,12 +268,12 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
 		int best = sharedPref.getInt("puntos_resistencia_best", 0);
 		int actual = sharedPref.getInt("puntos_resistencia_aux", 0);
 		if (best < actual) {
-			Games.Leaderboards.submitScore(GAP,  getContext().getString(R.string.leaderboard_resistance_ranking), actual);
+			//Games.Leaderboards.submitScore(GAP,  getContext().getString(R.string.leaderboard_resistance_ranking), actual);
 			editor.putInt("puntos_resistencia_best", actual);
 			editor.commit();
 			Log.i("PointsView","metera en resistance actual:"+actual);
 		}
-		BGA.startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GAP, getContext().getString(R.string.leaderboard_resistance_ranking)), 3);
+		//BGA.startActivityForResult(Games.Leaderboards.getLeaderboardIntent(GAP, getContext().getString(R.string.leaderboard_resistance_ranking)), 3);
 	}
 
 	public void desconecta() {
