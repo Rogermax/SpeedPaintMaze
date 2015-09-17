@@ -25,4 +25,6 @@ public abstract class Figura {
 	public int getId() {
 		return id;
 	}
+
+	public abstract boolean cointainsPoint(int x, int y);
 }

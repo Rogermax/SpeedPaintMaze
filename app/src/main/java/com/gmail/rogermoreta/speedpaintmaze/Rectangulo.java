@@ -20,4 +20,8 @@ public class Rectangulo extends Figura {
 	public int getAlto() {
 		return alto;
 	}
+
+	public boolean cointainsPoint(int x, int y) {
+		return this.x < x  && x < (this.x + ancho) && this.y < y  && y < (this.y + alto);
+	}
 }

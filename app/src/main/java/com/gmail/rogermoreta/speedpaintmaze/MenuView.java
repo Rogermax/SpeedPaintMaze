@@ -1,280 +1,236 @@
 package com.gmail.rogermoreta.speedpaintmaze;
 
-import java.util.ArrayList;
-
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.util.ArrayList;
+
 public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
 
-	private ClickThread thread;
-	private ArrayList<Figura> figuras;
-	private int figuraActiva;
-	Paint p;
-	int width;
-	int height;
-	private Bitmap bg;
-	private Bitmap jugar;
-	private Bitmap jugara;
-	private Bitmap resistencia;
-	private Bitmap resistenciaa;
-	private Bitmap puntos;
-	private Bitmap puntosa;
-	private Bitmap logros;
-	private Bitmap logrosa;
-	private int offset;
-	private GoogleApiClient GAP;
-	private Menu BGA;
-	
+    private ClickThread thread;
+    private ArrayList<Figura> figuras;
+    private int figuraActiva;
+    //Paint p; //The Paint class holds the style and color information about how to draw geometries, text and bitmaps.
+    int width;
+    int height;
+    private Bitmap bg;
+    private Bitmap jugar;
+    private Bitmap jugara;
+    private Bitmap resistencia;
+    private Bitmap resistenciaa;
+    private Bitmap puntos;
+    private Bitmap puntosa;
+    private Bitmap logros;
+    private Bitmap logrosa;
+    private int offset;
 
-	public MenuView(Context context) {
-		super(context);
-		getHolder().addCallback(this);	
-	}
+    //Para google Api y saber si la actividad menu ha recibido bien el login
+    private GoogleApiClient GAP;
+    private Menu BGA;
 
-	public MenuView(Context context, AttributeSet attributeSet) {
-		super(context,attributeSet);
-		getHolder().addCallback(this);	
-	}
-	
-	@Override
-	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
-		// nothing here
-	}
 
-	@Override
-	public void surfaceCreated(SurfaceHolder arg0) {
-		figuras = new ArrayList<>();
-		figuras.add(new Rectangulo(1, width / 4, 3 * height / 7+offset, width / 2,
-				height / 7));
-		figuras.add(new Rectangulo(2, width / 4, 4 * height / 7+offset, width / 2,
-				height / 7));
-		figuras.add(new Rectangulo(3, width / 4, 5 * height / 7+offset, width / 2,
-				height / 7));
-		figuras.add(new Rectangulo(4, width / 4, 6 * height / 7+offset, width / 2,
-				height / 7));
-		figuraActiva = -1;
+    public MenuView(Context context) {
+        super(context);
+        getHolder().addCallback(this);
+    }
 
-		thread = new ClickThread(getHolder(), this);
-		thread.setRunning(true);
-		thread.start();
-	}
+    public MenuView(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+        getHolder().addCallback(this);
+    }
 
-	@Override
-	public void surfaceDestroyed(SurfaceHolder arg0) {
-		boolean retry = true;
-		thread.setRunning(false);
-		while (retry) {
-			try {
-				thread.join();
-				retry = false;
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    @Override
+    public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+        // nothing here
+    }
 
-	public void onDrawC(Canvas canvas) {
-		p.setAntiAlias(true);
+    @Override
+    public void surfaceCreated(SurfaceHolder arg0) {
 
-		// canvas.drawColor(Color.WHITE);
-		canvas.drawBitmap(bg, 0, 0, null);
-		/*
-		 * for(Figura f : figuras) { if(f instanceof Circulo) { Circulo c =
-		 * (Circulo) f; p.setColor(Color.BLACK); canvas.drawCircle(c.getX(),
-		 * c.getY(), c.getRadio(), p); } else { // in this context, only
-		 * instanceof Rectangulo Rectangulo r = (Rectangulo) f;
-		 * p.setColor(Color.RED); canvas.drawRect(r.getX(), r.getY(),
-		 * r.getX()+r.getAncho(), r.getY()+r.getAlto(), p); } }
-		 */
+        figuras = new ArrayList<>(); //Añadimos 4 rectangulos lógicos, para saber si clickan dentro.
 
-		for (int i = 0; i < figuras.size(); ++i) {
-			Figura f = figuras.get(i);
-			if (f.getId() == 1) {
-				if (f.getId() == figuraActiva)
-					canvas.drawBitmap(jugara, width / 4, 3 * height / 7 + offset, null);
-				else
-					canvas.drawBitmap(jugar, width / 4, 3 * height / 7 + offset, null);
-			}
-			if (f.getId() == 2) {
-				if (f.getId() == figuraActiva)
-					canvas.drawBitmap(resistenciaa, width / 4, 4 * height / 7 + offset, null);
-				else
-					canvas.drawBitmap(resistencia, width / 4, 4 * height / 7 + offset, null);
-			}
-			if (f.getId() == 3) {
-				if (f.getId() == figuraActiva)
-					canvas.drawBitmap(puntosa, width / 4, 5 * height / 7 + offset, null);
-				else
-					canvas.drawBitmap(puntos, width / 4, 5 * height / 7 + offset, null);
-			}
-			if (f.getId() == 4 && BGA.signIn) {
-				if (f.getId() == figuraActiva)
-					canvas.drawBitmap(logrosa, width / 4, 6 * height / 7 + offset, null);
-				else
-					canvas.drawBitmap(logros, width / 4, 6 * height / 7 + offset, null);
-			}
-		}
-	}
+        figuras.add(new Rectangulo(1, width / 4, 3 * height / 7 + offset, width / 2, height / 7));
+        figuras.add(new Rectangulo(2, width / 4, 4 * height / 7 + offset, width / 2, height / 7));
+        figuras.add(new Rectangulo(3, width / 4, 5 * height / 7 + offset, width / 2, height / 7));
+        figuras.add(new Rectangulo(4, width / 4, 6 * height / 7 + offset, width / 2, height / 7));
 
-	@Override
-	public boolean onTouchEvent(@NonNull MotionEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
+        figuraActiva = -1;
 
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			for (Figura f : figuras) {
-				if (f instanceof Circulo) {
-					Circulo c = (Circulo) f;
-					if (Math.pow(c.getRadio(), 2) > (Math.pow(x - c.getX(), 2) + Math
-							.pow(y - c.getY(), 2))) {
-						figuraActiva = c.getId();
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				} else { // in this context, only instanceof Rectangulo
-					Rectangulo r = (Rectangulo) f;
-					if (x > r.getX() && x < r.getX() + r.getAncho()
-							&& y > r.getY() && y < r.getY() + r.getAlto()) {
-						figuraActiva = r.getId();
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				}
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			figuraActiva = -1;
-			for (Figura f : figuras) {
-				if (f instanceof Circulo) {
-					Circulo c = (Circulo) f;
-					if (Math.pow(c.getRadio(), 2) > (Math.pow(x - c.getX(), 2) + Math
-							.pow(y - c.getY(), 2))) {
-						figuraActiva = c.getId();
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				} else { // in this context, only instanceof Rectangulo
-					Rectangulo r = (Rectangulo) f;
-					if (x > r.getX() && x < r.getX() + r.getAncho()
-							&& y > r.getY() && y < r.getY() + r.getAlto()) {
-						figuraActiva = r.getId();
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				}
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			for (Figura f : figuras) {
-				if (f instanceof Circulo) {
-					Circulo c = (Circulo) f;
-					if (Math.pow(c.getRadio(), 2) > (Math.pow(x - c.getX(), 2) + Math
-							.pow(y - c.getY(), 2))) {
-						figuraActiva = c.getId();
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				} else { // in this context, only instanceof Rectangulo
-					Rectangulo r = (Rectangulo) f;
-					if (x > r.getX() && x < r.getX() + r.getAncho()
-							&& y > r.getY() && y < r.getY() + r.getAlto()) {
-						if (figuraActiva == r.getId() && r.getId() == 1) {// Han
-																			// apretado
-																			// el
-																			// boton
-																			// 1
-																			// (Jugar).
-							Intent mainIntent = new Intent().setClass(
-							getContext(), Game.class);
-							Bundle b = new Bundle();
-							b.putLong("time", 500); //Your id
-							mainIntent.putExtras(b); //Put your id to your next Intent
-							getContext().startActivity(mainIntent);
-						}
-						if (figuraActiva == r.getId() && r.getId() == 2) {// Han
-																			// apretado
-																			// el
-																			// boton
-																			// 2
-																			// (resistencia).
-							Intent mainIntent = new Intent().setClass(
-									getContext(), Game.class);
-							Bundle b = new Bundle();
-							b.putLong("time", 3000); //Your id
-							mainIntent.putExtras(b); //Put your id to your next Intent
-							getContext().startActivity(mainIntent);
-						}
-						if (figuraActiva == r.getId() && r.getId() == 3) {// Han
-																			// apretado
-																			// el
-																			// boton
-																			// 3.
-																			// (Puntos)
-							Intent mainIntent = new Intent().setClass(
-									getContext(), Points.class);
-							getContext().startActivity(mainIntent);
-						}
-						if (figuraActiva == r.getId() && r.getId() == 4 && BGA.signIn) {// Han
-																			// apretado
-																			// el
-																			// boton
-																			// 4
-																			// (Logros)
-							new Logros_Manager(BGA,GAP);
-							BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
-						}
-						// break; check blog entry for explanation on why this
-						// is commented
-					}
-				}
-			}
-			figuraActiva = -1;
-			break;
-		}
+        //arrancamos el thread.
+        thread = new ClickThread(getHolder(), this);
+        thread.setRunning(true);
+        thread.start();
+    }
 
-		return true;
-	}
+    @Override //paramos el thread.
+    public void surfaceDestroyed(SurfaceHolder arg0) {
+        boolean retry = true;
+        thread.setRunning(false);
+        while (retry) {
+            try {
+                thread.join();
+                retry = false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	public void Init(Menu base, GoogleApiClient googleApiClient, int width, int height) {
-		p = new Paint();
-		this.width = width;
-		this.height = height;
-		GAP = googleApiClient;
-		BGA = base;
-		offset = - height / 14;
-		Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.menut);
-		bg = Bitmap.createScaledBitmap(background, width, height, true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonjugar)).getBitmap();
-		jugar = Bitmap.createScaledBitmap(background, width / 2, height / 7,true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonjugara)).getBitmap();
-		jugara = Bitmap.createScaledBitmap(background, width / 2, height / 7,true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonresistencia)).getBitmap();
-		resistencia = Bitmap.createScaledBitmap(background, width / 2, height / 7,true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonresistenciaa)).getBitmap();
-		resistenciaa = Bitmap.createScaledBitmap(background, width / 2, height / 7,	true);
-		background =  ((BitmapDrawable) getResources().getDrawable(R.drawable.botonpuntos)).getBitmap();
-		puntos = Bitmap.createScaledBitmap(background, width / 2, height / 7,	true);
-		background =  ((BitmapDrawable) getResources().getDrawable(R.drawable.botonpuntosa)).getBitmap();
-		puntosa = Bitmap.createScaledBitmap(background, width / 2, height / 7,	true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonlogros)).getBitmap();
-		logros = Bitmap.createScaledBitmap(background, width / 2, height / 7,	true);
-		background = ((BitmapDrawable) getResources().getDrawable(R.drawable.botonlogrosa)).getBitmap();
-		logrosa = Bitmap.createScaledBitmap(background, width / 2, height / 7,	true);
-	}
+    public void onDrawC(Canvas canvas) {
+        //p.setAntiAlias(true); //Pa que desenfoque las aristas y se vea mas suave.
+
+        //Pintamos el background
+        canvas.drawBitmap(bg, 0, 0, null);
+
+        //Pintamos botones, segun si estan apretados o no y si tenemos conexion con Google pay service
+        for (int i = 0; i < figuras.size(); ++i) {
+            Figura f = figuras.get(i);
+            int figura_id = f.getId();
+            switch (figura_id) {
+                case 1:
+                    if (figura_id == figuraActiva) {
+                        canvas.drawBitmap(jugara, width / 4, 3 * height / 7 + offset, null);
+                    } else {
+                        canvas.drawBitmap(jugar, width / 4, 3 * height / 7 + offset, null);
+                    }
+                    break;
+                case 2:
+                    if (figura_id == figuraActiva) {
+                        canvas.drawBitmap(resistenciaa, width / 4, 4 * height / 7 + offset, null);
+                    } else {
+                        canvas.drawBitmap(resistencia, width / 4, 4 * height / 7 + offset, null);
+                    }
+                    break;
+                case 3:
+                    if (figura_id == figuraActiva) {
+                        canvas.drawBitmap(puntosa, width / 4, 5 * height / 7 + offset, null);
+                    } else {
+                        canvas.drawBitmap(puntos, width / 4, 5 * height / 7 + offset, null);
+                    }
+                    break;
+                case 4:
+                    if (BGA.signIn) {
+                        if (figura_id == figuraActiva) {
+                            canvas.drawBitmap(logrosa, width / 4, 6 * height / 7 + offset, null);
+                        } else {
+                            canvas.drawBitmap(logros, width / 4, 6 * height / 7 + offset, null);
+                        }
+                    }
+                    break;
+                default:
+                    System.out.println("No deberia entrar en el switch de onDraw con la opcion: " + figura_id);
+            }
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                for (Figura f : figuras) {
+                    if (f.cointainsPoint(x, y)) {
+                        figuraActiva = f.getId();
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                figuraActiva = -1;
+                for (Figura f : figuras) {
+                    if (f.cointainsPoint(x, y)) {
+                        figuraActiva = f.getId();
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                for (Figura f : figuras) {
+                    if (f.getId() == figuraActiva) {
+                        Intent mainIntent;
+                        int figura_id = f.getId();
+                        switch (figura_id) {
+                            case 1:
+                                mainIntent = new Intent().setClass(getContext(), Game.class);
+                                mainIntent.putExtra("time", 500l); //Partida con inc. de 0.5 sec.
+                                getContext().startActivity(mainIntent);
+                                break;
+                            case 2:
+                                mainIntent = new Intent().setClass(getContext(), Game.class);
+                                mainIntent.putExtra("time", 30000l); //Partida con inc. de 3.0 sec.
+                                getContext().startActivity(mainIntent);
+                                break;
+                            case 3:
+                                getContext().startActivity(new Intent().setClass(getContext(), Points.class));
+                                break;
+                            case 4:
+                                //new Logros_Manager(BGA,GAP);
+                                //BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
+                                break;
+                            default:
+                                System.out.println("No deberia entrar en el switch de onTouch up con la opcion: " + figura_id);
+                        }
+                    }
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    public void Init(Menu base, GoogleApiClient googleApiClient, int width, int height) {
+
+        this.width = width;
+        this.height = height;
+
+        GAP = googleApiClient;
+        BGA = base;
+
+        //margen superior
+        offset = -height / 14;
+
+        //Cargamos todas las imagenes.
+        bg = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.menut)), width, height, true);
+        jugar = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonjugar)), width / 2, height / 7, true);
+        jugara = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonjugara)), width / 2, height / 7, true);
+        resistencia = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonresistencia)), width / 2, height / 7, true);
+        resistenciaa = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonresistenciaa)), width / 2, height / 7, true);
+        puntos = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonpuntos)), width / 2, height / 7, true);
+        puntosa = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonpuntosa)), width / 2, height / 7, true);
+        logros = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonlogros)), width / 2, height / 7, true);
+        logrosa = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.botonlogrosa)), width / 2, height / 7, true);
+    }
+    private static Bitmap drawableToBitmap (Drawable drawable) {
+        Bitmap bitmap;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if(bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if(drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
 }

@@ -14,4 +14,9 @@ public class Circulo extends Figura {
 	public int getRadio() {
 		return radio;
 	}
+
+	@Override
+	public boolean cointainsPoint(int x, int y) {
+		return (x-this.x)*(x-this.x)+(y-this.y)*(x-this.y) < radio*radio;
+	}
 }
