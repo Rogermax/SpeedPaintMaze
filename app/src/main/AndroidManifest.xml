@@ -12,37 +12,37 @@
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.Game"
+            android:name=".view.GameActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.MainActivity"
+            android:name=".view.MainActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.Menu"
+            android:name=".view.MenuActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.Points"
+            android:name=".view.PointsActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.Logros"
+            android:name=".view.LogrosActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >
         </activity>
         <activity
-            android:name="com.gmail.rogermoreta.speedpaintmaze.SplashScreenActivity"
+            android:name=".view.SplashScreenActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize"
             >

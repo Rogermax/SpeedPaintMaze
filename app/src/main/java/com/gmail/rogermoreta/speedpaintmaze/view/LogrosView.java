@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import com.gmail.rogermoreta.speedpaintmaze.R;
 
 public class LogrosView extends SurfaceView implements SurfaceHolder.Callback {
 

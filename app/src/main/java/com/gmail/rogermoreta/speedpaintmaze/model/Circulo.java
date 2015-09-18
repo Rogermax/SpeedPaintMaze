@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.model;
 
 public class Circulo extends Figura {
 

@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,6 +19,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
+import com.gmail.rogermoreta.speedpaintmaze.model.Rectangulo;
+import com.gmail.rogermoreta.speedpaintmaze.thread.GameThread;
 import com.purplebrain.adbuddiz.sdk.AdBuddiz;
 
 import java.util.ArrayList;

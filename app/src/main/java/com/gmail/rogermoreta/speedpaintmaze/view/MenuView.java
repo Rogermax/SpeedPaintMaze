@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gmail.rogermoreta.speedpaintmaze.thread.ClickThread;
+import com.gmail.rogermoreta.speedpaintmaze.R;
+import com.gmail.rogermoreta.speedpaintmaze.model.Figura;
+import com.gmail.rogermoreta.speedpaintmaze.model.Rectangulo;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
@@ -38,7 +42,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
 
     //Para google Api y saber si la actividad menu ha recibido bien el login
     private GoogleApiClient GAP;
-    private Menu BGA;
+    private MenuActivity BGA;
 
 
     public MenuView(Context context) {
@@ -163,17 +167,17 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                         int figura_id = f.getId();
                         switch (figura_id) {
                             case 1:
-                                mainIntent = new Intent().setClass(getContext(), Game.class);
+                                mainIntent = new Intent().setClass(getContext(), GameActivity.class);
                                 mainIntent.putExtra("time", 500l); //Partida con inc. de 0.5 sec.
                                 getContext().startActivity(mainIntent);
                                 break;
                             case 2:
-                                mainIntent = new Intent().setClass(getContext(), Game.class);
+                                mainIntent = new Intent().setClass(getContext(), GameActivity.class);
                                 mainIntent.putExtra("time", 30000l); //Partida con inc. de 3.0 sec.
                                 getContext().startActivity(mainIntent);
                                 break;
                             case 3:
-                                getContext().startActivity(new Intent().setClass(getContext(), Points.class));
+                                getContext().startActivity(new Intent().setClass(getContext(), PointsActivity.class));
                                 break;
                             case 4:
                                 //new Logros_Manager(BGA,GAP);
@@ -190,7 +194,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
-    public void Init(Menu base, GoogleApiClient googleApiClient, int width, int height) {
+    public void Init(MenuActivity base, GoogleApiClient googleApiClient, int width, int height) {
 
         this.width = width;
         this.height = height;

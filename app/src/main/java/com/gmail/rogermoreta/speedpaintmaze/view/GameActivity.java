@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -8,10 +8,12 @@ import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class Game extends Activity {
+import com.gmail.rogermoreta.speedpaintmaze.thread.GameThread;
+
+public class GameActivity extends Activity {
 	/** Called when the activity is first created. */
 
-	private static final String TAG = Game.class.getSimpleName();
+	private static final String TAG = GameActivity.class.getSimpleName();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

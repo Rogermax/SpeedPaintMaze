@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +23,7 @@ public class SplashScreenActivity extends Activity {
 			@Override
 			public void run() {
 				Intent mainIntent = new Intent().setClass(
-						SplashScreenActivity.this, Menu.class);
+						SplashScreenActivity.this, MenuActivity.class);
 				startActivity(mainIntent);
 				finish();// Destruimos esta activity para prevenit que el
 							// usuario retorne aqui presionando el boton Atras.

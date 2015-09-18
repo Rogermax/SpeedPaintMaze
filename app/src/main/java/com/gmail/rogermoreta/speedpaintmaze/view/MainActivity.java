@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
 public class MainActivity extends BaseGameActivity implements OnClickListener {
@@ -29,7 +30,7 @@ public class MainActivity extends BaseGameActivity implements OnClickListener {
 		Log.i("MainActivity", "SigInSucced");
 	    findViewById(R.id.sign_in_button).setVisibility(View.GONE);
 		Intent mainIntent = new Intent().setClass(
-				MainActivity.this, Menu.class);
+				MainActivity.this, MenuActivity.class);
 		startActivity(mainIntent);
 		finish();// Destruimos esta activity para prevenit que el
 					// usuario retorne aqui presionando el boton Atras.

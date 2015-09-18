@@ -1,9 +1,8 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -15,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
@@ -23,7 +23,7 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
     int height;
     int RR, G, B;
     private GoogleApiClient GAP;
-    private Points BGA;
+    private PointsActivity BGA;
     int puntos_maximos_normal, puntos_maximos_resistencia;
     private SharedPreferences.Editor editor;
     private SharedPreferences sharedPref;
@@ -58,7 +58,7 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
         RR = G = B = 255;
     }
 
-    public void Init(Points base, GoogleApiClient googleApiClient, int width, int height) {
+    public void Init(PointsActivity base, GoogleApiClient googleApiClient, int width, int height) {
         this.width = width;
         this.height = height;
         puntos_maximos_normal = Math.max(sharedPref.getInt("puntos_normal_aux", 0), sharedPref.getInt("puntos_normal_best", 0));

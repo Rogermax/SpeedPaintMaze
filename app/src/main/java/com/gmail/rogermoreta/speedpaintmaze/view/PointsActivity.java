@@ -1,4 +1,4 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -6,9 +6,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
-public class Points extends BaseGameActivity implements OnClickListener {
+public class PointsActivity extends BaseGameActivity implements OnClickListener {
 
 
 	boolean	signIn = false;
@@ -64,7 +65,7 @@ public class Points extends BaseGameActivity implements OnClickListener {
 				editor.putBoolean("puntos_normal_bool", 
 						true);
 				if (temp > best) {
-					Log.i("Points", "Lo va a meter en google");
+					Log.i("PointsActivity", "Lo va a meter en google");
 					editor.putInt("puntos_normal_best", 
 							temp);
 					Games.Leaderboards.submitScore(getApiClient(), getString(R.string.leaderboard_10_seconds_ranking), temp);

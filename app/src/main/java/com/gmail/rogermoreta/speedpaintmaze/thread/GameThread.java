@@ -1,8 +1,10 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.thread;
 
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.SurfaceHolder;
+
+import com.gmail.rogermoreta.speedpaintmaze.view.GameView;
 
 public class GameThread extends Thread {
 

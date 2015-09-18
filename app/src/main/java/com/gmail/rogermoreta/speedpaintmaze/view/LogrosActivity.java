@@ -1,13 +1,14 @@
-package com.gmail.rogermoreta.speedpaintmaze;
+package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.google.example.games.basegameutils.BaseGameActivity;
 
-public class Logros extends BaseGameActivity implements OnClickListener{
+public class LogrosActivity extends BaseGameActivity implements OnClickListener{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
