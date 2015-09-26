@@ -35,13 +35,13 @@ public class MazeView extends SurfaceView implements SurfaceHolder.Callback {
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("MazeView", "ACTION DOWN: (" + x + "," + y + ")");
+                MainManager.getMazeController().sendActionDown(x,y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.d("MazeView", "ACTION ACTION_MOVE: (" + x + "," + y + ")");
+                MainManager.getMazeController().sendActionMove(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("MazeView", "ACTION_UP DOWN: (" + x + "," + y + ")");
+                MainManager.getMazeController().sendActionUp(x, y);
                 break;
             default:
                 return false;

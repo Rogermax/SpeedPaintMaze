@@ -39,7 +39,7 @@ public class MainManager {
                 break;
             case MAZE:
                 mazeController = new MazeController();
-                mazeController.initModel(22);
+                mazeController.initModel(5);
                 mazeController.initView();
                 mazeController.mostrarActividad(activity,500l);
                 break;

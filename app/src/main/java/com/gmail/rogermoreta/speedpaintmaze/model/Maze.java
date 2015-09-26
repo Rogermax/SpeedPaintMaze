@@ -10,7 +10,6 @@ public class Maze {
     private static Random r;
     private static int startI;
     private static int startJ;
-    private int numCells;
 
     /**
      * @param difficulty: must be 1 or greater.
