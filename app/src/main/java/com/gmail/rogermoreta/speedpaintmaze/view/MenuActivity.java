@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.view;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -7,14 +9,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
-import com.google.example.games.basegameutils.BaseGameActivity;
+import com.gmail.rogermoreta.speedpaintmaze.controller.ManagedActivity;
 
-public class MenuActivity extends BaseGameActivity implements OnClickListener {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MenuActivity extends ManagedActivity implements OnClickListener {
 
 
 	boolean signIn;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+
+        getGameHelper().setMaxAutoSignInAttempts(0);
 		super.onCreate(savedInstanceState);
 
 		// want fullscreen, we hide Activity's title and notification bar
@@ -33,7 +40,22 @@ public class MenuActivity extends BaseGameActivity implements OnClickListener {
 		((MenuView) findViewById(R.id.menu_view)).Init(this, getApiClient(), size.x, size.y);
 	}
 
-	@Override
+    @Override
+    public void changeActivityToIn(final Activity from, final Class activityClassToGo, long miliseconds) {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Intent mainIntent = new Intent().setClass(from, activityClassToGo);
+                from.startActivity(mainIntent);
+                from.finish();// Destruimos esta activity para prevenir que el usuario vuelva aqui apretando atras.
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(task, miliseconds);// Pasado los 3 segundos dispara/fija/registra la tarea
+    }
+
+    @Override
 	public void onSignInFailed() {
 	    findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
 		signIn = false;

@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.gmail.rogermoreta.speedpaintmaze.controller.MainManager;
+import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
 import com.gmail.rogermoreta.speedpaintmaze.thread.ClickThread;
 import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.model.Figura;
@@ -167,9 +169,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                         int figura_id = f.getId();
                         switch (figura_id) {
                             case 1:
-                                mainIntent = new Intent().setClass(getContext(), GameActivity.class);
-                                mainIntent.putExtra("time", 500l); //Partida con inc. de 0.5 sec.
-                                getContext().startActivity(mainIntent);
+                                MainManager.goToSection(Section.MAZE, BGA);
                                 break;
                             case 2:
                                 mainIntent = new Intent().setClass(getContext(), GameActivity.class);

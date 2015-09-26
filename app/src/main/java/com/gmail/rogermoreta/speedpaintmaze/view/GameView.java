@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -124,9 +123,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         this.width = width;
         this.height = height;
         this.mask_paint = new boolean[width][height];
-        Paint circlePaint = new Paint();
-        circlePaint.setAntiAlias(true);
-        circlePaint.setColor(Color.RED);
         lienzo = Bitmap.createBitmap(width, 6 * height / 7, Bitmap.Config.ARGB_8888);
         Bitmap background = drawableToBitmap(ContextCompat.getDrawable(getContext(), R.drawable.boton));
         boton = Bitmap.createScaledBitmap(background, width / 3, height / 8, true);
