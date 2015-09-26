@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.Layout;
 import android.util.Log;
+import android.util.Pair;
 import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.model.Maze;
@@ -60,6 +61,9 @@ public class MazeController extends Controller {
                     }
                 }
             }
+            for (Pair<Integer, Integer> p : maze.getEndPoints()) {
+                mazeCellState[p.first][p.second] = -3;
+            }
             mazeCellState[1][1] = -2;
         } catch (Exception e) {
             Log.d("MazeController", "Exception en initModel:" + e);
@@ -100,6 +104,9 @@ public class MazeController extends Controller {
         for (int i = 0; i < mazeSize; i++) {
             for (int j = 0; j < mazeSize; ++j) {
                 switch (mazeCellState[i][j]) {
+                    case -3:
+                        canvas = dibujaFinSendero(canvas, i, j);
+                        break;
                     case -2:
                         canvas = dibujaAdvertencia(canvas, i, j);
                         break;
@@ -159,7 +166,19 @@ public class MazeController extends Controller {
 
     private Canvas dibujaAdvertencia(Canvas canvas, int i, int j) {
         Paint pincel = new Paint();
-        pincel.setARGB(200, 255, 255, 0);
+        pincel.setARGB(255, 255, 255, 0);
+        pincel.setStyle(Paint.Style.FILL);
+        float i0 = i * step;
+        float i1 = i0 + step;
+        float j0 = j * step;
+        float j1 = j0 + step;
+        canvas.drawCircle((i0 + i1) / 2f, (j0 + j1) / 2, step / 2f, pincel);
+        return canvas;
+    }
+
+    private Canvas dibujaFinSendero(Canvas canvas, int i, int j) {
+        Paint pincel = new Paint();
+        pincel.setARGB(255, 255, 0, 0);
         pincel.setStyle(Paint.Style.FILL);
         float i0 = i * step;
         float i1 = i0 + step;
