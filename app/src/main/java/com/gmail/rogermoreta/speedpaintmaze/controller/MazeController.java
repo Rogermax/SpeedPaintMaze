@@ -34,6 +34,9 @@ public class MazeController extends Controller {
     private int lastJ = 1;
     private boolean isOneInAdvise = true;
 
+    private static void makeNoise() {
+        SoundManager.getInstance().playSound();
+    }
 
     public MazeController() {
         super();
@@ -208,6 +211,7 @@ public class MazeController extends Controller {
                     mazeCellState[i][j] = 0;
                     lastI = i;
                     lastJ = j;
+                    makeNoise();
                 }
             } else {
                 if (!isOneInAdvise) {

@@ -13,8 +13,8 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            proguardFile 'E:/Workspace/Android/AndroidStudio/SpeedPaintMaze/proguard-project.txt'
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //proguardFile 'E:/Workspace/Android/AndroidStudio/SpeedPaintMaze/proguard-project.txt'
         }
     }
 }
