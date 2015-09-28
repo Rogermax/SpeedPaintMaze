@@ -1,5 +1,6 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
+@SuppressWarnings("unused")
 public class Circulo extends Figura {
 
 	private int radio;

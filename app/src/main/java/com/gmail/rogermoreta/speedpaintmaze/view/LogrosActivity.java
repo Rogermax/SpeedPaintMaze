@@ -52,14 +52,6 @@ public class LogrosActivity extends BaseGameActivity implements OnClickListener{
 	        // start the asynchronous sign in flow
 	        beginUserInitiatedSignIn();
 	    }
-	    /*else if (view.getId() == R.id.button1) {
-
-	    	new Logros_Manager(this, getApiClient());
-			
-			
-	        // show sign-in button, hide the sign-out button
-	        ((TextView) findViewById(R.id.textView1)).setText("le has dado a ranking: ");
-	    }*/
 	}
 
 }

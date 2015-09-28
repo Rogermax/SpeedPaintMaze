@@ -1,47 +1,41 @@
 package com.gmail.rogermoreta.speedpaintmaze.view;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 
+import com.gmail.rogermoreta.speedpaintmaze.R;
+import com.gmail.rogermoreta.speedpaintmaze.controller.MainManager;
 import com.gmail.rogermoreta.speedpaintmaze.controller.ManagedActivity;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MazeActivity extends ManagedActivity {
 
+    SoundPool sp;
+    public static boolean prepared = false;
+    private int soundId;
+    private static MainManager MM = MainManager.getInstance();
+
     @Override
-    public void onCreate(Bundle b) {
+    protected void onCreate(Bundle savedInstanceState) {
         getGameHelper().setMaxAutoSignInAttempts(0);
-        super.onCreate(b); //Necesario siempre que haces override de onCreate
+        super.onCreate(savedInstanceState); //Necesario siempre que haces override de onCreate
         setContentView(new MazeView(this));
-    }
-
-    @Override
-    /**
-     * Esta función se ejecuta cuando el usuario deja de interactuar con esta actividad.
-     * Por tanto, es el momento para guardar el estado de la partida.
-     */
-    public void onPause() {
-        super.onPause(); //Necesario siempre que haces override de onPause
-
-    }
-
-
-    @Override
-    public void changeActivityToIn(final Activity from, final Class activityClassToGo, long miliseconds) {
-        TimerTask task = new TimerTask() {
+        //noinspection deprecation
+        sp = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+        soundId = sp.load(this, R.raw.bip, 1);
+        sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
-            public void run() {
-                Intent mainIntent = new Intent().setClass(from, activityClassToGo);
-                from.startActivity(mainIntent);
-                //finish();// Destruimos esta activity para prevenir que el usuario vuelva aqui apretando atras.
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                prepared = true;
             }
-        };
+        });
+        MM.setInstanceMazeActivity(this);
+    }
 
-        Timer timer = new Timer();
-        timer.schedule(task, miliseconds);// Pasado los 3 segundos dispara/fija/registra la tarea
+    @Override
+    public void onPause(){
+        super.onPause();
+        MM.pauseMaze();
     }
 
     @Override
@@ -49,4 +43,10 @@ public class MazeActivity extends ManagedActivity {
 
     @Override
     public void onSignInSucceeded() {}
+
+    public void playSound() {
+        if (prepared) {
+            sp.play(soundId,1f,1f,1,0,1f);
+        }
+    }
 }

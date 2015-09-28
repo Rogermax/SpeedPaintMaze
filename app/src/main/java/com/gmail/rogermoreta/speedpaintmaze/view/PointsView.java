@@ -22,7 +22,6 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
     int width;
     int height;
     int RR, G, B;
-    private GoogleApiClient GAP;
     private PointsActivity BGA;
     int puntos_maximos_normal, puntos_maximos_resistencia;
     private SharedPreferences.Editor editor;
@@ -58,12 +57,12 @@ public class PointsView extends SurfaceView implements SurfaceHolder.Callback {
         RR = G = B = 255;
     }
 
-    public void Init(PointsActivity base, GoogleApiClient googleApiClient, int width, int height) {
+    public void Init(PointsActivity base, @SuppressWarnings("UnusedParameters") GoogleApiClient googleApiClient, int width, int height) {
         this.width = width;
         this.height = height;
         puntos_maximos_normal = Math.max(sharedPref.getInt("puntos_normal_aux", 0), sharedPref.getInt("puntos_normal_best", 0));
         puntos_maximos_resistencia = Math.max(sharedPref.getInt("puntos_resistencia_aux", 0), sharedPref.getInt("puntos_resistencia_best", 0));
-        GAP = googleApiClient;
+        //GAP = googleApiClient;
         BGA = base;
         int ancho_digito = width / 12;
         int alto_digito = height / 9;

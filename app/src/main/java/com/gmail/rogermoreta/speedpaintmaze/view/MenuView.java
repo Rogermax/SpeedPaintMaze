@@ -41,9 +41,10 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap logros;
     private Bitmap logrosa;
     private int offset;
+    private static MainManager MM = MainManager.getInstance();
 
     //Para google Api y saber si la actividad menu ha recibido bien el login
-    private GoogleApiClient GAP;
+    //private GoogleApiClient GAP;
     private MenuActivity BGA;
 
 
@@ -127,7 +128,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                     }
                     break;
                 case 4:
-                    if (BGA.signIn) {
+                    if (BGA.isSignedIn()) {
                         if (figura_id == figuraActiva) {
                             canvas.drawBitmap(logrosa, width / 4, 6 * height / 7 + offset, null);
                         } else {
@@ -169,18 +170,20 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                         int figura_id = f.getId();
                         switch (figura_id) {
                             case 1:
-                                MainManager.goToSection(Section.MAZE, BGA);
+                                MenuActivity.playSound();
+                                MM.goToSection(Section.MAZE, BGA);
                                 break;
                             case 2:
+                                MenuActivity.playSound();
                                 mainIntent = new Intent().setClass(getContext(), GameActivity.class);
                                 mainIntent.putExtra("time", 30000l); //Partida con inc. de 3.0 sec.
                                 getContext().startActivity(mainIntent);
                                 break;
                             case 3:
+                                MenuActivity.playSound();
                                 getContext().startActivity(new Intent().setClass(getContext(), PointsActivity.class));
                                 break;
                             case 4:
-                                //new Logros_Manager(BGA,GAP);
                                 //BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);
                                 break;
                             default:
@@ -194,12 +197,12 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
         return true;
     }
 
-    public void Init(MenuActivity base, GoogleApiClient googleApiClient, int width, int height) {
+    public void Init(MenuActivity base, @SuppressWarnings("UnusedParameters") GoogleApiClient googleApiClient, int width, int height) {
 
         this.width = width;
         this.height = height;
 
-        GAP = googleApiClient;
+        //GAP = googleApiClient;
         BGA = base;
 
         //margen superior

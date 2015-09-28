@@ -1,16 +1,11 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.util.Log;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
 import com.gmail.rogermoreta.speedpaintmaze.view.MazeActivity;
 import com.gmail.rogermoreta.speedpaintmaze.view.MenuActivity;
-import com.gmail.rogermoreta.speedpaintmaze.view.SplashScreenActivity;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainManager {
 
@@ -21,6 +16,8 @@ public class MainManager {
 
     private MainManager() {
         sectionActual = Section.NONE;
+        menuController = new MenuController();
+        mazeController = new MazeController();
     }
 
     public static MainManager getInstance() {
@@ -30,15 +27,15 @@ public class MainManager {
         return instance;
     }
 
-    public static void goToSection(Section nextSection, Activity activity) {
+
+
+    public void goToSection(Section nextSection, Activity activity) {
         sectionActual = nextSection;
         switch (sectionActual) {
             case MENU:
-                menuController = new MenuController();
-                menuController.mostrarActividad(activity,3000l);
+                menuController.mostrarActividad(activity, 3000l);
                 break;
             case MAZE:
-                mazeController = new MazeController();
                 mazeController.initModel(5);
                 mazeController.initView();
                 mazeController.mostrarActividad(activity,500l);
@@ -48,7 +45,18 @@ public class MainManager {
         }
     }
 
-    public static MazeController getMazeController() {
+    public MazeController getMazeController() {
         return mazeController;
+    }
+
+    public void setInstanceMenuActivity(MenuActivity instanceMenuActivity) {
+        menuController.setActivity(instanceMenuActivity);
+    }
+    public void setInstanceMazeActivity(MazeActivity instanceMazeActivity) {
+        mazeController.setActivity(instanceMazeActivity);
+    }
+
+    public void pauseMaze() {
+        mazeController.pause();
     }
 }

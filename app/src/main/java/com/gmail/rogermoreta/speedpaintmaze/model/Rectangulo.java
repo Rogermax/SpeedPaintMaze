@@ -1,7 +1,5 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
-import com.gmail.rogermoreta.speedpaintmaze.model.Figura;
-
 public class Rectangulo extends Figura {
 
 	private int ancho;

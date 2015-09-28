@@ -1,10 +1,8 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.text.Layout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.SurfaceHolder;
@@ -12,15 +10,14 @@ import android.view.SurfaceHolder;
 import com.gmail.rogermoreta.speedpaintmaze.model.Maze;
 import com.gmail.rogermoreta.speedpaintmaze.view.MazeActivity;
 
-import java.util.ArrayList;
 
 public class MazeController extends Controller {
 
     private MazeActivity mazeActivity;
 
     //attributes of view layer
-    private Layout layout;
-    private ArrayList<Bitmap> images;
+    //private Layout layout;
+    //private ArrayList<Bitmap> images;
 
     //attributes of model layer
     private Maze maze;
@@ -30,13 +27,10 @@ public class MazeController extends Controller {
     private SurfaceHolder surfaceHolder;
     private int mazeSize;
     private short[][] mazeCellState;
-    private int lastI = 1;
-    private int lastJ = 1;
-    private boolean isOneInAdvise = true;
-
-    private static void makeNoise() {
-        SoundManager.getInstance().playSound();
-    }
+    private int lastI;
+    private int lastJ;
+    private boolean isOneInAdvise;
+    private boolean paused;
 
     public MazeController() {
         super();
@@ -50,6 +44,10 @@ public class MazeController extends Controller {
      */
     public void initModel(int difficulty) {
         try {
+            lastI = 1;
+            lastJ = 1;
+            isOneInAdvise = true;
+            paused = false;
             maze = new Maze(difficulty);
             maze.generateMazeStartingAt(0, 0);
             mazeSize = maze.getSize();
@@ -64,7 +62,7 @@ public class MazeController extends Controller {
                     }
                 }
             }
-            for (Pair<Integer, Integer> p : maze.getEndPoints()) {
+            for (Pair<Integer, Integer> p : Maze.getEndPoints()) {
                 mazeCellState[p.first][p.second] = -3;
             }
             mazeCellState[1][1] = -2;
@@ -77,10 +75,12 @@ public class MazeController extends Controller {
         maze.printWalls();
     }
 
+    @SuppressWarnings("unused")
     public boolean testRecursive() {
         return Maze.testRecursive(0);
     }
 
+    @SuppressWarnings("unused")
     public void paint() {
         //View view = new View();
         //mazeActivity.setContentView(view);
@@ -88,7 +88,7 @@ public class MazeController extends Controller {
 
     @Override
     public void mostrarActividad(Activity activity, long miliseconds) {
-        mazeActivity.changeActivityToIn(activity, MazeActivity.class, miliseconds);
+        ManagedActivity.changeActivityToIn(activity, MazeActivity.class, miliseconds, false);
     }
 
 
@@ -121,6 +121,14 @@ public class MazeController extends Controller {
                         break;
                 }
             }
+        }
+        if (paused) {
+            canvas.drawARGB(100, 255, 255, 255);
+            Paint pincell = new Paint();
+            pincell.setARGB(175, 0, 0, 0);
+            pincell.setTextSize(Math.min(width,height)/7);
+            pincell.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("PAUSED",width/2,height/2,pincell);
         }
     }
 
@@ -191,51 +199,76 @@ public class MazeController extends Controller {
         return canvas;
     }
 
-    public void sendActionDown(float x, float y) {
+    public void sendActionDown(@SuppressWarnings("UnusedParameters") float x,@SuppressWarnings("UnusedParameters") float y) {
 
     }
 
-    public void sendActionMove(float x, float y) {
-        final int i;
-        final int j;
-        if (width < height) {
-            i = (int) (x / (float) width * mazeSize);
-            j = (int) (y / (float) width * mazeSize);
-        } else {
-            i = (int) (x / (float) height * mazeSize);
-            j = (int) (y / (float) height * mazeSize);
-        }
-        if (0 <= i && i < mazeSize && 0 <= j && j < mazeSize && (mazeCellState[i][j] == -1 || mazeCellState[i][j] == -2)) {
-            if (adjacent(i, j)) {
-                if (!isOneInAdvise) {
-                    mazeCellState[i][j] = 0;
-                    lastI = i;
-                    lastJ = j;
-                    makeNoise();
-                }
-            } else {
-                if (!isOneInAdvise) {
-                    isOneInAdvise = true;
-                    mazeCellState[lastI][lastJ] = -2;
-                }
-                else {
-                    if (lastI == i && lastJ == j) {
-                        isOneInAdvise = false;
-                        mazeCellState[lastI][lastJ] = 0;
-                    }
-                }
-            }
+    public void sendActionUp(@SuppressWarnings("UnusedParameters") float x,@SuppressWarnings("UnusedParameters") float y) {
+        if (paused) {
+            resume();
             Canvas canvas = this.surfaceHolder.lockCanvas();
             drawMaze(canvas);
             this.surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
 
+    public void sendActionMove(float x, float y) {
+        if (!paused) {
+            final int i;
+            final int j;
+            if (width < height) {
+                i = (int) (x / (float) width * mazeSize);
+                j = (int) (y / (float) width * mazeSize);
+            } else {
+                i = (int) (x / (float) height * mazeSize);
+                j = (int) (y / (float) height * mazeSize);
+            }
+            if (0 <= i && i < mazeSize && 0 <= j && j < mazeSize && (mazeCellState[i][j] == -1 || mazeCellState[i][j] == -2)) {
+                if (adjacent(i, j)) {
+                    if (!isOneInAdvise) {
+                        mazeCellState[i][j] = 0;
+                        lastI = i;
+                        lastJ = j;
+                        mazeActivity.playSound();
+                    }
+                } else {
+                    if (!isOneInAdvise) {
+                        isOneInAdvise = true;
+                        mazeCellState[lastI][lastJ] = -2;
+                    } else {
+                        if (lastI == i && lastJ == j) {
+                            isOneInAdvise = false;
+                            mazeCellState[lastI][lastJ] = 0;
+                        }
+                    }
+                }
+                Canvas canvas = this.surfaceHolder.lockCanvas();
+                drawMaze(canvas);
+                this.surfaceHolder.unlockCanvasAndPost(canvas);
+            }
+        }
+    }
+
+
     private boolean adjacent(int i, int j) {
         return Math.abs(lastI - i) + Math.abs(lastJ - j) == 1;
     }
 
-    public void sendActionUp(float x, float y) {
 
+    public void pause() {
+        paused = true;
+        if (this.surfaceHolder != null) {
+            Canvas canvas = this.surfaceHolder.lockCanvas();
+            drawMaze(canvas);
+            this.surfaceHolder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    public void resume() {
+        paused = false;
+    }
+
+    public void setActivity(MazeActivity activity) {
+        this.mazeActivity = activity;
     }
 }
