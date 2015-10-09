@@ -174,10 +174,11 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                                 MM.goToSection(Section.MAZE, BGA);
                                 break;
                             case 2:
-                                MenuActivity.playSound();
+                                MM.goToSection(Section.BURBU, BGA);
+                               /* MenuActivity.playSound();
                                 mainIntent = new Intent().setClass(getContext(), GameActivity.class);
                                 mainIntent.putExtra("time", 30000l); //Partida con inc. de 3.0 sec.
-                                getContext().startActivity(mainIntent);
+                                getContext().startActivity(mainIntent);*/
                                 break;
                             case 3:
                                 MenuActivity.playSound();

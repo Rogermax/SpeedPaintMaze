@@ -1,13 +1,11 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
-import android.util.Pair;
-
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Maze {
+public class MazeConstructor {
 
-    private static ArrayList<Pair<Integer, Integer>> endPoints;
+    private static ArrayList<Pair> endPoints;
     private static boolean[][] mazeRecursive;
     private static boolean[][] mazeWallsStructure;
     private static int mazeSizeEdge;
@@ -19,7 +17,7 @@ public class Maze {
     /**
      * @param difficulty: must be 1 or greater.
      */
-    public Maze(int difficulty) throws Exception {
+    public MazeConstructor(int difficulty) throws Exception {
         if (0 < difficulty) {
 
             mazeSizeEdge = difficulty + 1;
@@ -31,11 +29,11 @@ public class Maze {
                 }
             }
         } else {
-            throw new Exception("Error en los parametros de entrada de la creadora Maze(int)");
+            throw new Exception("Error en los parametros de entrada de la creadora MazeConstructor(int)");
         }
     }
 
-    public static ArrayList<Pair<Integer, Integer>> getEndPoints() {
+    public static ArrayList<Pair> getEndPoints() {
         return endPoints;
     }
 
@@ -112,7 +110,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 1://
@@ -141,7 +139,7 @@ public class Maze {
                     generateMazeRecursive(i0 + 1, j0); //3
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 2://
@@ -170,7 +168,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 3://
@@ -199,7 +197,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 4://
@@ -228,7 +226,7 @@ public class Maze {
                     generateMazeRecursive(i0 + 1, j0); //3
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 5://
@@ -257,7 +255,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 6://
@@ -286,7 +284,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 7://
@@ -315,7 +313,7 @@ public class Maze {
                     generateMazeRecursive(i0 + 1, j0); //3
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 8://
@@ -344,7 +342,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 9://
@@ -373,7 +371,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 10://
@@ -402,7 +400,7 @@ public class Maze {
                     generateMazeRecursive(i0 + 1, j0); //3
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 11://
@@ -431,7 +429,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 12:
@@ -460,7 +458,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 13:
@@ -489,7 +487,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 14:
@@ -518,7 +516,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 + 1); //4
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 15:
@@ -547,7 +545,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 16:
@@ -576,7 +574,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 17:
@@ -605,7 +603,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 18:
@@ -634,7 +632,7 @@ public class Maze {
                     generateMazeRecursive(i0 + 1, j0); //3
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 19:
@@ -663,7 +661,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 20:
@@ -692,7 +690,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 21:
@@ -721,7 +719,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 22:
@@ -750,7 +748,7 @@ public class Maze {
                     generateMazeRecursive(i0, j0 - 1); //2
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2*i0+1, 2*j0+1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
                 break;
             case 23:
@@ -779,7 +777,7 @@ public class Maze {
                     generateMazeRecursive(i0 - 1, j0); //1
                 }
                 if (!oneVisited) {
-                    endPoints.add(new Pair<>(2 * i0 + 1, 2 * j0 + 1));
+                    endPoints.add(new Pair(2 * i0 + 1, 2 * j0 + 1));
                 }
 
         }
@@ -789,6 +787,7 @@ public class Maze {
         return fin > 752 || testRecursive(fin + 1);
     }
 
+    @SuppressWarnings("unused")
     public void printWalls() {
         final int mazeSizeLogic = mazeSizeEdge * 2 + 1;
         System.out.println("Laberinto:");

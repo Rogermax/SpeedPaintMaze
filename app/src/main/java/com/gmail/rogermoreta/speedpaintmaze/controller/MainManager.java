@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
+import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
 import com.gmail.rogermoreta.speedpaintmaze.view.MazeActivity;
 import com.gmail.rogermoreta.speedpaintmaze.view.MenuActivity;
 
@@ -13,11 +14,13 @@ public class MainManager {
     private static Section sectionActual;
     private static MenuController menuController;
     private static MazeController mazeController;
+    private static BurbujitaController burbujitaController;
 
     private MainManager() {
         sectionActual = Section.NONE;
         menuController = new MenuController();
         mazeController = new MazeController();
+        burbujitaController = new BurbujitaController();
     }
 
     public static MainManager getInstance() {
@@ -37,8 +40,10 @@ public class MainManager {
                 break;
             case MAZE:
                 mazeController.initModel(5);
-                mazeController.initView();
                 mazeController.mostrarActividad(activity,500l);
+                break;
+            case BURBU:
+                burbujitaController.mostrarActividad(activity,500l);
                 break;
             default:
                 Log.d("MainManager", "goToSection value not processed:" + sectionActual);
@@ -47,6 +52,9 @@ public class MainManager {
 
     public MazeController getMazeController() {
         return mazeController;
+    }
+    public BurbujitaController getBurbujitaController() {
+        return burbujitaController;
     }
 
     public void setInstanceMenuActivity(MenuActivity instanceMenuActivity) {
@@ -58,5 +66,13 @@ public class MainManager {
 
     public void pauseMaze() {
         mazeController.pause();
+    }
+
+    public void setInstanceBurbujitaActivity(BurbujitaActivity instanceBurbujitaActivity) {
+        burbujitaController.setActivity(instanceBurbujitaActivity);
+    }
+
+    public void pauseBurbujita() {
+        burbujitaController.pause();
     }
 }

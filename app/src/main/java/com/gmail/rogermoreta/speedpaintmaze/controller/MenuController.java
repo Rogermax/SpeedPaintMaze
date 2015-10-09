@@ -18,6 +18,16 @@ public class MenuController extends Controller {
         ManagedActivity.changeActivityToIn(activity, MenuActivity.class, miliseconds, true);
     }
 
+    @Override
+    public void update() {
+        //nothing to do
+    }
+
+    @Override
+    public void render() {
+        //nothing to do
+    }
+
     public void setActivity(MenuActivity activity) {
         menuActivity = activity;
     }

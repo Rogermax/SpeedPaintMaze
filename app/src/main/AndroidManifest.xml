@@ -17,6 +17,11 @@
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
         <activity
+            android:name=".view.BurbujitaActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
             android:name=".view.GameActivity"
             android:screenOrientation="portrait"
             android:configChanges="keyboardHidden|orientation|screenSize">
