@@ -25,11 +25,27 @@ public class BurbujitaController extends Controller {
     private BurbujitaActivity burbujitaActivity;
     private BurbujitaMap burbujitaMap;
     private boolean paused;
+    private Long lastTimeUpdated;
+    private Long lastTimeDrawed;
+    private ArrayList<Long> historicTimeUpdates;
+    private ArrayList<Long> historicTimeDraws;
+    private int nextIndexUpdate;
+    private int nextIndexDraw;
 
     public BurbujitaController() {
-        paused = false;
+        paused = true;
         gameThread = new GameThread(this);
         gameThread.encender();
+        historicTimeUpdates = new ArrayList<>(5);
+        historicTimeDraws = new ArrayList<>(5);
+        for (int i = 0; i < 5; i++) {
+            historicTimeUpdates.add(i, (long) 20);
+            historicTimeDraws.add(i,(long) 20);
+        }
+        lastTimeUpdated = System.currentTimeMillis();
+        lastTimeDrawed = System.currentTimeMillis();
+        nextIndexUpdate = 0;
+        nextIndexDraw = 0;
     }
 
     public void setActivity(BurbujitaActivity activity) {
@@ -53,13 +69,25 @@ public class BurbujitaController extends Controller {
 
     private void draw() {
         if (burbujitaMap != null) {
-            burbujitaMap.draw();
+            historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis()-lastTimeDrawed);
+            lastTimeDrawed = System.currentTimeMillis();
+            nextIndexDraw = (nextIndexDraw+1)%5;
+            Long aux = 0l;
+            Long aux2 = 0l;
+            for (int i = 0; i < 5; i++) {
+                aux += historicTimeDraws.get(i);
+                aux2 += historicTimeUpdates.get(i);
+            }
+            burbujitaMap.draw(5000/aux,5000/aux2);
         }
     }
 
     @Override
     public void update() {
         if (!paused) {
+            historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis()-lastTimeUpdated);
+            lastTimeUpdated = System.currentTimeMillis();
+            nextIndexUpdate = (nextIndexUpdate+1)%5;
             logic();
         }
     }

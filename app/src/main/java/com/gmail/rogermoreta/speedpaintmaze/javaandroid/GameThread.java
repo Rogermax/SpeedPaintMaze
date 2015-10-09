@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.javaandroid;
 
+import android.util.Log;
+
 import com.gmail.rogermoreta.speedpaintmaze.controller.Controller;
 
 public class GameThread extends Thread {
@@ -59,7 +61,7 @@ public class GameThread extends Thread {
         long timeDiff;		// the time it took for the cycle to execute
         int sleepTime;		// ms to sleep (<0 if we're behind)
         int framesSkipped;	// number of frames being skipped
-
+        long lastTimeFPSUpdated = System.currentTimeMillis();
         sleepTime = 0;
 
         while (running) {
@@ -79,6 +81,10 @@ public class GameThread extends Thread {
                 //this.gamePanel.render(canvas);
                 // calculate how long did the cycle take
                 timeDiff = System.currentTimeMillis() - beginTime;
+                /*if (System.currentTimeMillis() - lastTimeFPSUpdated > 500) {
+                    Log.d("FPS:", (1000d / timeDiff)+"");
+                    lastTimeFPSUpdated = System.currentTimeMillis();
+                }*/
                 // calculate sleep time
                 sleepTime = (int)(FRAME_PERIOD - timeDiff);
 

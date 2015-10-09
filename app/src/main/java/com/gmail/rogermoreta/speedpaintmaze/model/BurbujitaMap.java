@@ -46,7 +46,7 @@ public class BurbujitaMap {
         this.surfaceHolder.unlockCanvasAndPost(canvas);
     }
 
-    public void draw() {
+    public void draw(float fps, float ups) {
         if (this.surfaceHolder != null) {
             Canvas canvas = this.surfaceHolder.lockCanvas();
             canvas.drawARGB(255, 181, 230, 29);
@@ -62,7 +62,8 @@ public class BurbujitaMap {
 
                 }
             }
-            canvas.drawText("Time: "+System.currentTimeMillis(), width / 2, 3 * height / 4, pincell);
+            canvas.drawText("FPS: "+fps, width / 2, 6 * height / 8, pincell);
+            canvas.drawText("UPS: "+ups, width / 2, 7 * height / 8, pincell);
             this.surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
