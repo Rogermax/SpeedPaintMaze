@@ -1,49 +1,85 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-
 public class Bullet {
 
     private float posX;
     private float posY;
     private float velX;
     private float velY;
-    private long lifeTime = 2000l;
-    private long startTime;
+    private long tiempoDeVida;
+    private long tiempoDeExplosion;
+    private boolean existe;
     private float radius;
+    private int faseExplosion;
+    private int faseDeDisparo;
+    private float vel;
 
-    public Bullet(float posX, float posY, float velX, float velY, float radius) {
+    public Bullet(float posX, float posY, float vel, int objX, int objY, float radius) {
         this.posX = posX;
         this.posY = posY;
-        this.velX = velX;
-        this.velY = velY;
+        this.vel = vel;
+        double distanciaAobjetivo = Math.sqrt((objX-posX)*(objX-posX)+(objY-posY)*(objY-posY));
+        velX = (float) ((objX-posX)*vel/distanciaAobjetivo);
+        velY = (float) ((objY-posY)*vel/distanciaAobjetivo);
         this.radius = radius;
-        startTime = System.currentTimeMillis();
+        faseExplosion = 0;
+        faseDeDisparo = 0;
+        tiempoDeVida = 3000l;
+        existe = true;
+        tiempoDeExplosion = 200l;
     }
 
-    public void logic() {
-        posX += velX;
-        posY += velY;
-        this.radius -= this.radius*0.1;
+    public void logic(long milisegundos) {
+        if (existe) {
+            if (faseExplosion > 0) {
+                faseExplosion += milisegundos;
+                if (faseExplosion > tiempoDeExplosion) existe = false;
+            } else {
+                faseDeDisparo += milisegundos;
+                if (faseDeDisparo > tiempoDeVida) explota();
+                else {
+                    posX += (velX * milisegundos);
+                    posY += (velY * milisegundos);
+                }
+            }
+        }
     }
 
-    public Canvas draw(Canvas canvas) {
-        Paint pincell = new Paint();
-        pincell.setARGB(255, 255, (int) ((System.currentTimeMillis() - startTime)*255/lifeTime), 0);
-        canvas.drawCircle(posX, posY, this.radius, pincell);
-        return canvas;
+    public void explota() {
+        faseExplosion = 1;
     }
 
-    public boolean mustDie() {
-        return (System.currentTimeMillis() - startTime > lifeTime);
+    public boolean estaExplotando() {
+        return faseExplosion > 0;
     }
 
-    public void logic(int lastX, int lastY) {
-        double vel = Math.sqrt(velX*velX+velY*velY);
-        double mod = Math.sqrt((lastX-posX)*(lastX-posX)+(lastY-posY)*(lastY-posY));
-        velX = (float) ((lastX-posX)*vel/mod);
-        velY = (float) ((lastY-posY)*vel/mod);
-        logic();
+    public boolean existe() {
+        return existe;
+    }
+
+    public void logic(long deltaTimeMiliSec, int objX, int objY) {
+        double distanciaAobjetivo = Math.sqrt((objX-posX)*(objX-posX)+(objY-posY)*(objY-posY));
+        velX = (float) ((objX-posX)*vel/distanciaAobjetivo);
+        velY = (float) ((objY-posY)*vel/distanciaAobjetivo);
+        logic(deltaTimeMiliSec);
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public long getLifeTime() {
+        return faseDeDisparo;
+    }
+    public long getMaxLifeTime() {
+        return tiempoDeVida;
     }
 }

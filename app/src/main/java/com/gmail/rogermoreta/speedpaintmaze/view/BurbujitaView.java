@@ -2,7 +2,6 @@ package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;

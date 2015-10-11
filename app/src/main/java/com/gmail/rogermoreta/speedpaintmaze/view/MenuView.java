@@ -28,7 +28,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
     private ClickThread thread;
     private ArrayList<Figura> figuras;
     private int figuraActiva;
-    //Paint p; //The Paint class holds the style and color information about how to draw geometries, text and bitmaps.
+    //Paint p; //The Paint class holds the style and color information about how to Entity geometries, text and bitmaps.
     int width;
     int height;
     private Bitmap bg;

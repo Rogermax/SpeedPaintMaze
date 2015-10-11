@@ -1,25 +1,17 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
 import android.view.SurfaceHolder;
 
-import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
-import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
-import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
 
 import java.util.ArrayList;
 
 public class BurbujitaController extends Controller {
 
+    @SuppressWarnings("FieldCanBeLocal")
     private GameThread gameThread;
 
     private BurbujitaActivity burbujitaActivity;
@@ -42,8 +34,6 @@ public class BurbujitaController extends Controller {
             historicTimeUpdates.add(i, (long) 20);
             historicTimeDraws.add(i,(long) 20);
         }
-        lastTimeUpdated = System.currentTimeMillis();
-        lastTimeDrawed = System.currentTimeMillis();
         nextIndexUpdate = 0;
         nextIndexDraw = 0;
     }
@@ -59,11 +49,12 @@ public class BurbujitaController extends Controller {
 
     public void onViewReady(SurfaceHolder surfaceHolder) {
         burbujitaMap = new BurbujitaMap(surfaceHolder, burbujitaActivity);
+        burbujitaMap.draw(50f,50f);
     }
 
-    private void logic() {
+    private void logic(long milisec) {
         if (burbujitaMap != null && !paused) {
-            burbujitaMap.logic();
+            burbujitaMap.logic(milisec);
         }
     }
 
@@ -72,13 +63,13 @@ public class BurbujitaController extends Controller {
             historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis()-lastTimeDrawed);
             lastTimeDrawed = System.currentTimeMillis();
             nextIndexDraw = (nextIndexDraw+1)%5;
-            Long aux = 0l;
-            Long aux2 = 0l;
+            Long aux = 1l;
+            Long aux2 = 1l;
             for (int i = 0; i < 5; i++) {
                 aux += historicTimeDraws.get(i);
                 aux2 += historicTimeUpdates.get(i);
             }
-            burbujitaMap.draw(5000/aux,5000/aux2);
+            burbujitaMap.draw(5000f/aux,5000f/aux2);
         }
     }
 
@@ -86,9 +77,9 @@ public class BurbujitaController extends Controller {
     public void update() {
         if (!paused) {
             historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis()-lastTimeUpdated);
+            logic(System.currentTimeMillis() - lastTimeUpdated);
             lastTimeUpdated = System.currentTimeMillis();
             nextIndexUpdate = (nextIndexUpdate+1)%5;
-            logic();
         }
     }
 
@@ -114,6 +105,8 @@ public class BurbujitaController extends Controller {
 
     public void sendActionUp(float x, float y) {
         burbujitaMap.buildTurret((int) x, (int) y);
+        lastTimeUpdated = System.currentTimeMillis();
+        lastTimeDrawed = System.currentTimeMillis();
         paused = false;
     }
 }
