@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 
 public class Pintor {
 
@@ -80,6 +81,21 @@ public class Pintor {
         platanodie2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(activity, R.drawable.platano12)), 100, 100, true);
         platanodie3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(activity, R.drawable.platano13)), 100, 100, true);
         platanodie4 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(activity, R.drawable.platano14)), 100, 100, true);
+    }
+
+
+    public Canvas drawCasilla(Canvas canvas, Casilla casilla) {
+        int left = casilla.getPosX()*100;
+        int right = casilla.getPosY()*100;
+        Paint pincell = new Paint();
+        if (casilla.getTipoCasilla() == TipoCasilla.CAMINO) {
+            pincell.setARGB(255, 204, 119, 34);
+        }
+        else {
+            pincell.setARGB(255, 68, 148, 74);
+        }
+        canvas.drawRect(left, right, left + Casilla.size, right + Casilla.size, pincell);
+        return canvas;
     }
 
     public Canvas drawBaseTurret(Canvas canvas, Turret t) {
@@ -212,13 +228,13 @@ public class Pintor {
         pincell.setARGB(255, 0, 255, 0);
         canvas.drawRect(x, y - 4, x + 100 * life / totalLife, y - 2, pincell);
         pincell.setARGB(255, 255, 0, 0);
-        canvas.drawRect(x + 100 * life / totalLife, y - 4, x + 100,y-2,pincell);
+        canvas.drawRect(x + 100 * life / totalLife, y - 4, x + 100, y - 2, pincell);
         return canvas;
     }
 
     public Canvas drawBullet(Canvas canvas, Bullet bullet) {
         Paint pincell = new Paint();
-        pincell.setARGB(255, 255, (int) (bullet.getLifeTime()*255/bullet.getMaxLifeTime()), 0);
+        pincell.setARGB(255, 255, (int) (bullet.getLifeTime() * 255 / bullet.getMaxLifeTime()), 0);
         canvas.drawCircle(bullet.getPosX(), bullet.getPosY(), bullet.getRadius(), pincell);
         return canvas;
     }

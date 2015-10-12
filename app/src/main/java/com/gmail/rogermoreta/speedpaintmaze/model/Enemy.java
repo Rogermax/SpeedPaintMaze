@@ -90,4 +90,11 @@ public class Enemy extends Entity {
         velY = (float) ((targetMoveY-posY)*vel/mod);
     }
 
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
+    }
 }
