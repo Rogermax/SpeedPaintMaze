@@ -1,6 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
+import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
@@ -49,7 +50,7 @@ public class BurbujitaController extends Controller {
 
     public void onViewReady(SurfaceHolder surfaceHolder) {
         burbujitaMap = new BurbujitaMap(surfaceHolder, burbujitaActivity);
-        burbujitaMap.draw(50f,50f);
+        burbujitaMap.draw(50f, 50f);
     }
 
     private void logic(long milisec) {
@@ -60,26 +61,32 @@ public class BurbujitaController extends Controller {
 
     private void draw() {
         if (burbujitaMap != null) {
-            historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis()-lastTimeDrawed);
-            lastTimeDrawed = System.currentTimeMillis();
-            nextIndexDraw = (nextIndexDraw+1)%5;
-            Long aux = 1l;
-            Long aux2 = 1l;
-            for (int i = 0; i < 5; i++) {
-                aux += historicTimeDraws.get(i);
-                aux2 += historicTimeUpdates.get(i);
+            try {
+                historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis()-lastTimeDrawed);
+                lastTimeDrawed = System.currentTimeMillis();
+                nextIndexDraw = (nextIndexDraw+1)%5;
+                Long aux = 1l;
+                Long aux2 = 1l;
+                for (int i = 0; i < 5; i++) {
+                    aux += historicTimeDraws.get(i);
+                    aux2 += historicTimeUpdates.get(i);
+                }
+                burbujitaMap.draw(5000f / aux, 5000f / aux2);
             }
-            burbujitaMap.draw(5000f/aux,5000f/aux2);
+            catch (Exception ignored){}
         }
     }
 
     @Override
     public void update() {
         if (!paused) {
-            historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis()-lastTimeUpdated);
-            logic(System.currentTimeMillis() - lastTimeUpdated);
-            lastTimeUpdated = System.currentTimeMillis();
-            nextIndexUpdate = (nextIndexUpdate+1)%5;
+            try {
+                historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis() - lastTimeUpdated);
+                logic(System.currentTimeMillis() - lastTimeUpdated);
+                lastTimeUpdated = System.currentTimeMillis();
+                nextIndexUpdate = (nextIndexUpdate + 1) % 5;
+            }
+            catch (Exception ignored){}
         }
     }
 
@@ -96,6 +103,7 @@ public class BurbujitaController extends Controller {
     }
 
     public void sendActionDown(float x, float y) {
+        paused = false;
         burbujitaMap.createNewNextTurret((int) x, (int) y);
     }
 
@@ -107,6 +115,11 @@ public class BurbujitaController extends Controller {
         burbujitaMap.buildTurret((int) x, (int) y);
         lastTimeUpdated = System.currentTimeMillis();
         lastTimeDrawed = System.currentTimeMillis();
-        paused = false;
+    }
+
+    public void onSurfaceChange(SurfaceHolder holder) {
+        Canvas canvas = holder.lockCanvas();
+        burbujitaMap.reajustarTamaño(canvas);
+        holder.unlockCanvasAndPost(canvas);
     }
 }

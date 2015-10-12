@@ -18,12 +18,15 @@ public abstract class Entity implements Serializable {
     protected boolean wannaAttack;
     protected boolean damagable;
     protected boolean isAlive;
+    protected long hittedState;
     protected long dyingState;
     protected long attackState;
     protected long movementState;
 
     protected long timeRechargeAttack;
     protected long timeDying;
+    protected long timeHitted;
+    protected float totalLife;
 
     public Entity() {
         posX = 0f;
@@ -32,6 +35,7 @@ public abstract class Entity implements Serializable {
         velY = 0f;
         vel = 1d;
         life = 100f;
+        totalLife = 100f;
         damage = 1f;
         damagable = true;
         isAlive = true;
@@ -44,6 +48,7 @@ public abstract class Entity implements Serializable {
         targetMoveY = 0f;
         timeRechargeAttack = 1000l;
         timeDying = 1000l;
+        timeHitted = 100l;
         attackDistance = 25f;
         wannaAttack = false;
     }
@@ -76,6 +81,7 @@ public abstract class Entity implements Serializable {
 
     public void receiveDamage(float damage) {
         life -= damage;
+        hittedState = 1;
         if (dyingState == 0 && life <= 0) {
             dyingState = 1;
         }
@@ -91,5 +97,24 @@ public abstract class Entity implements Serializable {
 
     public long getDyingState() {
         return dyingState;
+    }
+    public long getHittedState() {
+        return hittedState;
+    }
+
+    public long getMovementCycleTime(){
+        return movementState;
+    }
+
+    public long getTimeDying() {
+        return timeDying;
+    }
+
+    public float getLife() {
+        return life;
+    }
+
+    public float getTotalLife() {
+        return totalLife;
     }
 }

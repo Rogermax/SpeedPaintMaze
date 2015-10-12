@@ -3,7 +3,7 @@ package com.gmail.rogermoreta.speedpaintmaze.model;
 public class Enemy extends Entity {
 
     int timesShootted = 0;
-    public static final int cycleTimeMovement = 200;
+    public static final int cycleTimeMovement = 750;
 
     public Enemy() {
         super();
@@ -13,15 +13,25 @@ public class Enemy extends Entity {
     @Override
     public void logic(long milisenconds) {
         if (dyingState == 0) {
-            logicMove(milisenconds);
-            if (wannaAttack) {
-                logicAttack(milisenconds);
+            if (hittedState > 0) {
+                logicHitted(milisenconds);
+            }
+            else {
+                logicMove(milisenconds);
+                if (wannaAttack) {
+                    logicAttack(milisenconds);
+                }
             }
         }
         else {
             logicDie(milisenconds);
         }
 
+    }
+
+    private void logicHitted(long milisenconds) {
+        hittedState+=milisenconds;
+        if (hittedState > timeHitted) hittedState = 0;
     }
 
     private void logicDie(long milisenconds) {
@@ -80,7 +90,4 @@ public class Enemy extends Entity {
         velY = (float) ((targetMoveY-posY)*vel/mod);
     }
 
-    public long getMovementCycleTime(){
-        return movementState;
-    }
 }
