@@ -445,12 +445,15 @@ public class BurbujitaMap {
             int casillaY = (int) (enemies.get(i).getY()/100);
             int indexOfCasilla = casillaX+casillaY*numeroCasillasX;
             Casilla casillaDelBicho = mapaEnCasillas.get(indexOfCasilla);
-            if (casillaDelBicho.esDeDireccionamiento()) {
+            if (casillaDelBicho.esDeFin()) {
+                enemigoTratado.setPosX(0);
+                enemigoTratado.setPosY(0);
+            }
+            if (casillaDelBicho.esDeInicio()) {
                 enemigoTratado.asignarMoveTarget(casillaDelBicho.getRandomNextX(),casillaDelBicho.getRandomNextY());
             }
-            if (casillaDelBicho.esDeFin()) {
-                enemigoTratado.setPosX(1);
-                enemigoTratado.setPosY(1);
+            if (casillaDelBicho.esDeDireccionamiento() && (casillaDelBicho.getPosX() * 100 - enemigoTratado.getX()) * (casillaDelBicho.getPosX() * 100 -enemigoTratado.getX()) < 5) {
+                enemigoTratado.asignarMoveTarget(casillaDelBicho.getRandomNextX(),casillaDelBicho.getRandomNextY());
             }
             for (int j = 0; j < turrets.size(); ++j) {
                 Turret torretaTratada = turrets.get(j);
