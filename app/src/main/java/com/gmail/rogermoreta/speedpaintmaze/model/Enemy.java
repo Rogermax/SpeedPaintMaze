@@ -16,11 +16,9 @@ public class Enemy extends Entity {
             if (hittedState > 0) {
                 logicHitted(milisenconds);
             }
-            else {
-                logicMove(milisenconds);
-                if (wannaAttack) {
-                    logicAttack(milisenconds);
-                }
+            logicMove(milisenconds);
+            if (wannaAttack) {
+                logicAttack(milisenconds);
             }
         }
         else {

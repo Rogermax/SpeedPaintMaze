@@ -2,6 +2,7 @@ package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
@@ -47,7 +48,7 @@ public class BurbujitaController extends Controller {
 
     public void onViewReady(SurfaceHolder surfaceHolder) {
         burbujitaMap = new BurbujitaMap(surfaceHolder, this);
-        burbujitaMap.draw(50f, 50f);
+        draw();
     }
 
     private void logic(long milisec) {
@@ -63,7 +64,9 @@ public class BurbujitaController extends Controller {
     private void draw() {
         if (burbujitaMap != null) {
             try {
-                historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis()-lastTimeDrawed);
+                if (lastTimeDrawed != null) {
+                    historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis() - lastTimeDrawed);
+                }
                 lastTimeDrawed = System.currentTimeMillis();
                 nextIndexDraw = (nextIndexDraw+1)%5;
                 Long aux = 1l;
@@ -93,34 +96,41 @@ public class BurbujitaController extends Controller {
 
     @Override
     public void render() {
-        if (!paused) {
-            draw();
-        }
+        draw();
     }
 
     public void pause() {
+        Log.d("BurbujitaController", "PAUSA ACTIVADA");
         paused = true;
         draw();
     }
 
     public void sendActionDown(float x, float y) {
         paused = false;
-        burbujitaMap.createNewNextTurret((int) x, (int) y);
+        if (burbujitaMap != null) {
+            burbujitaMap.createNewNextTurret((int) x, (int) y);
+        }
     }
 
     public void sendActionMove(float x, float y) {
-        burbujitaMap.setNextTurret((int) x, (int) y);
+        if (burbujitaMap != null) {
+            burbujitaMap.setNextTurret((int) x, (int) y);
+        }
     }
 
     public void sendActionUp(float x, float y) {
-        burbujitaMap.buildTurret((int) x, (int) y);
-        lastTimeUpdated = System.currentTimeMillis();
-        lastTimeDrawed = System.currentTimeMillis();
+        if (burbujitaMap != null) {
+            burbujitaMap.buildTurret((int) x, (int) y);
+            lastTimeUpdated = System.currentTimeMillis();
+            lastTimeDrawed = System.currentTimeMillis();
+        }
     }
 
     public void onSurfaceChange(SurfaceHolder holder) {
-        Canvas canvas = holder.lockCanvas();
-        burbujitaMap.reajustarTamaño(canvas);
-        holder.unlockCanvasAndPost(canvas);
+        if (burbujitaMap != null) {
+            Canvas canvas = holder.lockCanvas();
+            burbujitaMap.reajustarTamaño(canvas);
+            holder.unlockCanvasAndPost(canvas);
+        }
     }
 }

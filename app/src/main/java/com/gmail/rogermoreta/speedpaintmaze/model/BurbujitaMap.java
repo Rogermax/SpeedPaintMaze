@@ -53,18 +53,14 @@ public class BurbujitaMap {
         enemies = new ArrayList<>();
         Canvas canvas = this.surfaceHolder.lockCanvas();
         reajustarTamaño(canvas);
-        Enemy enemy = new Enemy();
-        enemy.asignarMoveTarget(canvasWidth, canvasHeight);
+        BaseMonster enemy = new BaseMonster();
         enemy.setVelocity(4f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.asignarMoveTarget(0, canvasHeight);
         enemy.setVelocity(3f);
         enemies.add(enemy);
         pincell = new Paint();
         pincell.setARGB(175, 0, 0, 0);
-        pincell.setTextAlign(Paint.Align.CENTER);
-        pincell.setTextSize(Math.min(canvasWidth, canvasHeight) / 15);
         this.surfaceHolder.unlockCanvasAndPost(canvas);
         leerMapa();
     }
@@ -98,6 +94,8 @@ public class BurbujitaMap {
         canvasHeight = filas * 100;
         numeroCasillasX = longFilas;
         numeroCasillasY = filas;
+        pincell.setTextAlign(Paint.Align.CENTER);
+        pincell.setTextSize(Math.min(canvasWidth, canvasHeight) / 15);
         trobat = false;
         i--;
         int casillaX = 0;
@@ -370,7 +368,7 @@ public class BurbujitaMap {
                 canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i), 0);
             }
             if (i == 1) {
-                canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i),0);
+                canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i), 0);
             }
         }
         return canvas;
