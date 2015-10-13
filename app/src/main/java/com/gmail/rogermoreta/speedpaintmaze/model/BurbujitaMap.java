@@ -34,12 +34,25 @@ public class BurbujitaMap {
     public static final char[] codifiedMap;
 
     static {
-        codifiedMap = ("5x4" +
-                "Ir3**db2" +
-                "...*" +
-                "db2**dl3" +
-                "*..." +
-                "dr3**F").toCharArray();
+        codifiedMap = ("18x10" +
+                "Ir7******db2.F" +
+                ".......*.*" +
+                "db3******dl7.*" +
+                "*........*" +
+                "*........*" +
+                "dr7******db3.*" +
+                ".......*.*" +
+                ".......*.*" +
+                "db3******dl7.*" +
+                "*........*" +
+                "*........*" +
+                "dr7******db2.*" +
+                ".......*.*" +
+                "db4******dl7.*" +
+                "*........*" +
+                "*........*" +
+                "*........*" +
+                "dr9********dt17").toCharArray();
     }
 
 
@@ -59,6 +72,15 @@ public class BurbujitaMap {
         enemy = new BaseMonster();
         enemy.setVelocity(3f);
         enemies.add(enemy);
+        enemy = new BaseMonster();
+        enemy.setVelocity(5f);
+        enemies.add(enemy);
+        enemy = new BaseMonster();
+        enemy.setVelocity(1f);
+        enemies.add(enemy);
+        enemy = new BaseMonster();
+        enemy.setVelocity(2f);
+        enemies.add(enemy);
         pincell = new Paint();
         pincell.setARGB(175, 0, 0, 0);
         this.surfaceHolder.unlockCanvasAndPost(canvas);
@@ -69,25 +91,21 @@ public class BurbujitaMap {
         int filas = 0;
         int longFilas = 0; //columnas
         int i = 0;
-        int decimalPosition = 1;
         mapaEnCasillas = new ArrayList<>();
         boolean trobat = false;
         for (; i < codifiedMap.length && !trobat; i++) {
             if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                 trobat = true;
             } else {
-                filas += decimalPosition * (codifiedMap[i] - 48);
-                decimalPosition *= 10;
+                filas = filas*10+(codifiedMap[i] - 48);
             }
         }
-        decimalPosition = 1;
         trobat = false;
         for (; i < codifiedMap.length && !trobat; i++) {
             if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                 trobat = true;
             } else {
-                longFilas += decimalPosition * (codifiedMap[i] - 48);
-                decimalPosition *= 10;
+                longFilas = longFilas*10+(codifiedMap[i] - 48);
             }
         }
         canvasWidth = longFilas * 100;
@@ -112,14 +130,12 @@ public class BurbujitaMap {
                     switch (codifiedMap[i]) {
                         case 't':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -127,14 +143,12 @@ public class BurbujitaMap {
                             break;
                         case 'r':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -142,14 +156,12 @@ public class BurbujitaMap {
                             break;
                         case 'l':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -157,14 +169,12 @@ public class BurbujitaMap {
                             break;
                         case 'b':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -199,14 +209,12 @@ public class BurbujitaMap {
                     switch (codifiedMap[i]) {
                         case 't':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -214,14 +222,12 @@ public class BurbujitaMap {
                             break;
                         case 'r':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -229,14 +235,12 @@ public class BurbujitaMap {
                             break;
                         case 'l':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -244,14 +248,12 @@ public class BurbujitaMap {
                             break;
                         case 'b':
                             i++;
-                            decimalPosition = 1;
                             trobat2 = false;
                             for (; i < codifiedMap.length && !trobat2; i++) {
                                 if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
                                     trobat2 = true;
                                 } else {
-                                    numSaltos += decimalPosition * (codifiedMap[i] - 48);
-                                    decimalPosition *= 10;
+                                    numSaltos = numSaltos *10+(codifiedMap[i] - 48);
                                 }
                             }
                             i--;
@@ -364,12 +366,7 @@ public class BurbujitaMap {
 
     private Canvas drawEnemies(Canvas canvas) {
         for (int i = 0; i < enemies.size(); i++) {
-            if (i == 0) {
-                canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i), 0);
-            }
-            if (i == 1) {
-                canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i), 0);
-            }
+            canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i), 0);
         }
         return canvas;
     }
@@ -494,34 +491,59 @@ public class BurbujitaMap {
         x = (int) ((x - offsetX) / factorDeEscalado);
         y = (int) ((y - offsetY) / factorDeEscalado);
         if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
-            nextTurretBuilded = false;
-            nextTurret = new Turret(x, y, 0.02f * Math.max(canvasWidth, canvasHeight));
+            int casillaX = x/100;
+            int casillaY = y/100;
+            int indexOfCasilla = casillaX+casillaY*numeroCasillasX;
+            Casilla casilla = mapaEnCasillas.get(indexOfCasilla);
+            if (casilla.getTipoCasilla() == TipoCasilla.CESPED && !casilla.tieneTorreta()) {
+                nextTurret = new Turret(casillaX*100, casillaY*100, 300);
+                nextTurretBuilded = false;
+            }
         }
     }
 
     public void setNextTurret(int x, int y) {
-        x = (int) ((x - offsetX) / factorDeEscalado);
-        y = (int) ((y - offsetY) / factorDeEscalado);
-        if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
-            if (nextTurretBuilded) {
-                nextTurretBuilded = false;
-                nextTurret = new Turret(x, y, 0.02f * Math.max(canvasWidth, canvasHeight));
-            } else {
-                nextTurret.setX(x);
-                nextTurret.setY(y);
+        if (nextTurretBuilded || nextTurret == null) {
+            createNewNextTurret(x,y);
+        }
+        else {
+            x = (int) ((x - offsetX) / factorDeEscalado);
+            y = (int) ((y - offsetY) / factorDeEscalado);
+            if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
+                int casillaX = x / 100;
+                int casillaY = y / 100;
+                int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
+                Casilla casilla = mapaEnCasillas.get(indexOfCasilla);
+                if (casilla.getTipoCasilla() == TipoCasilla.CESPED && !casilla.tieneTorreta()) {
+                    nextTurret.setX(casillaX * 100);
+                    nextTurret.setY(casillaY * 100);
+                } else {
+                    nextTurretBuilded = true;
+                }
             }
         }
     }
 
     public void buildTurret(int x, int y) {
-        x = (int) ((x - offsetX) / factorDeEscalado);
-        y = (int) ((y - offsetY) / factorDeEscalado);
-        if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
+        if (nextTurretBuilded || nextTurret == null) {
+            createNewNextTurret(x,y);
+        }
+        else {
             nextTurretBuilded = true;
-            turrets.add(new Turret(x, y, nextTurret.getRadius()));
-        } else {
-            nextTurretBuilded = true;
-            turrets.add(nextTurret);
+            x = (int) ((x - offsetX) / factorDeEscalado);
+            y = (int) ((y - offsetY) / factorDeEscalado);
+            if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
+                int casillaX = x / 100;
+                int casillaY = y / 100;
+                int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
+                Casilla casilla = mapaEnCasillas.get(indexOfCasilla);
+                if (casilla.getTipoCasilla() == TipoCasilla.CESPED && !casilla.tieneTorreta()) {
+                    nextTurret.setX(casillaX * 100);
+                    nextTurret.setY(casillaY * 100);
+                    turrets.add(nextTurret);
+                    casilla.ponTorreta();
+                }
+            }
         }
     }
 

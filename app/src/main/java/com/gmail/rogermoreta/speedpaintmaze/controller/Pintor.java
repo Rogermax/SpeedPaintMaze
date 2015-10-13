@@ -103,7 +103,7 @@ public class Pintor {
         if (turret0base != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
-            canvas.drawBitmap(turret0base, t.getX()-t.getRadius(), t.getY()-t.getRadius()/2, pincell);
+            canvas.drawBitmap(turret0base, t.getX(), t.getY(), pincell);
         }
         else {
             Log.d("Pintor", "turret0base es null, no pinto");
@@ -115,7 +115,7 @@ public class Pintor {
         if (turret0ceil != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
-            canvas.drawBitmap(turret0ceil, t.getX() - t.getRadius(), t.getY() - t.getRadius() / 2, pincell);
+            canvas.drawBitmap(turret0ceil, t.getX(), t.getY(), pincell);
         }
         else {
             Log.d("Pintor", "turret0ceil es null, no pinto");

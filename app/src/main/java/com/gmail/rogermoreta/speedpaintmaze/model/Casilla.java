@@ -88,4 +88,8 @@ public class Casilla {
     public float getRandomNextY() {
         return posNextY*100/*+r.nextInt(100)*/;
     }
+
+    public void ponTorreta() {
+        tieneTorreta = true;
+    }
 }
