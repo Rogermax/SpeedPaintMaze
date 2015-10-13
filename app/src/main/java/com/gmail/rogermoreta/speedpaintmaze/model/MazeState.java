@@ -185,6 +185,7 @@ public class MazeState implements Serializable {
         return -1;
     }
 
+    @SuppressWarnings("unused")
     public void saveState(Context context) {
         try {
             FileOutputStream fos = context.openFileOutput("mazeState.dat", Context.MODE_PRIVATE);
@@ -197,6 +198,7 @@ public class MazeState implements Serializable {
         }
     }
 
+    @SuppressWarnings("unused")
     public MazeState loadState(Context context) {
         try {
             FileInputStream fis = context.openFileInput("mazeState.dat");

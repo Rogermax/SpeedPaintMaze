@@ -14,6 +14,7 @@ public class SplashScreenActivity extends ManagedActivity {
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+        MM.setContext(getApplicationContext());
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getGameHelper().setMaxAutoSignInAttempts(0);

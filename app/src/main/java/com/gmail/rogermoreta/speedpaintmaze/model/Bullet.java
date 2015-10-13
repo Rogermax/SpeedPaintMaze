@@ -15,21 +15,6 @@ public class Bullet {
     private int faseDeDisparo;
     private float vel;
 
-    public Bullet(float posX, float posY, float vel, int objX, int objY, float radius) {
-        this.posX = posX;
-        this.posY = posY;
-        this.vel = vel;
-        double distanciaAobjetivo = Math.sqrt((objX-posX)*(objX-posX)+(objY-posY)*(objY-posY));
-        velX = (float) ((objX-posX)*vel/distanciaAobjetivo);
-        velY = (float) ((objY-posY)*vel/distanciaAobjetivo);
-        this.radius = radius;
-        faseExplosion = 0;
-        faseDeDisparo = 0;
-        tiempoDeVida = 3000l;
-        existe = true;
-        tiempoDeExplosion = 200l;
-    }
-
     public Bullet(float posX, float posY, float vel, Enemy enemy, float radius) {
         this.posX = posX;
         this.posY = posY;
@@ -76,13 +61,6 @@ public class Bullet {
 
     public boolean existe() {
         return existe;
-    }
-
-    public void logic(long deltaTimeMiliSec, int objX, int objY) {
-        double distanciaAobjetivo = Math.sqrt((objX-posX)*(objX-posX)+(objY-posY)*(objY-posY));
-        velX = (float) ((objX-posX)*vel/distanciaAobjetivo);
-        velY = (float) ((objY-posY)*vel/distanciaAobjetivo);
-        logic(deltaTimeMiliSec);
     }
 
     public float getPosX() {

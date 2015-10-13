@@ -19,7 +19,7 @@ public class MazeView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        MM.getMazeController().onViewReady(this.getHolder());
+        MM.mazeViewReady(this.getHolder());
     }
 
     @Override
@@ -37,13 +37,13 @@ public class MazeView extends SurfaceView implements SurfaceHolder.Callback {
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                MM.getMazeController().sendActionDown(x,y);
+                MM.sendActionDownToMaze(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                MM.getMazeController().sendActionMove(x, y);
+                MM.sendActionMoveToMaze(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                MM.getMazeController().sendActionUp(x, y);
+                MM.sendActionUpToMaze(x, y);
                 break;
             default:
                 return false;

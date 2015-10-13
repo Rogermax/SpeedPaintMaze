@@ -15,7 +15,6 @@ public class BurbujitaController extends Controller {
     @SuppressWarnings("FieldCanBeLocal")
     private GameThread gameThread;
 
-    private BurbujitaActivity burbujitaActivity;
     private BurbujitaMap burbujitaMap;
     private boolean paused;
     private Long lastTimeUpdated;
@@ -24,9 +23,11 @@ public class BurbujitaController extends Controller {
     private ArrayList<Long> historicTimeDraws;
     private int nextIndexUpdate;
     private int nextIndexDraw;
+    private MainManager MM;
 
-    public BurbujitaController() {
+    public BurbujitaController(MainManager mm) {
         paused = true;
+        MM = mm;
         gameThread = new GameThread(this);
         gameThread.encender();
         historicTimeUpdates = new ArrayList<>(5);
@@ -39,17 +40,13 @@ public class BurbujitaController extends Controller {
         nextIndexDraw = 0;
     }
 
-    public void setActivity(BurbujitaActivity activity) {
-        burbujitaActivity = activity;
-    }
-
     @Override
     public void mostrarActividad(Activity activity, long miliseconds) {
         ManagedActivity.changeActivityToIn(activity, BurbujitaActivity.class, miliseconds, false);
     }
 
     public void onViewReady(SurfaceHolder surfaceHolder) {
-        burbujitaMap = new BurbujitaMap(surfaceHolder, burbujitaActivity);
+        burbujitaMap = new BurbujitaMap(surfaceHolder, this);
         burbujitaMap.draw(50f, 50f);
     }
 
@@ -57,6 +54,10 @@ public class BurbujitaController extends Controller {
         if (burbujitaMap != null && !paused) {
             burbujitaMap.logic(milisec);
         }
+    }
+
+    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object, int capa) {
+        return MM.drawObjectIntoCanvas(canvas, object, capa);
     }
 
     private void draw() {

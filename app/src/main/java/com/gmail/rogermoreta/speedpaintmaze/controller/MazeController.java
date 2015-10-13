@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.gmail.rogermoreta.speedpaintmaze.enums.Sound;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
 import com.gmail.rogermoreta.speedpaintmaze.model.MazeConstructor;
 import com.gmail.rogermoreta.speedpaintmaze.model.MazeState;
@@ -17,8 +18,6 @@ import java.util.ArrayList;
 
 
 public class MazeController extends Controller {
-
-    private MazeActivity mazeActivity;
 
     //attributes of view layer
     //private Layout layout;
@@ -40,10 +39,11 @@ public class MazeController extends Controller {
     private ArrayList<Pair> posibleNextPositions;
     private boolean finished;
     private GameThread gameThread;
+    private MainManager mm;
 
-    public MazeController() {
+    public MazeController(MainManager mm) {
         super();
-        mazeActivity = new MazeActivity();
+        this.mm = mm;
     }
 
     /**
@@ -76,12 +76,6 @@ public class MazeController extends Controller {
         return MazeConstructor.testRecursive(0);
     }
 
-    @SuppressWarnings("unused")
-    public void paint() {
-        //View view = new View();
-        //mazeActivity.setContentView(view);
-    }
-
     @Override
     public void mostrarActividad(Activity activity, long miliseconds) {
         ManagedActivity.changeActivityToIn(activity, MazeActivity.class, miliseconds, false);
@@ -100,6 +94,7 @@ public class MazeController extends Controller {
     }
 
 
+    @SuppressWarnings("unused")
     public void onViewReady(SurfaceHolder surfaceHolder) {
         this.surfaceHolder = surfaceHolder;
         stablishSize();
@@ -188,10 +183,12 @@ public class MazeController extends Controller {
         return canvas;
     }
 
+    @SuppressWarnings("unused")
     public void sendActionDown(@SuppressWarnings("UnusedParameters") float x, @SuppressWarnings("UnusedParameters") float y) {
 
     }
 
+    @SuppressWarnings("unused")
     public void sendActionUp(@SuppressWarnings("UnusedParameters") float x, @SuppressWarnings("UnusedParameters") float y) {
         if (!finished && paused) {
             resume();
@@ -199,6 +196,7 @@ public class MazeController extends Controller {
         }
     }
 
+    @SuppressWarnings("unused")
     public void sendActionMove(float x, float y) {
         if (!finished && !paused) {
             final int i;
@@ -216,7 +214,7 @@ public class MazeController extends Controller {
                     mazeState.moveToPosible(positionInsidePosibles);
                     pintaPosibles = mazeState.locationOfTheEndPoint() >= 0;
                     drawMaze();
-                    mazeActivity.playSound();
+                    mm.playSound(Sound.BEEP);
                 } else {
                     if (posibleNextPositions.isEmpty()) {
                         finish();
@@ -259,10 +257,6 @@ public class MazeController extends Controller {
     public void resume() {
         paused = false;
         //mazeState.loadState(mazeActivity);
-    }
-
-    public void setActivity(MazeActivity activity) {
-        mazeActivity = activity;
     }
 
 }

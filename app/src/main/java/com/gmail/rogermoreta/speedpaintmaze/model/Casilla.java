@@ -2,8 +2,7 @@ package com.gmail.rogermoreta.speedpaintmaze.model;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 
-import java.util.Random;
-
+@SuppressWarnings("unused")
 public class Casilla {
     public static final int size = 100;
     private int posX;
@@ -16,8 +15,7 @@ public class Casilla {
     private boolean tieneTorreta;
     private Turret turret;
     private TipoCasilla tipoCasilla;
-    private Casilla nextCasilla;
-    private Random r = new Random(System.currentTimeMillis());
+    //private Random r = new Random(System.currentTimeMillis());
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY) {
         this.posX = posX;

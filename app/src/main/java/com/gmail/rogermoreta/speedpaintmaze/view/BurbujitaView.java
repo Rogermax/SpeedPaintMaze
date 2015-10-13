@@ -19,12 +19,12 @@ public class BurbujitaView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        MM.getBurbujitaController().onViewReady(this.getHolder());
+        MM.burbujitaViewReady(this.getHolder());
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        MM.getBurbujitaController().onSurfaceChange(this.getHolder());
+        MM.burbujitaViewChanged(this.getHolder());
     }
 
     @Override
@@ -37,13 +37,13 @@ public class BurbujitaView extends SurfaceView implements SurfaceHolder.Callback
         float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                MM.getBurbujitaController().sendActionDown(x, y);
+                MM.sendActionDownToBurbujita(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                MM.getBurbujitaController().sendActionMove(x, y);
+                MM.sendActionMoveToBurbujita(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                MM.getBurbujitaController().sendActionUp(x, y);
+                MM.sendActionUpToBurbujita(x, y);
                 break;
             default:
                 return false;

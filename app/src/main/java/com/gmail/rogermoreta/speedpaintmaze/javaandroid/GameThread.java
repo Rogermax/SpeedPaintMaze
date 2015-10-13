@@ -1,11 +1,9 @@
 package com.gmail.rogermoreta.speedpaintmaze.javaandroid;
 
-import android.util.Log;
-
 import com.gmail.rogermoreta.speedpaintmaze.controller.Controller;
 
 public class GameThread extends Thread {
-    private Controller controller;
+    private final Controller controller;
     private boolean running;
 
     public GameThread(Controller controller) {
@@ -23,28 +21,6 @@ public class GameThread extends Thread {
         interrupt();
     }
 
-    /*@Override
-    public void run() {
-        long ticksPS = 1000 / FPS;
-        long startTime;
-        long sleepTime;
-        while (running) {
-            startTime = System.currentTimeMillis();
-            synchronized (controller) {
-                controller.timeToDoThings();
-            }
-            sleepTime = ticksPS - (System.currentTimeMillis() - startTime);
-            try {
-                if (sleepTime > 0) {
-                    sleep(sleepTime);
-                } else {
-                    sleep(10);
-                }
-            } catch (Exception e) {
-            }
-        }
-    }*/
-
     // desired fps
     private final static int 	MAX_FPS = 50;
     // maximum number of frames to be skipped
@@ -61,8 +37,6 @@ public class GameThread extends Thread {
         long timeDiff;		// the time it took for the cycle to execute
         int sleepTime;		// ms to sleep (<0 if we're behind)
         int framesSkipped;	// number of frames being skipped
-        long lastTimeFPSUpdated = System.currentTimeMillis();
-        sleepTime = 0;
 
         while (running) {
             //canvas = null;
@@ -81,10 +55,6 @@ public class GameThread extends Thread {
                 //this.gamePanel.render(canvas);
                 // calculate how long did the cycle take
                 timeDiff = System.currentTimeMillis() - beginTime;
-                /*if (System.currentTimeMillis() - lastTimeFPSUpdated > 500) {
-                    Log.d("FPS:", (1000d / timeDiff)+"");
-                    lastTimeFPSUpdated = System.currentTimeMillis();
-                }*/
                 // calculate sleep time
                 sleepTime = (int)(FRAME_PERIOD - timeDiff);
 
@@ -94,7 +64,7 @@ public class GameThread extends Thread {
                         // send the thread to sleep for a short period
                         // very useful for battery saving
                         Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {}
+                    } catch (InterruptedException ignored) {}
                 }
 
                 while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {

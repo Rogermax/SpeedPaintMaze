@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 
 import com.gmail.rogermoreta.speedpaintmaze.controller.MainManager;
 import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
+import com.gmail.rogermoreta.speedpaintmaze.enums.Sound;
 import com.gmail.rogermoreta.speedpaintmaze.thread.ClickThread;
 import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.model.Figura;
@@ -166,14 +167,14 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_UP:
                 for (Figura f : figuras) {
                     if (f.getId() == figuraActiva) {
-                        Intent mainIntent;
                         int figura_id = f.getId();
                         switch (figura_id) {
                             case 1:
-                                MenuActivity.playSound();
+                                MM.playSound(Sound.BEEP);
                                 MM.goToSection(Section.MAZE, BGA);
                                 break;
                             case 2:
+                                MM.playSound(Sound.BEEP);
                                 MM.goToSection(Section.BURBU, BGA);
                                /* MenuActivity.playSound();
                                 mainIntent = new Intent().setClass(getContext(), GameActivity.class);
@@ -181,7 +182,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                                 getContext().startActivity(mainIntent);*/
                                 break;
                             case 3:
-                                MenuActivity.playSound();
+                                MM.playSound(Sound.BEEP);
                                 getContext().startActivity(new Intent().setClass(getContext(), PointsActivity.class));
                                 break;
                             case 4:

@@ -6,9 +6,6 @@ import com.gmail.rogermoreta.speedpaintmaze.view.MenuActivity;
 
 public class MenuController extends Controller {
 
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private static MenuActivity menuActivity;
-
     public MenuController() {
         super();
     }
@@ -26,9 +23,5 @@ public class MenuController extends Controller {
     @Override
     public void render() {
         //nothing to do
-    }
-
-    public void setActivity(MenuActivity activity) {
-        menuActivity = activity;
     }
 }

@@ -9,8 +9,6 @@ public class Turret {
     private boolean readyToFire;
     private float radius;
     private boolean objectiveSetted;
-    private float objX;
-    private float objY;
     private Enemy enemyToAttack;
     public static final float maxDistanceAttack = 200;
     //private ArrayList<PisoTurret> pisos;
@@ -36,12 +34,6 @@ public class Turret {
         readyToFire = false;
         shootingState = 0;
         return enemyToAttack;
-    }
-
-    public void provocar(int x, int y) {
-        objectiveSetted = true;
-        objX = x;
-        objY = y;
     }
 
     public int getX() {
@@ -72,18 +64,8 @@ public class Turret {
         return objectiveSetted;
     }
 
-    public float getObjX() {
-        return objX;
-    }
-
-    public float getObjY() {
-        return objY;
-    }
-
     public void provocar(Enemy enemy) {
         objectiveSetted = true;
-        objX = x;
-        objY = y;
         enemyToAttack = enemy;
     }
 }

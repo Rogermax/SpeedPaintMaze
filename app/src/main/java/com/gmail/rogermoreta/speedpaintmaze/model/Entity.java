@@ -117,4 +117,8 @@ public abstract class Entity implements Serializable {
     public float getTotalLife() {
         return totalLife;
     }
+
+    public boolean isAlive() {
+        return isAlive;
+    }
 }
