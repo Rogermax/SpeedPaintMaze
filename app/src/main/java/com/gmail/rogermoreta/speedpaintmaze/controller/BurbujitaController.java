@@ -129,8 +129,10 @@ public class BurbujitaController extends Controller {
     public void onSurfaceChange(SurfaceHolder holder) {
         if (burbujitaMap != null) {
             Canvas canvas = holder.lockCanvas();
-            burbujitaMap.reajustarTamaño(canvas);
-            holder.unlockCanvasAndPost(canvas);
+            if (canvas != null) {
+                burbujitaMap.reajustarTamaño(canvas);
+                holder.unlockCanvasAndPost(canvas);
+            }
         }
     }
 }
