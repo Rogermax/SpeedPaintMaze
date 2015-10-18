@@ -22,6 +22,7 @@ public class Pintor {
 
     public static Bitmap turret0base;
     public static Bitmap turret0ceil;
+    public static Bitmap torretaseta;
     public static Bitmap monsterHead0;
     public static Bitmap monsterHead1;
     public static Bitmap monsterBody0;
@@ -56,6 +57,7 @@ public class Pintor {
     public Pintor(Context context) {
         turret0base = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.turret0base)), 100, 100, true);
         turret0ceil = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.turret0ceil)), 100, 100, true);
+        torretaseta = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretaseta)), 100, 100, true);
         monsterHead0 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterhead0)), 32, 32, true);
         monsterHead1 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterhead1)), 32, 32, true);
         monsterBody0 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterbody0)), 32, 32, true);
@@ -100,26 +102,26 @@ public class Pintor {
     }
 
     public Canvas drawBaseTurret(Canvas canvas, Turret t) {
-        if (turret0base != null) {
+        if (torretaseta != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
-            canvas.drawBitmap(turret0base, t.getX(), t.getY(), pincell);
+            canvas.drawBitmap(torretaseta, t.getX(), t.getY(), pincell);
         }
         else {
-            Log.d("Pintor", "turret0base es null, no pinto");
+            Log.d("Pintor", "torretaseta es null, no pinto");
         }
         return canvas;
     }
 
     public Canvas drawCeilTurret(Canvas canvas, Turret t) {
-        if (turret0ceil != null) {
+        /*if (turret0ceil != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
             canvas.drawBitmap(turret0ceil, t.getX(), t.getY(), pincell);
         }
         else {
             Log.d("Pintor", "turret0ceil es null, no pinto");
-        }
+        }*/
         return canvas;
     }
 
