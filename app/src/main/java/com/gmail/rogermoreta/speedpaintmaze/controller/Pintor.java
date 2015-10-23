@@ -15,7 +15,11 @@ import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
 import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
+import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
+import com.gmail.rogermoreta.speedpaintmaze.model.InterfaceButton;
 import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
+
+import java.util.ArrayList;
 
 public class Pintor {
 
@@ -23,6 +27,16 @@ public class Pintor {
     public static Bitmap turret0base;
     public static Bitmap turret0ceil;
     public static Bitmap torretaseta;
+    public static Bitmap torretasetaattack;
+    public static Bitmap torretaseta2;
+    public static Bitmap torretasetaattack2;
+    public static Bitmap torretaseta3;
+    public static Bitmap torretasetaattack3;
+    public static Bitmap iconoseta1;
+    public static Bitmap iconoseta2;
+    public static Bitmap iconoseta3;
+    public static Bitmap hierba;
+    public static Bitmap tierra;
     public static Bitmap monsterHead0;
     public static Bitmap monsterHead1;
     public static Bitmap monsterBody0;
@@ -49,15 +63,24 @@ public class Pintor {
     public static Bitmap platanodie2;
     public static Bitmap platanodie3;
     public static Bitmap platanodie4;
+    private Context context;
 
     /**
      *
      * @param context para saber de donde coger los drawable
      */
     public Pintor(Context context) {
+        this.context = context;
         turret0base = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.turret0base)), 100, 100, true);
         turret0ceil = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.turret0ceil)), 100, 100, true);
         torretaseta = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretaseta)), 100, 100, true);
+        torretasetaattack = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretasetaattack)), 100, 100, true);
+        torretaseta2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretaseta2)), 100, 100, true);
+        torretasetaattack2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretasetaattack2)), 100, 100, true);
+        torretaseta3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretaseta3)), 100, 100, true);
+        torretasetaattack3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.torretasetaattack3)), 100, 100, true);
+        hierba = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.hierba1)), 100, 100, true);
+        tierra = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.tierra)), 100, 100, true);
         monsterHead0 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterhead0)), 32, 32, true);
         monsterHead1 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterhead1)), 32, 32, true);
         monsterBody0 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.monsterbody0)), 32, 32, true);
@@ -86,26 +109,54 @@ public class Pintor {
         platanodie4 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.platano14)), 100, 100, true);
     }
 
-
     public static Canvas drawCasilla(Canvas canvas, Casilla casilla) {
         int left = casilla.getPosX()*100;
         int top = casilla.getPosY()*100;
         Paint pincell = new Paint();
         if (casilla.getTipoCasilla() == TipoCasilla.CAMINO) {
-            pincell.setARGB(255, 204, 119, 34);
+            canvas.drawBitmap(tierra, left, top, pincell);
+            //pincell.setARGB(255, 204, 119, 34);
         }
         else {
-            pincell.setARGB(255, 68, 148, 74);
+            canvas.drawBitmap(hierba, left, top, pincell);
+            pincell.setARGB(100,100,100,100);
+            if (casilla.isSelected()) {
+                canvas.drawRect(left,top,left+100, top+100, pincell);
+            }
+            //pincell.setARGB(255, 68, 148, 74);
         }
-        canvas.drawRect(left, top, left + Casilla.size, top + Casilla.size, pincell);
+        //canvas.drawRect(left, top, left + Casilla.size, top + Casilla.size, pincell);
         return canvas;
     }
 
-    public Canvas drawBaseTurret(Canvas canvas, Turret t) {
+    public Canvas drawTurret(Canvas canvas, Turret t) {
         if (torretaseta != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
-            canvas.drawBitmap(torretaseta, t.getX(), t.getY(), pincell);
+            if (t.getAttackPercentage() > 0.5f) {
+                switch (t.tipo) {
+                    case 3:
+                        canvas.drawBitmap(torretasetaattack2, t.getX(), t.getY(), pincell);
+                        break;
+                    case 4:
+                        canvas.drawBitmap(torretasetaattack3, t.getX(), t.getY(), pincell);
+                        break;
+                    default:
+                        canvas.drawBitmap(torretasetaattack, t.getX(), t.getY(), pincell);
+                }
+            }
+            else {
+                switch (t.tipo) {
+                    case 3:
+                        canvas.drawBitmap(torretaseta2, t.getX(), t.getY(), pincell);
+                        break;
+                    case 4:
+                        canvas.drawBitmap(torretaseta3, t.getX(), t.getY(), pincell);
+                        break;
+                    default:
+                        canvas.drawBitmap(torretaseta, t.getX(), t.getY(), pincell);
+                }
+            }
         }
         else {
             Log.d("Pintor", "torretaseta es null, no pinto");
@@ -113,17 +164,17 @@ public class Pintor {
         return canvas;
     }
 
-    public Canvas drawCeilTurret(Canvas canvas, Turret t) {
-        /*if (turret0ceil != null) {
+    /*public Canvas drawCeilTurret(Canvas canvas, Turret t) {
+        if (turret0ceil != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
             canvas.drawBitmap(turret0ceil, t.getX(), t.getY(), pincell);
         }
         else {
             Log.d("Pintor", "turret0ceil es null, no pinto");
-        }*/
+        }
         return canvas;
-    }
+    }*/
 
 
     public Canvas drawEnemy(Canvas canvas, Enemy enemy) {
@@ -274,6 +325,75 @@ public class Pintor {
         return canvas;
     }
 
+    public Canvas drawInterface(Canvas canvas, Interface interfaceInstance) {
+        Paint pincell = new Paint();
+        pincell.setARGB(255, 255, 0, 0);
+        if (interfaceInstance.stepShowing() > 0) {
+            ArrayList<InterfaceButton> aux = interfaceInstance.getButtons();
+            int size = aux.size();
+            for (int i = 0; i < size; i++) {
+                pincell.setARGB(255, 0, 0, 0);
+                InterfaceButton aux2 = aux.get(i);
+                if (iconoseta1 == null || iconoseta2 == null || iconoseta3 == null) {
+                    iconoseta1 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta1)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
+                    iconoseta2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta2)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
+                    iconoseta3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta3)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
+                }
+                if (i == 0) {
+                    if (aux2.isSelected()) {
+                        canvas.drawBitmap(iconoseta1, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                    }
+                    else {
+                        canvas.drawBitmap(iconoseta1, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                        pincell.setARGB(100, 100, 100, 100);
+                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
+                    }
+                }
+                else if (i == 1) {
+                    if (aux2.isSelected()) {
+                        canvas.drawBitmap(iconoseta2, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                    }
+                    else {
+                        canvas.drawBitmap(iconoseta2, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                        pincell.setARGB(100, 100, 100, 100);
+                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
+                    }
+                }
+                else if (i == 2) {
+                    if (aux2.isSelected()) {
+                        canvas.drawBitmap(iconoseta3, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                    }
+                    else {
+                        canvas.drawBitmap(iconoseta3, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
+                        pincell.setARGB(100, 100, 100, 100);
+                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
+                    }
+                }
+                else {
+                    if (aux2.isCircular()) {
+                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
+                    }
+                    else {
+                        canvas.drawRect(aux2.getActualX(), aux2.getActualY(), aux2.getActualX()+2*aux2.getRadix(), aux2.getActualY()+2*aux2.getRadix(), pincell);
+                    }
+                }
+            }
+            InterfaceButton moreInfo = interfaceInstance.getMoreInfoButton();
+            if (moreInfo.isSelected()) {
+                pincell.setARGB(255, 0, 255, 0);
+            }
+            else {
+                pincell.setARGB(255, 255, 0, 0);
+            }
+            if (moreInfo.isCircular()) {
+                canvas.drawCircle(moreInfo.getActualX(), moreInfo.getActualY(), moreInfo.getRadix(), pincell);
+            }
+            else {
+                canvas.drawRect(moreInfo.getActualX(), moreInfo.getActualY(), moreInfo.getActualX() + 2 * moreInfo.getRadix(), moreInfo.getActualY() + 2 * moreInfo.getRadix(), pincell);
+            }
+        }
+        return canvas;
+    }
 
     public static Bitmap drawableToBitmap (Drawable drawable) {
         Bitmap bitmap;
@@ -296,5 +416,4 @@ public class Pintor {
         drawable.draw(canvas);
         return bitmap;
     }
-
 }

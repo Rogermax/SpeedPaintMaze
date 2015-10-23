@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.javaandroid;
 
+import android.util.Log;
+
 import com.gmail.rogermoreta.speedpaintmaze.controller.Controller;
 
 public class GameThread extends Thread {
@@ -22,7 +24,7 @@ public class GameThread extends Thread {
     }
 
     // desired fps
-    private final static int 	MAX_FPS = 50;
+    private final static int 	MAX_FPS = 30;
     // maximum number of frames to be skipped
     private final static int	MAX_FRAME_SKIPS = 5;
     // the frame period
@@ -38,43 +40,61 @@ public class GameThread extends Thread {
         int sleepTime;		// ms to sleep (<0 if we're behind)
         int framesSkipped;	// number of frames being skipped
 
+        long timeWastedInLogic = 0;
+        long timeWastedinDrawing = 0;
+        int i = 0;
         while (running) {
             //canvas = null;
             // try locking the canvas for exclusive pixel editing
             // in the surface
                 //canvas = this.surfaceHolder.lockCanvas();
             synchronized (controller) {
-                beginTime = System.currentTimeMillis();
-                framesSkipped = 0;	// resetting the frames skipped
-                // update game state
-                controller.update();
-                controller.render();
-                //this.gamePanel.update();
-                // render state to the screen
-                // draws the canvas on the panel
-                //this.gamePanel.render(canvas);
-                // calculate how long did the cycle take
-                timeDiff = System.currentTimeMillis() - beginTime;
-                // calculate sleep time
-                sleepTime = (int)(FRAME_PERIOD - timeDiff);
-
-                if (sleepTime > 0) {
-                    // if sleepTime > 0 we're OK
-                    try {
-                        // send the thread to sleep for a short period
-                        // very useful for battery saving
-                        Thread.sleep(sleepTime);
-                    } catch (InterruptedException ignored) {}
-                }
-
-                while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
-                    // we need to catch up
-                    // update without rendering
-                    //this.gamePanel.update();
+                if (!controller.isPaused()) {
+                    beginTime = System.currentTimeMillis();
+                    framesSkipped = 0;    // resetting the frames skipped
+                    // update game state
+                    i++;
                     controller.update();
-                    // add frame period to check if in next frame
-                    sleepTime += FRAME_PERIOD;
-                    framesSkipped++;
+                    /*if (i % 30 == 0) {
+                        timeWastedInLogic = System.currentTimeMillis() - beginTime;
+                        Log.d("GameThread", "LogicTime: " + timeWastedInLogic);
+                    }*/
+                    controller.render();
+                    /*if (i % 30 == 0) {
+                        timeWastedinDrawing = System.currentTimeMillis() - (beginTime + timeWastedInLogic);
+                        Log.d("GameThread", "DrawTime: " + timeWastedinDrawing);
+                    }*/
+                    //this.gamePanel.update();
+                    // render state to the screen
+                    // draws the canvas on the panel
+                    //this.gamePanel.render(canvas);
+                    // calculate how long did the cycle take
+                    timeDiff = System.currentTimeMillis() - beginTime;
+                    // calculate sleep time
+                    sleepTime = (int) (FRAME_PERIOD - timeDiff);
+
+                    if (sleepTime > 0) {
+                        if (i % 30 == 0) {
+                            Log.d("GameThread", "sleepTime: " + sleepTime);
+                        }
+                        // if sleepTime > 0 we're OK
+                        try {
+                            // send the thread to sleep for a short period
+                            // very useful for battery saving
+                            Thread.sleep(sleepTime);
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+
+                    while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
+                        // we need to catch up
+                        // update without rendering
+                        //this.gamePanel.update();
+                        controller.update();
+                        // add frame period to check if in next frame
+                        sleepTime += FRAME_PERIOD;
+                        framesSkipped++;
+                    }
                 }
             }
         }

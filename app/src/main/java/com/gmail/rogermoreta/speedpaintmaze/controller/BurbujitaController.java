@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
+import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
 
@@ -17,7 +18,6 @@ public class BurbujitaController extends Controller {
     private GameThread gameThread;
 
     private BurbujitaMap burbujitaMap;
-    private boolean paused;
     private Long lastTimeUpdated;
     private Long lastTimeDrawed;
     private ArrayList<Long> historicTimeUpdates;
@@ -41,6 +41,10 @@ public class BurbujitaController extends Controller {
         nextIndexDraw = 0;
     }
 
+    private void trace(String str) {
+        Trace.write(" BurbujitaController::" + str);
+    }
+
     @Override
     public void mostrarActividad(Activity activity, long miliseconds) {
         ManagedActivity.changeActivityToIn(activity, BurbujitaActivity.class, miliseconds, false);
@@ -57,8 +61,8 @@ public class BurbujitaController extends Controller {
         }
     }
 
-    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object, int capa) {
-        return MM.drawObjectIntoCanvas(canvas, object, capa);
+    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
+        return MM.drawObjectIntoCanvas(canvas, object);
     }
 
     private void draw() {
@@ -85,10 +89,15 @@ public class BurbujitaController extends Controller {
     public void update() {
         if (!paused) {
             try {
-                historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis() - lastTimeUpdated);
+                if (lastTimeUpdated != null) {
+                    historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis() - lastTimeUpdated);
+                }
+                else {
+                    lastTimeUpdated = System.currentTimeMillis();
+                }
+                nextIndexUpdate = (nextIndexUpdate + 1) % 5;
                 logic(System.currentTimeMillis() - lastTimeUpdated);
                 lastTimeUpdated = System.currentTimeMillis();
-                nextIndexUpdate = (nextIndexUpdate + 1) % 5;
             }
             catch (Exception ignored){}
         }
@@ -105,24 +114,48 @@ public class BurbujitaController extends Controller {
         draw();
     }
 
+
+    public void resume() {
+        //nothing to do, quitamos el pause cuando detectamos una pulsacion
+    }
+
     public void sendActionDown(float x, float y) {
-        paused = false;
+        if (paused) {
+            lastTimeUpdated = System.currentTimeMillis();
+            paused = false;
+        }
         if (burbujitaMap != null) {
-            burbujitaMap.createNewNextTurret((int) x, (int) y);
+            if (burbujitaMap.insterfaceIsActive(x,y)) {
+                burbujitaMap.highLightInterfaceButtons((int)x, (int) y);
+            }
+            else {
+                burbujitaMap.highLight((int)x, (int) y);
+            }
+            //burbujitaMap.createNewNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionMove(float x, float y) {
         if (burbujitaMap != null) {
-            burbujitaMap.setNextTurret((int) x, (int) y);
+            if (burbujitaMap.insterfaceIsActive(x,y)) {
+                burbujitaMap.highLightInterfaceButtons((int) x, (int) y);
+            }
+            else {
+                burbujitaMap.highLight((int) x, (int) y);
+            }
+            //burbujitaMap.setNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionUp(float x, float y) {
         if (burbujitaMap != null) {
-            burbujitaMap.buildTurret((int) x, (int) y);
-            lastTimeUpdated = System.currentTimeMillis();
-            lastTimeDrawed = System.currentTimeMillis();
+            if (burbujitaMap.insterfaceIsActive(x,y)) {
+                burbujitaMap.buildTurret();
+            }
+            else {
+                //muestra el interface si es un punto de construcicon
+                burbujitaMap.showInterface((int) x, (int) y);
+            }
         }
     }
 
@@ -133,6 +166,15 @@ public class BurbujitaController extends Controller {
                 burbujitaMap.reajustarTamaño(canvas);
                 holder.unlockCanvasAndPost(canvas);
             }
+            else {
+                trace("canvas es null");
+            }
         }
     }
+
+    public boolean isPaused() {
+        return paused;
+    }
+
 }
+

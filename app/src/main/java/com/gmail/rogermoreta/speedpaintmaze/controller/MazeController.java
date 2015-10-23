@@ -93,6 +93,11 @@ public class MazeController extends Controller {
         }
     }
 
+    @Override
+    public boolean isPaused() {
+        return false;
+    }
+
 
     @SuppressWarnings("unused")
     public void onViewReady(SurfaceHolder surfaceHolder) {

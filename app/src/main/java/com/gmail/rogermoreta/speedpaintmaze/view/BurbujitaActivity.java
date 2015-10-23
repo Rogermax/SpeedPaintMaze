@@ -17,6 +17,12 @@ public class BurbujitaActivity extends ManagedActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        MM.resumeBurbujita();
+    }
+
+    @Override
     public void onPause(){
         super.onPause();
         MM.pauseBurbujita();

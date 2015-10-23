@@ -13,6 +13,7 @@ public class Casilla {
     private boolean esDeInicio;
     private boolean esDeFin;
     private boolean tieneTorreta;
+    private boolean estaSeleccionada;
     private Turret turret;
     private TipoCasilla tipoCasilla;
     //private Random r = new Random(System.currentTimeMillis());
@@ -25,6 +26,7 @@ public class Casilla {
         esDeInicio = false;
         esDeFin = false;
         tieneTorreta = false;
+        estaSeleccionada = false;
     }
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY, boolean esDeInicio, boolean esDeFin) {
@@ -35,6 +37,7 @@ public class Casilla {
         this.esDeFin = esDeFin;
         esDeDireccionamiento = false;
         tieneTorreta = false;
+        estaSeleccionada = false;
     }
 
     public boolean esDeDireccionamiento() {
@@ -47,6 +50,18 @@ public class Casilla {
 
     public boolean tieneTorreta() {
         return tieneTorreta;
+    }
+
+    public boolean estaSeleccionada() {
+        return estaSeleccionada;
+    }
+
+    public void seleccionar() {
+        estaSeleccionada = true;
+    }
+
+    public void deselccionar() {
+        estaSeleccionada = false;
     }
 
     public void setTurret(Turret turret) {
@@ -91,5 +106,9 @@ public class Casilla {
 
     public void ponTorreta() {
         tieneTorreta = true;
+    }
+
+    public boolean isSelected() {
+        return estaSeleccionada;
     }
 }

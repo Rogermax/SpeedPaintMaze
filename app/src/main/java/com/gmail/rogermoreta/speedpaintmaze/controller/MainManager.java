@@ -9,10 +9,12 @@ import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
 import com.gmail.rogermoreta.speedpaintmaze.enums.Sound;
+import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
 import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
+import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
 
 public class MainManager {
@@ -30,6 +32,11 @@ public class MainManager {
         menuController = new MenuController();
         mazeController = new MazeController(this);
         burbujitaController = new BurbujitaController(this);
+        trace("Creados controllers del mainManager");
+    }
+
+    private void trace(String str) {
+        Trace.write(" MainManager::"+str);
     }
 
     public static MainManager getInstance() {
@@ -51,6 +58,7 @@ public class MainManager {
                 mazeController.mostrarActividad(activity, 500l);
                 break;
             case BURBU:
+                trace("Mostramos actividad burbujitaController en 5 segundos.");
                 burbujitaController.mostrarActividad(activity, 500l);
                 break;
             default:
@@ -74,11 +82,21 @@ public class MainManager {
 
     public void pauseBurbujita() {
         if (burbujitaController != null) {
+            trace("Enviamos pause a burbujita");
             burbujitaController.pause();
         }
     }
 
+
+    public void resumeBurbujita() {
+        if (burbujitaController != null) {
+            trace("Enviamos resume a burbujita");
+            burbujitaController.resume();
+        }
+    }
+
     public void setContext(@NonNull Context context) {
+        trace("Creamos pintor y musico");
         pintor = new Pintor(context);
         musico = new Musico(context);
     }
@@ -92,7 +110,7 @@ public class MainManager {
         }
     }
 
-    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object, int capa) {
+    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
         //Cuidado con las subclases, BaseMonster extiende Enemigo, por tanto BaseMonster es instancia de Enemigo (pero no al reves)
         //Por tanto si hay subclases, se han de mirar primero las mas particulares y al final la versión  más extensa.
         Canvas canvasRet = canvas;
@@ -109,12 +127,10 @@ public class MainManager {
             canvasRet = pintor.drawEnemy(canvas, (Enemy) object);
         }
         else if (object instanceof Turret) {
-            if (capa == 0) {
-                canvasRet = pintor.drawBaseTurret(canvas, (Turret) object);
-            }
-            else {
-                canvasRet = pintor.drawCeilTurret(canvas, (Turret) object);
-            }
+            canvasRet = pintor.drawTurret(canvas, (Turret) object);
+        }
+        else if (object instanceof Interface) {
+            canvasRet = pintor.drawInterface(canvas, (Interface) object);
         }
         else {
             Log.d("MainManager","drawObjectIntoCanvas::fail->do not know how to draw"+object);
@@ -202,4 +218,5 @@ public class MainManager {
             Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaController es null");
         }
     }
+
 }

@@ -24,4 +24,9 @@ public class MenuController extends Controller {
     public void render() {
         //nothing to do
     }
+
+    @Override
+    public boolean isPaused() {
+        return false;
+    }
 }

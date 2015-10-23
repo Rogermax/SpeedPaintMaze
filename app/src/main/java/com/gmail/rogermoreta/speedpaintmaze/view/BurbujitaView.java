@@ -2,6 +2,7 @@ package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,17 +20,19 @@ public class BurbujitaView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        MM.burbujitaViewReady(this.getHolder());
+        getHolder().addCallback(this);
+        MM.burbujitaViewReady(getHolder());
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        MM.burbujitaViewChanged(this.getHolder());
+        getHolder().addCallback(this);
+        MM.burbujitaViewChanged(getHolder());
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        Log.d("BurbujitaView", "--------------------->SurfaceDestroyed");
     }
 
     public boolean onTouchEvent(@NonNull MotionEvent event) {
