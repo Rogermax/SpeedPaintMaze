@@ -615,4 +615,16 @@ public class BurbujitaMap {
         }
         return false;
     }
+
+    public ArrayList<Casilla> getCasillaMap() {
+        return mapaEnCasillas;
+    }
+
+    public int getMapWidth() {
+        return numeroCasillasX;
+    }
+
+    public int getMapHeight() {
+        return numeroCasillasY;
+    }
 }

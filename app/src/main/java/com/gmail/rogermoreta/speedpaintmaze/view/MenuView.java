@@ -183,7 +183,8 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                                 break;
                             case 3:
                                 MM.playSound(Sound.BEEP);
-                                getContext().startActivity(new Intent().setClass(getContext(), PointsActivity.class));
+                                MM.goToSection(Section.BURBUOPENGL, BGA);
+                                //getContext().startActivity(new Intent().setClass(getContext(), PointsActivity.class));
                                 break;
                             case 4:
                                 //BGA.startActivityForResult(Games.Achievements.getAchievementsIntent(GAP), 2);

@@ -12,10 +12,13 @@ import com.gmail.rogermoreta.speedpaintmaze.enums.Sound;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
+import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
 import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
+
+import javax.microedition.khronos.opengles.GL10;
 
 public class MainManager {
 
@@ -26,6 +29,8 @@ public class MainManager {
     private Section sectionActual;
     private Pintor pintor;
     private Musico musico;
+    private BurbujitaGLRenderer burbujitaGLRenderer;
+    private Context context;
 
     private MainManager() {
         sectionActual = Section.NONE;
@@ -58,9 +63,12 @@ public class MainManager {
                 mazeController.mostrarActividad(activity, 500l);
                 break;
             case BURBU:
-                trace("Mostramos actividad burbujitaController en 5 segundos.");
+                trace("Mostramos actividad burbujitaController en 0.5 segundos.");
                 burbujitaController.mostrarActividad(activity, 500l);
                 break;
+            case BURBUOPENGL:
+                trace("Mostramos actividad burbujitaController en 0.5 segundos.");
+                burbujitaController.mostrarActividadOpenGL(activity, 500l);
             default:
                 Log.d("MainManager", "goToSection value not processed:" + sectionActual);
         }
@@ -99,6 +107,7 @@ public class MainManager {
         trace("Creamos pintor y musico");
         pintor = new Pintor(context);
         musico = new Musico(context);
+        this.context = context;
     }
 
     public void playSound(Sound sound) {
@@ -219,4 +228,15 @@ public class MainManager {
         }
     }
 
+    public void setRendererOpenGL(BurbujitaGLRenderer burbujitaGLRenderer) {
+        this.burbujitaGLRenderer = burbujitaGLRenderer;
+    }
+
+    public BurbujitaMap getBurbujitaMap() {
+        return burbujitaController.getBurbujitaMap();
+    }
+
+    public Context getContext() {
+        return context;
+    }
 }

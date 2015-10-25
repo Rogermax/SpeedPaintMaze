@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.opengl.GLES30;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -13,17 +14,30 @@ import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
+import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
 import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.model.InterfaceButton;
 import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 public class Pintor {
 
-
+    private static FloatBuffer vertexBuffer;
+    private static ShortBuffer mIndices;
+    // Set color with red, green, blue and alpha (opacity) values
+    private static float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+    private static int mPositionHandle;
+    private static int mColorHandle;        // number of coordinates per vertex in this array
+    private static final int COORDS_PER_VERTEX = 3;
+    private static final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private static int mMVPMatrixHandle;
     public static Bitmap turret0base;
     public static Bitmap turret0ceil;
     public static Bitmap torretaseta;
@@ -107,6 +121,172 @@ public class Pintor {
         platanodie2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.platano12)), 100, 100, true);
         platanodie3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.platano13)), 100, 100, true);
         platanodie4 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.platano14)), 100, 100, true);
+    }
+
+    public static void drawOpenGLMap(float[] mvpMatrix, int mProgram, BurbujitaMap burbujitaMap, int mBaseMapTexId, int mBaseMapLoc) {
+
+        // Add program to OpenGL ES environment
+        GLES30.glUseProgram(mProgram);
+
+        //Para aplicar transformaciones de view y camera.
+        // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix");
+
+        // Pass the projection and view transformation to the shader
+        GLES30.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+
+
+        if (burbujitaMap != null) {
+            ArrayList<Casilla> casillas = burbujitaMap.getCasillaMap();
+
+            if (casillas != null) {
+                int numeroCasillasX = burbujitaMap.getMapWidth();
+                int numeroCasillasY = burbujitaMap.getMapHeight();
+
+        /*
+        for (int i = 0; i < numeroCasillasX; ++i) { //por cada fila
+            for (int j = 0; j < numeroCasillasY; ++j) { //por cada elemento de la fila
+
+            }
+        }*/
+                int mapWidth = numeroCasillasX * 100;
+                int mapHeight = numeroCasillasY * 100;
+
+                float[] triangleCoords = new float[(COORDS_PER_VERTEX + 2) * 6 * casillas.size()];
+                short[] mIndicesData = {0, 1, 2, 0, 2, 3};
+
+                for (int i = 0; i < casillas.size(); i++) {
+                    triangleCoords[30 * i] = casillas.get(i).getPosX() * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 1] = casillas.get(i).getPosY() * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 2] = 0f;
+                    triangleCoords[30 * i + 3] = 0f;
+                    triangleCoords[30 * i + 4] = 0f;
+                    triangleCoords[30 * i + 5] = casillas.get(i).getPosX() * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 6] = (casillas.get(i).getPosY() + 100) * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 7] = 0f;
+                    triangleCoords[30 * i + 8] = 0f;
+                    triangleCoords[30 * i + 9] = 1f;
+                    triangleCoords[30 * i + 10] = (casillas.get(i).getPosX() + 100) * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 11] = casillas.get(i).getPosY() * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 12] = 0f;
+                    triangleCoords[30 * i + 13] = 1f;
+                    triangleCoords[30 * i + 14] = 0f;
+                    triangleCoords[30 * i + 15] = (casillas.get(i).getPosX() + 100) * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 16] = casillas.get(i).getPosY() * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 17] = 0f;
+                    triangleCoords[30 * i + 18] = 1f;
+                    triangleCoords[30 * i + 19] = 0f;
+                    triangleCoords[30 * i + 20] = casillas.get(i).getPosX() * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 21] = (casillas.get(i).getPosY() + 100) * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 22] = 0f;
+                    triangleCoords[30 * i + 23] = 0f;
+                    triangleCoords[30 * i + 24] = 1f;
+                    triangleCoords[30 * i + 25] = (casillas.get(i).getPosX() + 100) * 2 / (float) mapWidth - 1f;
+                    triangleCoords[30 * i + 26] = (casillas.get(i).getPosY() + 100) * 2 / (float) mapHeight - 1f;
+                    triangleCoords[30 * i + 27] = 0f;
+                    triangleCoords[30 * i + 28] = 1f;
+                    triangleCoords[30 * i + 29] = 1f;
+                }
+
+                final int vertexCount = triangleCoords.length / (COORDS_PER_VERTEX + 2);
+
+                // initialize vertex byte buffer for shape coordinates
+                ByteBuffer bb = ByteBuffer.allocateDirect(
+                        // (number of coordinate values * 4 bytes per float)
+                        triangleCoords.length * 4);
+                // use the device hardware's native byte order
+                bb.order(ByteOrder.nativeOrder());
+
+                // create a floating point buffer from the ByteBuffer
+                vertexBuffer = bb.asFloatBuffer();
+
+
+                mIndices = ByteBuffer.allocateDirect(mIndicesData.length * 2)
+                        .order(ByteOrder.nativeOrder()).asShortBuffer();
+                mIndices.put(mIndicesData).position(0);
+
+
+                // add the coordinates to the FloatBuffer
+                vertexBuffer.put(triangleCoords);
+
+                // Load the vertex position
+                vertexBuffer.position(0);
+                GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT,
+                        false,
+                        5 * 4, vertexBuffer);
+                // Load the texture coordinate
+                vertexBuffer.position(3);
+                GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT,
+                        false,
+                        5 * 4,
+                        vertexBuffer);
+
+                GLES30.glEnableVertexAttribArray(0);
+                GLES30.glEnableVertexAttribArray(1);
+
+
+                // Bind the base map
+                GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+                GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mBaseMapTexId);
+
+                // Set the base map sampler to texture unit to 0
+                GLES30.glUniform1i(mBaseMapLoc, 0);
+
+                // Bind the light map
+                //GLES30.glActiveTexture ( GLES30.GL_TEXTURE1 );
+                //GLES30.glBindTexture ( GLES30.GL_TEXTURE_2D, mLightMapTexId );
+
+                // Set the light map sampler to texture unit 1
+                //GLES30.glUniform1i ( mLightMapLoc, 1 );
+
+                //GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount);
+                GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
+
+
+        /*
+
+        // get handle to vertex shader's vPosition member
+        mPositionHandle = GLES30.glGetAttribLocation(mProgram, "vPosition");
+
+        // Enable a handle to the triangle vertices
+        GLES30.glEnableVertexAttribArray(mPositionHandle);
+
+        // Prepare the triangle coordinate data
+        GLES30.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES30.GL_FLOAT, false, vertexStride, vertexBuffer);
+
+
+        // get handle to fragment shader's vColor member
+        //mColorHandle = GLES30.glGetUniformLocation(mProgram, "vColor");
+
+        // Set color for drawing the triangle
+        //GLES30.glUniform4fv(mColorHandle, 1, color, 0);
+
+        // Load the texture coordinate
+        vertexBuffer.position ( 3 );
+        GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT,
+                false,
+                5 * 4,
+                vertexBuffer );
+
+        GLES30.glEnableVertexAttribArray(0 );
+        GLES30.glEnableVertexAttribArray ( 1 );
+
+
+        // Bind the base map
+        GLES30.glActiveTexture ( GLES30.GL_TEXTURE0 );
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mBaseMapTexId );
+
+        // Set the base map sampler to texture unit to 0
+        GLES30.glUniform1i(mBaseMapLoc, 0 );
+
+        // Draw the triangle
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount);
+
+        // Disable vertex array
+        GLES30.glDisableVertexAttribArray(mPositionHandle);
+        */
+            }
+        }
     }
 
     public static Canvas drawCasilla(Canvas canvas, Casilla casilla) {

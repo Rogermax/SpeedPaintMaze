@@ -23,10 +23,14 @@ public abstract class Entity implements Serializable {
     protected long attackState;
     protected long movementState;
 
+    public static final int cycleTimeMovement = 750;
     protected long timeRechargeAttack;
     protected long timeDying;
     protected long timeHitted;
     protected float totalLife;
+
+    //statics
+    protected int timesShootted = 0;
 
     public Entity() {
         posX = 0f;
@@ -53,6 +57,78 @@ public abstract class Entity implements Serializable {
         wannaAttack = false;
     }
 
+    public void logic(long milisenconds) {
+        if (dyingState == 0) {
+            if (hittedState > 0) {
+                logicHitted(milisenconds);
+            }
+            logicMove(milisenconds);
+            if (wannaAttack) {
+                logicAttack(milisenconds);
+            }
+        }
+        else {
+            logicDie(milisenconds);
+        }
+
+    }
+
+    private void logicHitted(long milisenconds) {
+        hittedState+=milisenconds;
+        if (hittedState > timeHitted) hittedState = 0;
+    }
+
+    private void logicDie(long milisenconds) {
+        dyingState+=milisenconds;
+        if (dyingState > timeDying) {
+            isAlive = false;
+        }
+    }
+
+    private void logicMove(long milisenconds) {
+        if (posX != targetMoveX || posY != targetMoveY) {
+            double distanceToTarget = Math.sqrt((targetMoveX - posX) * (targetMoveX - posX) + (targetMoveY - posY) * (targetMoveY - posY));
+            recalculateVelocityVector(distanceToTarget);
+            if (distanceToTarget < vel * milisenconds) {
+                posX = targetMoveX;
+                posY = targetMoveY;
+            } else {
+                posX += velX * milisenconds;
+                posY += velY * milisenconds;
+                movementState = (movementState+milisenconds)%cycleTimeMovement;
+            }
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    private void logicAttack(long miliseconds) {
+        if (attackState > 0) {
+            attackState+=miliseconds;
+            if(attackState > timeRechargeAttack) {
+                attackState = 0;
+                if (miObjetivoEstaAtiro()) {
+                    timesShootted++;
+                    attackState = 1;
+                }
+                else {
+                    //nothingtodo
+                }
+            }
+            else {
+                //nothingtodo
+            }
+        }
+        else {
+            if (miObjetivoEstaAtiro()) {
+                timesShootted++;
+                attackState+=miliseconds;
+            }
+            else {
+                //nothingtodo
+            }
+        }
+    }
+
     public void asignarMoveTarget(float x, float y) {
         targetMoveX = x;
         targetMoveY = y;
@@ -68,9 +144,6 @@ public abstract class Entity implements Serializable {
         targetMoveY = posY;
     }
 
-    public abstract void logic(long milisenconds);
-
-
     protected boolean miObjetivoEstaAtiro() {
         return (attackDistance * attackDistance > (targetAttackX - posX) * (targetAttackX - posX) + (targetAttackY - posY) * (targetAttackY - posY));
     }
@@ -85,6 +158,19 @@ public abstract class Entity implements Serializable {
         if (dyingState == 0 && life <= 0) {
             dyingState = 1;
         }
+    }
+
+    private void recalculateVelocityVector(double mod) {
+        velX = (float) ((targetMoveX-posX)*vel/mod);
+        velY = (float) ((targetMoveY-posY)*vel/mod);
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 
     public float getX() {

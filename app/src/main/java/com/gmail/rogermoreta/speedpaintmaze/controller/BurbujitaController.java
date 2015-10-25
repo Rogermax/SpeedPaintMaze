@@ -9,6 +9,7 @@ import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
+import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaOpenGLActivity;
 
 import java.util.ArrayList;
 
@@ -25,8 +26,10 @@ public class BurbujitaController extends Controller {
     private int nextIndexUpdate;
     private int nextIndexDraw;
     private MainManager MM;
+    private boolean isOpenGL;
 
     public BurbujitaController(MainManager mm) {
+        isOpenGL = false;
         paused = true;
         MM = mm;
         gameThread = new GameThread(this);
@@ -50,6 +53,11 @@ public class BurbujitaController extends Controller {
         ManagedActivity.changeActivityToIn(activity, BurbujitaActivity.class, miliseconds, false);
     }
 
+    public void mostrarActividadOpenGL(Activity activity, long miliseconds) {
+        isOpenGL = true;
+        ManagedActivity.changeActivityToIn(activity, BurbujitaOpenGLActivity.class, miliseconds, false);
+    }
+
     public void onViewReady(SurfaceHolder surfaceHolder) {
         burbujitaMap = new BurbujitaMap(surfaceHolder, this);
         draw();
@@ -62,7 +70,12 @@ public class BurbujitaController extends Controller {
     }
 
     public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
-        return MM.drawObjectIntoCanvas(canvas, object);
+        if (isOpenGL) {
+            return canvas;
+        }
+        else {
+            return MM.drawObjectIntoCanvas(canvas, object);
+        }
     }
 
     private void draw() {
@@ -176,5 +189,8 @@ public class BurbujitaController extends Controller {
         return paused;
     }
 
+    public BurbujitaMap getBurbujitaMap() {
+        return burbujitaMap;
+    }
 }
 
