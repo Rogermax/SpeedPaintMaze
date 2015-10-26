@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -138,7 +139,7 @@ public class MazeController extends Controller {
                 canvas.drawText("PAUSED", width / 2, height / 2, pincell);
             }
             pincell.setTextSize(Math.min(width, height) / 15);
-            canvas.drawText("Time: "+System.currentTimeMillis(), width / 2, 3 * height / 4, pincell);
+            canvas.drawText("Time: "+ SystemClock.uptimeMillis(), width / 2, 3 * height / 4, pincell);
             this.surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }

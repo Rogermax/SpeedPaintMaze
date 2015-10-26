@@ -9,10 +9,10 @@ import android.graphics.drawable.Drawable;
 import android.opengl.GLES30;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
-import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
@@ -29,15 +29,7 @@ import java.util.ArrayList;
 
 public class Pintor {
 
-    private static FloatBuffer vertexBuffer;
-    private static ShortBuffer mIndices;
-    // Set color with red, green, blue and alpha (opacity) values
-    private static float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
-    private static int mPositionHandle;
-    private static int mColorHandle;        // number of coordinates per vertex in this array
     private static final int COORDS_PER_VERTEX = 3;
-    private static final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-    private static int mMVPMatrixHandle;
     public static Bitmap turret0base;
     public static Bitmap turret0ceil;
     public static Bitmap torretaseta;
@@ -130,7 +122,7 @@ public class Pintor {
 
         //Para aplicar transformaciones de view y camera.
         // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix");
+        int mMVPMatrixHandle = GLES30.glGetUniformLocation(mProgram, "uMVPMatrix");
 
         // Pass the projection and view transformation to the shader
         GLES30.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
@@ -153,9 +145,15 @@ public class Pintor {
                 int mapHeight = numeroCasillasY * 100;
 
                 float[] triangleCoords = new float[(COORDS_PER_VERTEX + 2) * 6 * casillas.size()];
-                short[] mIndicesData = {0, 1, 2, 0, 2, 3};
+                short[] mIndicesData = new short[COORDS_PER_VERTEX * 6 * casillas.size()];
 
                 for (int i = 0; i < casillas.size(); i++) {
+                    mIndicesData[6*i] = (short)(6*i);
+                    mIndicesData[6*i+1] = (short)(6*i+1);
+                    mIndicesData[6*i+2] = (short)(6*i+2);
+                    mIndicesData[6*i+3] = (short)(6*i+3);
+                    mIndicesData[6*i+4] = (short)(6*i+4);
+                    mIndicesData[6*i+5] = (short)(6*i+5);
                     triangleCoords[30 * i] = casillas.get(i).getPosX() * 2 / (float) mapWidth - 1f;
                     triangleCoords[30 * i + 1] = casillas.get(i).getPosY() * 2 / (float) mapHeight - 1f;
                     triangleCoords[30 * i + 2] = 0f;
@@ -188,7 +186,7 @@ public class Pintor {
                     triangleCoords[30 * i + 29] = 1f;
                 }
 
-                final int vertexCount = triangleCoords.length / (COORDS_PER_VERTEX + 2);
+                //final int vertexCount = triangleCoords.length / (COORDS_PER_VERTEX + 2);
 
                 // initialize vertex byte buffer for shape coordinates
                 ByteBuffer bb = ByteBuffer.allocateDirect(
@@ -198,10 +196,10 @@ public class Pintor {
                 bb.order(ByteOrder.nativeOrder());
 
                 // create a floating point buffer from the ByteBuffer
-                vertexBuffer = bb.asFloatBuffer();
+                FloatBuffer vertexBuffer = bb.asFloatBuffer();
 
 
-                mIndices = ByteBuffer.allocateDirect(mIndicesData.length * 2)
+                ShortBuffer mIndices = ByteBuffer.allocateDirect(mIndicesData.length * 2)
                         .order(ByteOrder.nativeOrder()).asShortBuffer();
                 mIndices.put(mIndicesData).position(0);
 
@@ -213,7 +211,7 @@ public class Pintor {
                 vertexBuffer.position(0);
                 GLES30.glVertexAttribPointer(0, 3, GLES30.GL_FLOAT,
                         false,
-                        5 * 4, vertexBuffer);
+                        5 * 4, vertexBuffer); //El 4 es el tamaño en bytes del float, y el 5 es el numero de espacios hasta la siguiente coordenada
                 // Load the texture coordinate
                 vertexBuffer.position(3);
                 GLES30.glVertexAttribPointer(1, 2, GLES30.GL_FLOAT,
@@ -240,7 +238,7 @@ public class Pintor {
                 //GLES30.glUniform1i ( mLightMapLoc, 1 );
 
                 //GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount);
-                GLES30.glDrawElements(GLES30.GL_TRIANGLES, 6, GLES30.GL_UNSIGNED_SHORT, mIndices);
+                GLES30.glDrawElements(GLES30.GL_TRIANGLES, COORDS_PER_VERTEX * 6 * casillas.size(), GLES30.GL_UNSIGNED_SHORT, mIndices);
 
 
         /*
@@ -413,7 +411,7 @@ public class Pintor {
         return canvas;
     }
 
-    public Canvas drawBaseMonster(Canvas canvas, BaseMonster enemy) {
+    /*public Canvas drawBaseMonster(Canvas canvas, BaseMonster enemy) {
         if (platano0 != null && platano1 != null && platano2 != null && platano3 != null && platano4 != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 0, 255, 125);
@@ -484,7 +482,7 @@ public class Pintor {
         }
         canvas = drawLife(canvas, enemy.getX(), enemy.getY(), enemy.getLife(), enemy.getTotalLife());
         return canvas;
-    }
+    }*/
 
 
     private static Canvas drawLife(Canvas canvas, float x, float y, float life, float totalLife) {
@@ -505,7 +503,8 @@ public class Pintor {
         return canvas;
     }
 
-    public Canvas drawInterface(Canvas canvas, Interface interfaceInstance) {
+    public void drawInterface(SurfaceHolder holder, Interface interfaceInstance) {
+        Canvas canvas = holder.lockCanvas();
         Paint pincell = new Paint();
         pincell.setARGB(255, 255, 0, 0);
         if (interfaceInstance.stepShowing() > 0) {
@@ -572,7 +571,7 @@ public class Pintor {
                 canvas.drawRect(moreInfo.getActualX(), moreInfo.getActualY(), moreInfo.getActualX() + 2 * moreInfo.getRadix(), moreInfo.getActualY() + 2 * moreInfo.getRadix(), pincell);
             }
         }
-        return canvas;
+        holder.unlockCanvasAndPost(canvas);
     }
 
     public static Bitmap drawableToBitmap (Drawable drawable) {
@@ -595,5 +594,75 @@ public class Pintor {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+    public void drawBurbujitaMapCanvas(SurfaceHolder surfaceHolder, BurbujitaMap burbujitaMap) {
+        if (surfaceHolder != null) {
+            Paint pincell = new Paint();
+            pincell.setARGB(255, 181, 230, 29);
+            Canvas canvas = surfaceHolder.lockCanvas();
+            canvas.drawARGB(255, 0, 0, 0);
+            int mapWidth = burbujitaMap.getMapWidth();
+            int mapHeight = burbujitaMap.getMapHeight();
+            //canvas.translate(offsetX, offsetY);
+            //canvas.scale(factorDeEscalado, factorDeEscalado);
+            canvas.drawRect(0, 0, mapWidth, mapHeight, pincell);
+            canvas = drawCasillas(burbujitaMap, canvas);
+            canvas = drawTurrets(burbujitaMap,canvas);
+            canvas = drawEnemies(burbujitaMap,canvas);
+            canvas = drawBullets(burbujitaMap,canvas);
+            //canvas = drawTurretsCeils(canvas);
+            /*if (!burbujitaMap.getNextTurretBuilded() && burbujitaMap.getNextTurret() != null) {
+                try {
+                    canvas = burbujitaController.drawObjectIntoCanvas(canvas, burbujitaMap.getNextTurret());
+                } catch (Exception ignored) {
+
+                }
+            }*/
+            //canvas.drawText("FPS: " + Math.round(fps), mapWidth / 2, 6 * mapHeight / 8, pincell);
+            //canvas.drawText("UPS: " + Math.round(ups), mapWidth / 2, 7 * mapHeight / 8, pincell);
+
+
+            //canvas.scale(1 / factorDeEscalado, 1 / factorDeEscalado);
+            //canvas.translate(-offsetX, -offsetY);
+            //canvas = drawInterface(canvas);
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        }
+    }
+
+    private Canvas drawCasillas(BurbujitaMap burbujitaMap, Canvas canvas) {
+        ArrayList<Casilla> casillas = burbujitaMap.getCasillaMap();
+        int size = casillas.size();
+        for (int i = 0; i < size; i++) {
+            drawCasilla(canvas, casillas.get(i));
+        }
+        return canvas;
+    }
+
+    private Canvas drawTurrets(BurbujitaMap burbujitaMap, Canvas canvas) {
+        ArrayList<Turret> turrets = burbujitaMap.getTurrets();
+        int size = turrets.size();
+        for (int i = 0; i < size; i++) {
+            drawTurret(canvas, turrets.get(i));
+        }
+        return canvas;
+    }
+
+    private Canvas drawEnemies(BurbujitaMap burbujitaMap, Canvas canvas) {
+        ArrayList<Enemy> enemies = burbujitaMap.getEnemies();
+        int size = enemies.size();
+        for (int i = 0; i < size; i++) {
+            drawEnemy(canvas, enemies.get(i));
+        }
+        return canvas;
+    }
+
+    private Canvas drawBullets(BurbujitaMap burbujitaMap, Canvas canvas) {
+        ArrayList<Bullet> bullets = burbujitaMap.getBullets();
+        int size = bullets.size();
+        for (int i = 0; i < size; i++) {
+            drawBullet(canvas, bullets.get(i));
+        }
+        return canvas;
     }
 }

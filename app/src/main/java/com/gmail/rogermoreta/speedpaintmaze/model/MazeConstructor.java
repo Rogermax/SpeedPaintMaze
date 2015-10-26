@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
+import android.os.SystemClock;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -46,7 +48,7 @@ public class MazeConstructor {
     public void generateMazeStartingAt(int i0, int j0) throws Exception {
         if (0 <= i0 && i0 < mazeSizeEdge && 0 <= j0 && j0 < mazeSizeEdge) {
             final int mazeSizeLogic = mazeSizeEdge * 2 + 1;
-            r = new Random(System.currentTimeMillis());
+            r = new Random(SystemClock.uptimeMillis());
             mazeWallsStructure = new boolean[mazeSizeLogic][mazeSizeLogic];
             for (int i = 0; i < mazeSizeLogic; i++) {
                 for (int j = 0; j < mazeSizeLogic; j++) {

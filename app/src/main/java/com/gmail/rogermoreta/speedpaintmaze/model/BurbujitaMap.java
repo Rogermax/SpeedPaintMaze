@@ -1,9 +1,6 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.Log;
-import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.controller.BurbujitaController;
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
@@ -12,26 +9,27 @@ import java.util.ArrayList;
 
 public class BurbujitaMap {
 
-    private float offsetY;
-    private float offsetX;
-    private float factorDeEscalado;
-    private SurfaceHolder surfaceHolder;
+    //private float offsetY;
+    //private float offsetX;
+    //private float factorDeEscalado;
+    //private SurfaceHolder surfaceHolder;
     private ArrayList<Turret> turrets;
     private ArrayList<Bullet> bullets;
     private ArrayList<Enemy> enemies;
-    private Paint pincell;
-    private int canvasHeight;
-    private int canvasWidth;
+    //private Paint pincell;
+    private int mapHeight;
+    private int mapWidth;
     private int numeroCasillasX;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private int numeroCasillasY;
-    private Turret nextTurret;
+    //private Turret nextTurret;
     private int lastX;
     private int lastY;
-    private boolean nextTurretBuilded;
+    //private boolean nextTurretBuilded;
     private ArrayList<Casilla> mapaEnCasillas;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private BurbujitaController burbujitaController;
-    private Interface interfaceInstance;
+    //private Interface interfaceInstance;
     private int lastSelectedCasilla;
     public static final char[] codifiedMap;
 
@@ -76,8 +74,8 @@ public class BurbujitaMap {
     }*/
 
 
-    public BurbujitaMap(SurfaceHolder surfaceHolder, BurbujitaController burbujitaController) {
-        this.surfaceHolder = surfaceHolder;
+    public BurbujitaMap(BurbujitaController burbujitaController) {
+        //this.surfaceHolder = surfaceHolder;
         this.burbujitaController = burbujitaController;
         lastX = -1;
         lastY = -1;
@@ -85,8 +83,8 @@ public class BurbujitaMap {
         turrets = new ArrayList<>();
         bullets = new ArrayList<>();
         enemies = new ArrayList<>();
-        Canvas canvas = this.surfaceHolder.lockCanvas();
-        reajustarTamaño(canvas);
+        //Canvas canvas = this.surfaceHolder.lockCanvas();
+        //reajustarTamaño(canvas);
         BaseMonster enemy = new BaseMonster();
         enemy.setVelocity(4f);
         enemies.add(enemy);
@@ -102,9 +100,9 @@ public class BurbujitaMap {
         enemy = new BaseMonster();
         enemy.setVelocity(2f);
         enemies.add(enemy);
-        pincell = new Paint();
-        pincell.setARGB(175, 0, 0, 0);
-        this.surfaceHolder.unlockCanvasAndPost(canvas);
+        //pincell = new Paint();
+        //pincell.setARGB(175, 0, 0, 0);
+        //this.surfaceHolder.unlockCanvasAndPost(canvas);
         leerMapa();
     }
 
@@ -128,13 +126,13 @@ public class BurbujitaMap {
                 longFilas = longFilas * 10 + (codifiedMap[i] - 48);
             }
         }
-        canvasWidth = longFilas * 100;
-        canvasHeight = filas * 100;
+        mapWidth = longFilas * 100;
+        mapHeight = filas * 100;
         numeroCasillasX = longFilas;
         numeroCasillasY = filas;
         mapaEnCasillas = new ArrayList<>(longFilas * filas);
-        pincell.setTextAlign(Paint.Align.CENTER);
-        pincell.setTextSize(Math.min(canvasWidth, canvasHeight) / 15);
+        //pincell.setTextAlign(Paint.Align.CENTER);
+        //pincell.setTextSize(Math.min(mapWidth, mapHeight) / 15);
         trobat = false;
         i--;
         int casillaX = 0;
@@ -320,7 +318,7 @@ public class BurbujitaMap {
         }
     }
 
-    public void reajustarTamaño(Canvas canvas) {
+    /*public void reajustarTamaño(Canvas canvas) {
         int screenWidth = canvas.getWidth();
         int screenHeight = canvas.getHeight();
         interfaceInstance = new Interface(screenWidth, screenHeight, 8);
@@ -342,9 +340,9 @@ public class BurbujitaMap {
             offsetX = screenWidth / 2f - factorDeEscalado * canvasWidth / 2f;
             offsetY = 0;
         }
-    }
+    }*/
 
-    public void draw(float fps, float ups) {
+    /*public void draw(float fps, float ups) {
         if (this.surfaceHolder != null) {
             Canvas canvas = this.surfaceHolder.lockCanvas();
             canvas.drawARGB(255, 0, 0, 0);
@@ -381,33 +379,7 @@ public class BurbujitaMap {
         return canvas;
     }
 
-    private Canvas drawMap(Canvas canvas) {
-        for (int i = 0; i < mapaEnCasillas.size(); ++i) {
-            canvas = burbujitaController.drawObjectIntoCanvas(canvas, mapaEnCasillas.get(i));
-        }
-        return canvas;
-    }
-
-    private Canvas drawTurrets(Canvas canvas) {
-        for (int i = 0; i < turrets.size(); i++) {
-            canvas = burbujitaController.drawObjectIntoCanvas(canvas, turrets.get(i));
-        }
-        return canvas;
-    }
-
-    private Canvas drawEnemies(Canvas canvas) {
-        for (int i = 0; i < enemies.size(); i++) {
-            canvas = burbujitaController.drawObjectIntoCanvas(canvas, enemies.get(i));
-        }
-        return canvas;
-    }
-
-    private Canvas drawBullets(Canvas canvas) {
-        for (int i = 0; i < bullets.size(); i++) {
-            canvas = burbujitaController.drawObjectIntoCanvas(canvas, bullets.get(i));
-        }
-        return canvas;
-    }
+    */
 
     /*private Canvas drawTurretsCeils(Canvas canvas) {
         for (int i = 0; i < turrets.size(); i++) {
@@ -429,12 +401,12 @@ public class BurbujitaMap {
         actualizarEstadoBichos(milisegundos);
         actualizarEstadoTorretas(milisegundos);
         actualizarEstadoDisparos(milisegundos);
-        actualizarEstadoInterface(milisegundos);
+        //actualizarEstadoInterface(milisegundos);
     }
 
-    private void actualizarEstadoInterface(long milisegundos) {
+    /*private void actualizarEstadoInterface(long milisegundos) {
         interfaceInstance.logic(milisegundos);
-    }
+    }*/
 
     private void calcularColisiones() {
         for (int i = 0; i < bullets.size(); ++i) {
@@ -512,7 +484,7 @@ public class BurbujitaMap {
             torretaTratada.logic(milisegundos);
             if (torretaTratada.readyToFire()) {
                 Enemy enemy = torretaTratada.dispara();
-                bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(canvasWidth, canvasHeight)));
+                bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight)));
             }
         }
     }
@@ -548,27 +520,28 @@ public class BurbujitaMap {
     public void buildTurret() {
         if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
-            int selectedOption = interfaceInstance.getSelectedButton();
-            if (selectedOption > -1) {
-                nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, selectedOption);
-            }
-            if (nextTurret != null) {
-                mapaEnCasillas.get(lastSelectedCasilla).ponTorreta();
-                turrets.add(nextTurret);
-            }
-            interfaceInstance.desSeleccionar();
-            hideConstructorInterface();
+            //int selectedOption = burbujitaController.getSelectedButton();
+            //if (selectedOption > -1) {
+            //   nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, selectedOption);
+            //}
+            //if (nextTurret != null) {
+            //    mapaEnCasillas.get(lastSelectedCasilla).ponTorreta();
+            //    turrets.add(nextTurret);
+            //}
+            //interfaceInstance.desSeleccionar();
+            //hideConstructorInterface();
             cas.deselccionar();
             lastSelectedCasilla = -1;
         }
     }
 
-    public void showInterface(int x, int y) {
+    /*public void showInterface(int x, int y) {
         if (canBuildTurretOn(x,y)) {
             showConstructionInterface();
         }
-    }
+    }*/
 
+    /*
     private void showConstructionInterface() {
         interfaceInstance.startShowing();
     }
@@ -579,12 +552,12 @@ public class BurbujitaMap {
 
     public boolean insterfaceIsActive(float x, float y) {
         return interfaceInstance.isActive() && interfaceInstance.isClickInside(x, y);
-    }
+    }*/
 
     public void highLight(int x, int y) {
         if (canBuildTurretOn(x, y)) {
-            x = (int) ((x - offsetX) / factorDeEscalado);
-            y = (int) ((y - offsetY) / factorDeEscalado);
+            //x = (int) ((x - offsetX) / factorDeEscalado);
+            //y = (int) ((y - offsetY) / factorDeEscalado);
             int casillaX = x / 100;
             int casillaY = y / 100;
             int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
@@ -597,14 +570,15 @@ public class BurbujitaMap {
         }
     }
 
+    /*
     public void highLightInterfaceButtons(float x, float y) {
         interfaceInstance.highLight(x, y);
-    }
+    }*/
 
     public boolean canBuildTurretOn(int x, int y) {
-        x = (int) ((x - offsetX) / factorDeEscalado);
-        y = (int) ((y - offsetY) / factorDeEscalado);
-        if (x > 0 && x < canvasWidth && y > 0 && y < canvasHeight) {
+        //x = (int) ((x - offsetX) / factorDeEscalado);
+        //y = (int) ((y - offsetY) / factorDeEscalado);
+        if (x > 0 && x < mapWidth && y > 0 && y < mapHeight) {
             int casillaX = x / 100;
             int casillaY = y / 100;
             int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
@@ -626,5 +600,17 @@ public class BurbujitaMap {
 
     public int getMapHeight() {
         return numeroCasillasY;
+    }
+
+    public ArrayList<Turret> getTurrets() {
+        return turrets;
+    }
+
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public ArrayList<Bullet> getBullets() {
+        return bullets;
     }
 }

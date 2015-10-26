@@ -1,15 +1,14 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
-import android.graphics.Canvas;
+import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
+import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
-import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaOpenGLActivity;
 
 import java.util.ArrayList;
 
@@ -19,21 +18,20 @@ public class BurbujitaController extends Controller {
     private GameThread gameThread;
 
     private BurbujitaMap burbujitaMap;
+    private Interface burbujitaInterface;
     private Long lastTimeUpdated;
     private Long lastTimeDrawed;
+    @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
     private ArrayList<Long> historicTimeUpdates;
+    @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
     private ArrayList<Long> historicTimeDraws;
     private int nextIndexUpdate;
     private int nextIndexDraw;
     private MainManager MM;
-    private boolean isOpenGL;
 
     public BurbujitaController(MainManager mm) {
-        isOpenGL = false;
         paused = true;
         MM = mm;
-        gameThread = new GameThread(this);
-        gameThread.encender();
         historicTimeUpdates = new ArrayList<>(5);
         historicTimeDraws = new ArrayList<>(5);
         for (int i = 0; i < 5; i++) {
@@ -44,6 +42,7 @@ public class BurbujitaController extends Controller {
         nextIndexDraw = 0;
     }
 
+    @SuppressWarnings("unused")
     private void trace(String str) {
         Trace.write(" BurbujitaController::" + str);
     }
@@ -53,48 +52,20 @@ public class BurbujitaController extends Controller {
         ManagedActivity.changeActivityToIn(activity, BurbujitaActivity.class, miliseconds, false);
     }
 
-    public void mostrarActividadOpenGL(Activity activity, long miliseconds) {
-        isOpenGL = true;
-        ManagedActivity.changeActivityToIn(activity, BurbujitaOpenGLActivity.class, miliseconds, false);
-    }
-
-    public void onViewReady(SurfaceHolder surfaceHolder) {
-        burbujitaMap = new BurbujitaMap(surfaceHolder, this);
-        draw();
+    public void onViewReady() {
+        burbujitaInterface = new Interface(8);
+        gameThread = new GameThread(this);
+        gameThread.encender();
+        burbujitaMap = new BurbujitaMap(this);
+        render();
     }
 
     private void logic(long milisec) {
         if (burbujitaMap != null && !paused) {
             burbujitaMap.logic(milisec);
         }
-    }
-
-    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
-        if (isOpenGL) {
-            return canvas;
-        }
-        else {
-            return MM.drawObjectIntoCanvas(canvas, object);
-        }
-    }
-
-    private void draw() {
-        if (burbujitaMap != null) {
-            try {
-                if (lastTimeDrawed != null) {
-                    historicTimeDraws.set(nextIndexDraw, System.currentTimeMillis() - lastTimeDrawed);
-                }
-                lastTimeDrawed = System.currentTimeMillis();
-                nextIndexDraw = (nextIndexDraw+1)%5;
-                Long aux = 1l;
-                Long aux2 = 1l;
-                for (int i = 0; i < 5; i++) {
-                    aux += historicTimeDraws.get(i);
-                    aux2 += historicTimeUpdates.get(i);
-                }
-                burbujitaMap.draw(5000f / aux, 5000f / aux2);
-            }
-            catch (Exception ignored){}
+        if (burbujitaInterface != null) {
+            burbujitaInterface.logic(milisec);
         }
     }
 
@@ -103,14 +74,14 @@ public class BurbujitaController extends Controller {
         if (!paused) {
             try {
                 if (lastTimeUpdated != null) {
-                    historicTimeUpdates.set(nextIndexUpdate, System.currentTimeMillis() - lastTimeUpdated);
+                    historicTimeUpdates.set(nextIndexUpdate, SystemClock.uptimeMillis() - lastTimeUpdated);
                 }
                 else {
-                    lastTimeUpdated = System.currentTimeMillis();
+                    lastTimeUpdated = SystemClock.uptimeMillis();
                 }
                 nextIndexUpdate = (nextIndexUpdate + 1) % 5;
-                logic(System.currentTimeMillis() - lastTimeUpdated);
-                lastTimeUpdated = System.currentTimeMillis();
+                logic(SystemClock.uptimeMillis() - lastTimeUpdated);
+                lastTimeUpdated = SystemClock.uptimeMillis();
             }
             catch (Exception ignored){}
         }
@@ -118,13 +89,24 @@ public class BurbujitaController extends Controller {
 
     @Override
     public void render() {
-        draw();
+        if (burbujitaMap != null) {
+            try {
+                if (lastTimeDrawed != null) {
+                    historicTimeDraws.set(nextIndexDraw, SystemClock.uptimeMillis() - lastTimeDrawed);
+                }
+                lastTimeDrawed = SystemClock.uptimeMillis();
+                nextIndexDraw = (nextIndexDraw+1)%5;
+                MM.drawBurbujitaMap(burbujitaMap);
+                MM.drawInterface(burbujitaInterface);
+            }
+            catch (Exception ignored){}
+        }
     }
 
     public void pause() {
         Log.d("BurbujitaController", "PAUSA ACTIVADA");
         paused = true;
-        draw();
+        render();
     }
 
 
@@ -134,12 +116,12 @@ public class BurbujitaController extends Controller {
 
     public void sendActionDown(float x, float y) {
         if (paused) {
-            lastTimeUpdated = System.currentTimeMillis();
+            lastTimeUpdated = SystemClock.uptimeMillis();
             paused = false;
         }
         if (burbujitaMap != null) {
-            if (burbujitaMap.insterfaceIsActive(x,y)) {
-                burbujitaMap.highLightInterfaceButtons((int)x, (int) y);
+            if (burbujitaInterface.isActive()) {
+                burbujitaInterface.highLight(x, y);
             }
             else {
                 burbujitaMap.highLight((int)x, (int) y);
@@ -150,8 +132,8 @@ public class BurbujitaController extends Controller {
 
     public void sendActionMove(float x, float y) {
         if (burbujitaMap != null) {
-            if (burbujitaMap.insterfaceIsActive(x,y)) {
-                burbujitaMap.highLightInterfaceButtons((int) x, (int) y);
+            if (burbujitaInterface.isActive()) {
+                burbujitaInterface.highLight(x, y);
             }
             else {
                 burbujitaMap.highLight((int) x, (int) y);
@@ -162,25 +144,15 @@ public class BurbujitaController extends Controller {
 
     public void sendActionUp(float x, float y) {
         if (burbujitaMap != null) {
-            if (burbujitaMap.insterfaceIsActive(x,y)) {
+            if (burbujitaInterface.isActive()) {
+                burbujitaInterface.highLight(x, y);
                 burbujitaMap.buildTurret();
+                burbujitaInterface.startRetracting();
             }
             else {
+                burbujitaMap.highLight((int) x, (int) y);
                 //muestra el interface si es un punto de construcicon
-                burbujitaMap.showInterface((int) x, (int) y);
-            }
-        }
-    }
-
-    public void onSurfaceChange(SurfaceHolder holder) {
-        if (burbujitaMap != null) {
-            Canvas canvas = holder.lockCanvas();
-            if (canvas != null) {
-                burbujitaMap.reajustarTamaño(canvas);
-                holder.unlockCanvasAndPost(canvas);
-            }
-            else {
-                trace("canvas es null");
+                burbujitaInterface.startShowing();
             }
         }
     }

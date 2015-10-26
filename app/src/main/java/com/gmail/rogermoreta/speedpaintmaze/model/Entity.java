@@ -184,6 +184,7 @@ public abstract class Entity implements Serializable {
     public long getDyingState() {
         return dyingState;
     }
+    @SuppressWarnings("unused")
     public long getHittedState() {
         return hittedState;
     }

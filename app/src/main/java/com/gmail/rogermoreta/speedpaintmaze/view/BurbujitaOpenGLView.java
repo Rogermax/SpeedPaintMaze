@@ -4,42 +4,40 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.support.annotation.NonNull;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.controller.BurbujitaGLRenderer;
-import com.gmail.rogermoreta.speedpaintmaze.controller.MainManager;
 
-public class BurbujitaOpenGLView  extends GLSurfaceView implements SurfaceHolder.Callback{
+public class BurbujitaOpenGLView extends GLSurfaceView{
 
-    private final BurbujitaGLRenderer mRenderer;
-    private MainManager MM = MainManager.getInstance();
+    //private MainManager MM = MainManager.getInstance();
 
     public BurbujitaOpenGLView(Context context){
         super(context);
-        getHolder().addCallback(this);
+        //getHolder().addCallback(this);
 
         // Create an OpenGL ES 3.0 context
         setEGLContextClientVersion(3);
 
-        mRenderer = new BurbujitaGLRenderer();
-        MM.setRendererOpenGL(mRenderer);
+        //MM.setRendererOpenGL(mRenderer);
 
         // Set the Renderer for drawing on the GLSurfaceView
-        setRenderer(mRenderer);
+        setRenderer(new BurbujitaGLRenderer());
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        //setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
     }
 
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+        //float x = event.getX();
+        //float y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                MM.sendActionDownToBurbujita(x, y);
+                //MM.sendActionDownToBurbujita(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                MM.sendActionMoveToBurbujita(x, y);
+                //MM.sendActionMoveToBurbujita(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                MM.sendActionUpToBurbujita(x, y);
+                //MM.sendActionUpToBurbujita(x, y);
                 break;
             default:
                 return false;

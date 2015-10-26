@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Interface {
 
-    private float prop;
     private int interfaceStepShown;
     public static final int maxTimeInterfaceShown = 200;
     private ArrayList<InterfaceButton> buttons;
@@ -15,20 +14,19 @@ public class Interface {
     private InterfaceButton lastSelectedButton;
     private int selectedButton;
 
-    public Interface(int width, int height, int numButtons) {
+    public Interface(int numButtons) {
         interfaceStepShown = 0;
         isStarting = false;
         isRetracting = false;
         isActive = false;
         buttons = new ArrayList<>(numButtons);
-        float radioButton = width/(float)(2*(numButtons+2));
-        float offset = width/(float)(numButtons+2);
-        moreInfoButton = new InterfaceButton(0,height+offset,0,height-offset, radioButton, false);
+        float radioButton = 1f/(float)(2*(numButtons+2));
+        float offset = 1f/(float)(numButtons+2);
+        moreInfoButton = new InterfaceButton(0,1f+offset,0,1f-offset, radioButton, false);
         for (int i = 2; i < numButtons+2; i++) {
             //(float initialX, float initialY, float endX, float endY, float radix, boolean isCircular)
-            buttons.add(new InterfaceButton(offset * i+radioButton, height + radioButton, offset * i+radioButton, height - radioButton, radioButton, true));
+            buttons.add(new InterfaceButton(offset * i+radioButton, 1f + radioButton, offset * i+radioButton, 1f - radioButton, radioButton, true));
         }
-        prop = 0f;
     }
 
     public void logic(long miliseconds) {
@@ -41,12 +39,10 @@ public class Interface {
             interfaceStepShown += miliseconds;
             if (interfaceStepShown >= maxTimeInterfaceShown) { //ha llegado al tope
                 interfaceStepShown = maxTimeInterfaceShown;
-                prop = 1f;
                 isActive = true;
                 isStarting = false;
             }
             else { //No esta en el tope
-                prop = interfaceStepShown/(float)maxTimeInterfaceShown;
                 isActive = false;
             }
         }
@@ -55,12 +51,10 @@ public class Interface {
             interfaceStepShown -= miliseconds;
             if (interfaceStepShown <= 0) { //Esta escondido por completo
                 interfaceStepShown = 0;
-                prop = 0f;
                 isActive = false;
                 isRetracting = false;
             }
             else { //No esta en el tope
-                prop = interfaceStepShown/(float)maxTimeInterfaceShown;
                 isActive = false;
             }
 
@@ -86,7 +80,6 @@ public class Interface {
             isStarting = true;
             isRetracting = false;
             interfaceStepShown = 1;
-            prop = 0f;
         }
         else if (isRetracting || isStarting) { //En caso de que se llame mientras esta haciendo starting o esta haciendo retracting solo actualiza estado
             isActive = false;
@@ -106,7 +99,6 @@ public class Interface {
             isStarting = false;
             isRetracting = true;
             interfaceStepShown = maxTimeInterfaceShown - 1;
-            prop = 1f;
         }
         else if (isRetracting || isStarting) { //En caso de que se llame a retraer y ya lo esta haciendo o esta starting, solo cambiamos el estado.
             isActive = false;
@@ -153,14 +145,17 @@ public class Interface {
         }
     }
 
+    @SuppressWarnings("unused")
     public boolean isClickInside(float x, float y) {
         return isSomethingClicked(x,y) != -1;
     }
 
+    @SuppressWarnings("unused")
     public int getSelectedButton() {
         return selectedButton;
     }
 
+    @SuppressWarnings("unused")
     public void desSeleccionar() {
         if (lastSelectedButton != null) {
             lastSelectedButton.unSelect();

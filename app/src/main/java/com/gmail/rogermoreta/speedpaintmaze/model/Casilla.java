@@ -16,7 +16,7 @@ public class Casilla {
     private boolean estaSeleccionada;
     private Turret turret;
     private TipoCasilla tipoCasilla;
-    //private Random r = new Random(System.currentTimeMillis());
+    //private Random r = new Random(SystemClock.uptimeMillis());
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY) {
         this.posX = posX;

@@ -8,12 +8,6 @@ import android.opengl.Matrix;
 import android.support.v4.content.ContextCompat;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
-import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
-import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -25,18 +19,23 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mMVPMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mViewMatrix = new float[16];
+    @SuppressWarnings("FieldCanBeLocal")
     private float cameraX = 0f;
+    @SuppressWarnings("FieldCanBeLocal")
     private float cameraY = 0f;
     /** The texture pointer */
+    @SuppressWarnings("unused")
     private static int[] textures = new int[1];
     private static int mProgram;
     private static MainManager MM;
     private static Bitmap bitmap;
     // Sampler location
     private int mBaseMapLoc;
+    @SuppressWarnings("unused")
     private int mLightMapLoc;
     // Texture handle
     private int mBaseMapTexId;
+    @SuppressWarnings("unused")
     private int mLightMapTexId;
 
     public BurbujitaGLRenderer() {
@@ -44,6 +43,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         bitmap = Pintor.drawableToBitmap(ContextCompat.getDrawable(MM.getContext(), R.drawable.hierba1));
     }
 
+    @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
         // Load the texture for the square
 
@@ -91,6 +91,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    @Override
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
@@ -109,6 +110,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES30.glViewport(0, 0, width, height);
 

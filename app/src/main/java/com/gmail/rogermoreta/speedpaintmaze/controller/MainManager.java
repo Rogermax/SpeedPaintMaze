@@ -2,7 +2,6 @@ package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -10,15 +9,8 @@ import android.view.SurfaceHolder;
 import com.gmail.rogermoreta.speedpaintmaze.enums.Section;
 import com.gmail.rogermoreta.speedpaintmaze.enums.Sound;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
-import com.gmail.rogermoreta.speedpaintmaze.model.BaseMonster;
-import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
-import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
-import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
-import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
-
-import javax.microedition.khronos.opengles.GL10;
 
 public class MainManager {
 
@@ -29,8 +21,8 @@ public class MainManager {
     private Section sectionActual;
     private Pintor pintor;
     private Musico musico;
-    private BurbujitaGLRenderer burbujitaGLRenderer;
     private Context context;
+    private SurfaceHolder burbujitaHolder;
 
     private MainManager() {
         sectionActual = Section.NONE;
@@ -68,7 +60,7 @@ public class MainManager {
                 break;
             case BURBUOPENGL:
                 trace("Mostramos actividad burbujitaController en 0.5 segundos.");
-                burbujitaController.mostrarActividadOpenGL(activity, 500l);
+                burbujitaController.mostrarActividad(activity, 500l);
             default:
                 Log.d("MainManager", "goToSection value not processed:" + sectionActual);
         }
@@ -119,7 +111,7 @@ public class MainManager {
         }
     }
 
-    public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
+    /*public Canvas drawObjectIntoCanvas(Canvas canvas, Object object) {
         //Cuidado con las subclases, BaseMonster extiende Enemigo, por tanto BaseMonster es instancia de Enemigo (pero no al reves)
         //Por tanto si hay subclases, se han de mirar primero las mas particulares y al final la versión  más extensa.
         Canvas canvasRet = canvas;
@@ -145,7 +137,7 @@ public class MainManager {
             Log.d("MainManager","drawObjectIntoCanvas::fail->do not know how to draw"+object);
         }
         return canvasRet;
-    }
+    }*/
 
     public void sendActionDownToMaze(float x, float y) {
         if (mazeController != null) {
@@ -212,7 +204,8 @@ public class MainManager {
 
     public void burbujitaViewReady(SurfaceHolder holder) {
         if (burbujitaController != null) {
-            burbujitaController.onViewReady(holder);
+            burbujitaHolder = holder;
+            burbujitaController.onViewReady();
         }
         else {
             Log.d("MainManager", "burbujitaViewReady::fail->burbujitaController es null");
@@ -221,15 +214,11 @@ public class MainManager {
 
     public void burbujitaViewChanged(SurfaceHolder holder) {
         if (burbujitaController != null) {
-            burbujitaController.onSurfaceChange(holder);
+            burbujitaHolder = holder;
         }
         else {
             Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaController es null");
         }
-    }
-
-    public void setRendererOpenGL(BurbujitaGLRenderer burbujitaGLRenderer) {
-        this.burbujitaGLRenderer = burbujitaGLRenderer;
     }
 
     public BurbujitaMap getBurbujitaMap() {
@@ -238,5 +227,13 @@ public class MainManager {
 
     public Context getContext() {
         return context;
+    }
+
+    public void drawBurbujitaMap(BurbujitaMap burbujitaMap) {
+        pintor.drawBurbujitaMapCanvas(burbujitaHolder,burbujitaMap);
+    }
+
+    public void drawInterface(Interface burbujitaInterface) {
+        pintor.drawInterface(burbujitaHolder,burbujitaInterface);
     }
 }

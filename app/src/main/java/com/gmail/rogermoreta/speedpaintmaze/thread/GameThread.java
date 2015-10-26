@@ -1,6 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.thread;
 
 import android.graphics.Canvas;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -68,7 +69,7 @@ public class GameThread extends Thread {
 
 		while (running) {
 
-			beginTime = System.currentTimeMillis();
+			beginTime = SystemClock.uptimeMillis();
 			canvas = null;
 			// try locking the canvas for exclusive pixel editing
 			// in the surface
@@ -83,7 +84,7 @@ public class GameThread extends Thread {
 						this.gamePanel.render(canvas);
 					// render state to the screen
 					// calculate how long did the cycle take
-					timeDiff = System.currentTimeMillis() - beginTime;
+					timeDiff = SystemClock.uptimeMillis() - beginTime;
 					// calculate sleep time
 					sleepTime = (int) (FRAME_PERIOD - timeDiff);
 
@@ -138,7 +139,7 @@ public class GameThread extends Thread {
 		// statusIntervalTimer += FRAME_PERIOD;
 
 		// check the actual time
-		statusIntervalTimer += (System.currentTimeMillis() - statusIntervalTimer);
+		statusIntervalTimer += (SystemClock.uptimeMillis() - statusIntervalTimer);
 
 		if (statusIntervalTimer >= lastStatusStore + STAT_INTERVAL) {
 			// calculate the actual frames pers status check interval
@@ -157,7 +158,7 @@ public class GameThread extends Thread {
 			statusIntervalTimer = 0;
 			frameCountPerStatCycle = 0;
 
-			statusIntervalTimer = System.currentTimeMillis();
+			statusIntervalTimer = SystemClock.uptimeMillis();
 			lastStatusStore = statusIntervalTimer;
 			// Log.d(TAG, "Average FPS:" + df.format(averageFps));
 		}

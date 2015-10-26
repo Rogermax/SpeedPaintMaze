@@ -1,5 +1,6 @@
 package com.gmail.rogermoreta.speedpaintmaze.javaandroid;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.gmail.rogermoreta.speedpaintmaze.controller.Controller;
@@ -41,7 +42,7 @@ public class GameThread extends Thread {
         int framesSkipped;	// number of frames being skipped
 
         long timeWastedInLogic = 0;
-        long timeWastedinDrawing = 0;
+        long timeWastedinDrawing;
         int i = 0;
         while (running) {
             //canvas = null;
@@ -50,18 +51,18 @@ public class GameThread extends Thread {
                 //canvas = this.surfaceHolder.lockCanvas();
             synchronized (controller) {
                 if (!controller.isPaused()) {
-                    beginTime = System.currentTimeMillis();
+                    beginTime = SystemClock.uptimeMillis();
                     framesSkipped = 0;    // resetting the frames skipped
                     // update game state
                     i++;
                     controller.update();
                     if (i % 30 == 0) {
-                        timeWastedInLogic = System.currentTimeMillis() - beginTime;
+                        timeWastedInLogic = SystemClock.uptimeMillis() - beginTime;
                         Log.d("GameThread", "LogicTime: " + timeWastedInLogic);
                     }
                     controller.render();
                     if (i % 30 == 0) {
-                        timeWastedinDrawing = System.currentTimeMillis() - (beginTime + timeWastedInLogic);
+                        timeWastedinDrawing = SystemClock.uptimeMillis() - (beginTime + timeWastedInLogic);
                         Log.d("GameThread", "DrawTime: " + timeWastedinDrawing);
                     }
                     //this.gamePanel.update();
@@ -69,7 +70,7 @@ public class GameThread extends Thread {
                     // draws the canvas on the panel
                     //this.gamePanel.render(canvas);
                     // calculate how long did the cycle take
-                    timeDiff = System.currentTimeMillis() - beginTime;
+                    timeDiff = SystemClock.uptimeMillis() - beginTime;
                     // calculate sleep time
                     sleepTime = (int) (FRAME_PERIOD - timeDiff);
 

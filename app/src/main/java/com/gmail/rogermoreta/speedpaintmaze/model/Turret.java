@@ -69,6 +69,7 @@ public class Turret {
         this.y = y;
     }
 
+    @SuppressWarnings("unused")
     public float getRadius() {
         return radius;
     }
