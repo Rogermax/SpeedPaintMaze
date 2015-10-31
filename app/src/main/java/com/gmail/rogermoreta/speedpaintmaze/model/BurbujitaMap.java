@@ -22,13 +22,11 @@ public class BurbujitaMap {
     private int numeroCasillasX;
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private int numeroCasillasY;
-    //private Turret nextTurret;
+    private Turret nextTurret;
     private int lastX;
     private int lastY;
     //private boolean nextTurretBuilded;
     private ArrayList<Casilla> mapaEnCasillas;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
-    private BurbujitaController burbujitaController;
     //private Interface interfaceInstance;
     private int lastSelectedCasilla;
     public static final char[] codifiedMap;
@@ -74,9 +72,8 @@ public class BurbujitaMap {
     }*/
 
 
-    public BurbujitaMap(BurbujitaController burbujitaController) {
+    public BurbujitaMap() {
         //this.surfaceHolder = surfaceHolder;
-        this.burbujitaController = burbujitaController;
         lastX = -1;
         lastY = -1;
         lastSelectedCasilla = -1;
@@ -517,17 +514,17 @@ public class BurbujitaMap {
         }
     }*/
 
-    public void buildTurret() {
+    public void buildTurret(int tipo) {
         if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
             //int selectedOption = burbujitaController.getSelectedButton();
-            //if (selectedOption > -1) {
-            //   nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, selectedOption);
-            //}
-            //if (nextTurret != null) {
-            //    mapaEnCasillas.get(lastSelectedCasilla).ponTorreta();
-            //    turrets.add(nextTurret);
-            //}
+            if (tipo > -1) {
+               nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, tipo);
+            }
+            if (nextTurret != null) {
+                mapaEnCasillas.get(lastSelectedCasilla).ponTorreta();
+                turrets.add(nextTurret);
+            }
             //interfaceInstance.desSeleccionar();
             //hideConstructorInterface();
             cas.deselccionar();
@@ -612,5 +609,23 @@ public class BurbujitaMap {
 
     public ArrayList<Bullet> getBullets() {
         return bullets;
+    }
+
+    public void buildPreTurret(int tipo) {
+        if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
+            Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
+            //int selectedOption = burbujitaController.getSelectedButton();
+            if (tipo > -1) {
+                nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, tipo);
+            }
+        }
+    }
+
+    public Turret getNextTurret() {
+        return nextTurret;
+    }
+
+    public void destroyPreBuildTurret() {
+        nextTurret = null;
     }
 }

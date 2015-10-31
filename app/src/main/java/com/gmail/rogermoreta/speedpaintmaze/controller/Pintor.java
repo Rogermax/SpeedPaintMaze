@@ -13,6 +13,7 @@ import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
+import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
@@ -70,6 +71,7 @@ public class Pintor {
     public static Bitmap platanodie3;
     public static Bitmap platanodie4;
     private Context context;
+    private SurfaceHolder burbujitaHolder;
 
     /**
      *
@@ -145,15 +147,11 @@ public class Pintor {
                 int mapHeight = numeroCasillasY * 100;
 
                 float[] triangleCoords = new float[(COORDS_PER_VERTEX + 2) * 6 * casillas.size()];
-                short[] mIndicesData = new short[COORDS_PER_VERTEX * 6 * casillas.size()];
+                short[] mIndicesData = new short[2 * casillas.size()];
 
                 for (int i = 0; i < casillas.size(); i++) {
-                    mIndicesData[6*i] = (short)(6*i);
-                    mIndicesData[6*i+1] = (short)(6*i+1);
-                    mIndicesData[6*i+2] = (short)(6*i+2);
-                    mIndicesData[6*i+3] = (short)(6*i+3);
-                    mIndicesData[6*i+4] = (short)(6*i+4);
-                    mIndicesData[6*i+5] = (short)(6*i+5);
+                    mIndicesData[2*i] = (short)(2*i);
+                    mIndicesData[2*i+1] = (short)(2*i+1);
                     triangleCoords[30 * i] = casillas.get(i).getPosX() * 2 / (float) mapWidth - 1f;
                     triangleCoords[30 * i + 1] = casillas.get(i).getPosY() * 2 / (float) mapHeight - 1f;
                     triangleCoords[30 * i + 2] = 0f;
@@ -238,7 +236,7 @@ public class Pintor {
                 //GLES30.glUniform1i ( mLightMapLoc, 1 );
 
                 //GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, vertexCount);
-                GLES30.glDrawElements(GLES30.GL_TRIANGLES, COORDS_PER_VERTEX * 6 * casillas.size(), GLES30.GL_UNSIGNED_SHORT, mIndices);
+                GLES30.glDrawElements(GLES30.GL_TRIANGLES, 2 * casillas.size(), GLES30.GL_UNSIGNED_SHORT, mIndices);
 
 
         /*
@@ -311,6 +309,41 @@ public class Pintor {
         if (torretaseta != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
+            if (t.getAttackPercentage() > 0.5f) {
+                switch (t.tipo) {
+                    case 3:
+                        canvas.drawBitmap(torretasetaattack2, t.getX(), t.getY(), pincell);
+                        break;
+                    case 4:
+                        canvas.drawBitmap(torretasetaattack3, t.getX(), t.getY(), pincell);
+                        break;
+                    default:
+                        canvas.drawBitmap(torretasetaattack, t.getX(), t.getY(), pincell);
+                }
+            }
+            else {
+                switch (t.tipo) {
+                    case 3:
+                        canvas.drawBitmap(torretaseta2, t.getX(), t.getY(), pincell);
+                        break;
+                    case 4:
+                        canvas.drawBitmap(torretaseta3, t.getX(), t.getY(), pincell);
+                        break;
+                    default:
+                        canvas.drawBitmap(torretaseta, t.getX(), t.getY(), pincell);
+                }
+            }
+        }
+        else {
+            Log.d("Pintor", "torretaseta es null, no pinto");
+        }
+        return canvas;
+    }
+
+    public Canvas drawPreTurret(Canvas canvas, Turret t) {
+        if (torretaseta != null) {
+            Paint pincell = new Paint();
+            pincell.setARGB(100, 255, 125, 0);
             if (t.getAttackPercentage() > 0.5f) {
                 switch (t.tipo) {
                     case 3:
@@ -503,77 +536,6 @@ public class Pintor {
         return canvas;
     }
 
-    public void drawInterface(SurfaceHolder holder, Interface interfaceInstance) {
-        Canvas canvas = holder.lockCanvas();
-        Paint pincell = new Paint();
-        pincell.setARGB(255, 255, 0, 0);
-        if (interfaceInstance.stepShowing() > 0) {
-            ArrayList<InterfaceButton> aux = interfaceInstance.getButtons();
-            int size = aux.size();
-            for (int i = 0; i < size; i++) {
-                pincell.setARGB(255, 0, 0, 0);
-                InterfaceButton aux2 = aux.get(i);
-                if (iconoseta1 == null || iconoseta2 == null || iconoseta3 == null) {
-                    iconoseta1 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta1)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
-                    iconoseta2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta2)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
-                    iconoseta3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta3)), (int)(2*aux2.getRadix()), (int)(2*aux2.getRadix()), true);
-                }
-                if (i == 0) {
-                    if (aux2.isSelected()) {
-                        canvas.drawBitmap(iconoseta1, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                    }
-                    else {
-                        canvas.drawBitmap(iconoseta1, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                        pincell.setARGB(100, 100, 100, 100);
-                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
-                    }
-                }
-                else if (i == 1) {
-                    if (aux2.isSelected()) {
-                        canvas.drawBitmap(iconoseta2, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                    }
-                    else {
-                        canvas.drawBitmap(iconoseta2, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                        pincell.setARGB(100, 100, 100, 100);
-                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
-                    }
-                }
-                else if (i == 2) {
-                    if (aux2.isSelected()) {
-                        canvas.drawBitmap(iconoseta3, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                    }
-                    else {
-                        canvas.drawBitmap(iconoseta3, aux2.getActualX()-aux2.getRadix(),aux2.getActualY()-aux2.getRadix(), pincell);
-                        pincell.setARGB(100, 100, 100, 100);
-                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
-                    }
-                }
-                else {
-                    if (aux2.isCircular()) {
-                        canvas.drawCircle(aux2.getActualX(), aux2.getActualY(), aux2.getRadix(), pincell);
-                    }
-                    else {
-                        canvas.drawRect(aux2.getActualX(), aux2.getActualY(), aux2.getActualX()+2*aux2.getRadix(), aux2.getActualY()+2*aux2.getRadix(), pincell);
-                    }
-                }
-            }
-            InterfaceButton moreInfo = interfaceInstance.getMoreInfoButton();
-            if (moreInfo.isSelected()) {
-                pincell.setARGB(255, 0, 255, 0);
-            }
-            else {
-                pincell.setARGB(255, 255, 0, 0);
-            }
-            if (moreInfo.isCircular()) {
-                canvas.drawCircle(moreInfo.getActualX(), moreInfo.getActualY(), moreInfo.getRadix(), pincell);
-            }
-            else {
-                canvas.drawRect(moreInfo.getActualX(), moreInfo.getActualY(), moreInfo.getActualX() + 2 * moreInfo.getRadix(), moreInfo.getActualY() + 2 * moreInfo.getRadix(), pincell);
-            }
-        }
-        holder.unlockCanvasAndPost(canvas);
-    }
-
     public static Bitmap drawableToBitmap (Drawable drawable) {
         Bitmap bitmap;
 
@@ -596,45 +558,141 @@ public class Pintor {
         return bitmap;
     }
 
-    public void drawBurbujitaMapCanvas(SurfaceHolder surfaceHolder, BurbujitaMap burbujitaMap) {
-        if (surfaceHolder != null) {
+    public void drawBurbujitaMapAndInterface(BurbujitaMap burbujitaMap, Interface burbujitaInterface) {
+        if (burbujitaHolder != null) {
             Paint pincell = new Paint();
             pincell.setARGB(255, 181, 230, 29);
-            Canvas canvas = surfaceHolder.lockCanvas();
+            Canvas canvas = burbujitaHolder.lockCanvas();
             canvas.drawARGB(255, 0, 0, 0);
-            int mapWidth = burbujitaMap.getMapWidth();
-            int mapHeight = burbujitaMap.getMapHeight();
-            //canvas.translate(offsetX, offsetY);
-            //canvas.scale(factorDeEscalado, factorDeEscalado);
-            canvas.drawRect(0, 0, mapWidth, mapHeight, pincell);
-            canvas = drawCasillas(burbujitaMap, canvas);
-            canvas = drawTurrets(burbujitaMap,canvas);
-            canvas = drawEnemies(burbujitaMap,canvas);
-            canvas = drawBullets(burbujitaMap,canvas);
-            //canvas = drawTurretsCeils(canvas);
-            /*if (!burbujitaMap.getNextTurretBuilded() && burbujitaMap.getNextTurret() != null) {
-                try {
-                    canvas = burbujitaController.drawObjectIntoCanvas(canvas, burbujitaMap.getNextTurret());
-                } catch (Exception ignored) {
-
+            int screenWidth = canvas.getWidth();
+            int screenHeight = canvas.getHeight();
+            try {
+                int mapWidth = burbujitaMap.getMapWidth() * 100;
+                int mapHeight = burbujitaMap.getMapHeight() * 100;
+                float offsetX;
+                float offsetY;
+                float factorDeEscalado;
+                float escaldoX = screenWidth / (float) mapWidth;
+                float escaldoY = screenHeight / (float) mapHeight;
+                if (escaldoX < escaldoY) {
+                    factorDeEscalado = escaldoX;
+                    offsetX = 0f;
+                    offsetY = screenHeight / 2f - factorDeEscalado * mapHeight / 2f;
+                } else {
+                    factorDeEscalado = escaldoY;
+                    offsetX = screenWidth / 2f - factorDeEscalado * mapWidth / 2f;
+                    offsetY = 0f;
                 }
-            }*/
-            //canvas.drawText("FPS: " + Math.round(fps), mapWidth / 2, 6 * mapHeight / 8, pincell);
-            //canvas.drawText("UPS: " + Math.round(ups), mapWidth / 2, 7 * mapHeight / 8, pincell);
+                canvas.translate(offsetX, offsetY);
+                canvas.scale(factorDeEscalado, factorDeEscalado);
+                canvas.drawARGB(255, 0, 0, 0);
+                //canvas.translate(offsetX, offsetY);
+                //canvas.scale(factorDeEscalado, factorDeEscalado);
+                canvas = drawCasillas(burbujitaMap, canvas);
+                canvas = drawTurrets(burbujitaMap, canvas);
+                canvas = drawEnemies(burbujitaMap, canvas);
+                canvas = drawBullets(burbujitaMap, canvas);
+                //canvas = drawTurretsCeils(canvas);
+        /*if (!burbujitaMap.getNextTurretBuilded() && burbujitaMap.getNextTurret() != null) {
+            try {
+                canvas = burbujitaController.drawObjectIntoCanvas(canvas, burbujitaMap.getNextTurret());
+            } catch (Exception ignored) {
+
+            }
+        }*/
+                //canvas.drawText("FPS: " + Math.round(fps), mapWidth / 2, 6 * mapHeight / 8, pincell);
+                //canvas.drawText("UPS: " + Math.round(ups), mapWidth / 2, 7 * mapHeight / 8, pincell);
 
 
-            //canvas.scale(1 / factorDeEscalado, 1 / factorDeEscalado);
-            //canvas.translate(-offsetX, -offsetY);
-            //canvas = drawInterface(canvas);
-            surfaceHolder.unlockCanvasAndPost(canvas);
+                //canvas.scale(1 / factorDeEscalado, 1 / factorDeEscalado);
+                //canvas.translate(-offsetX, -offsetY);
+                //canvas = drawInterface(canvas);
+                canvas.scale(1 / factorDeEscalado, 1 / factorDeEscalado);
+                canvas.translate(-offsetX, -offsetY);
+            }
+            catch (Exception e) {
+                trace("Ha petado en Mapa por: " + e);
+            }
+            try {
+                if (burbujitaInterface.stepShowing() > 0) {
+                    ArrayList<InterfaceButton> aux = burbujitaInterface.getButtons();
+                    int size = aux.size();
+                    for (int i = 0; i < size; i++) {
+                        pincell.setARGB(255, 0, 0, 0);
+                        InterfaceButton aux2 = aux.get(i);
+                        float radix = aux2.getRadix();
+                        if (iconoseta1 == null || iconoseta2 == null || iconoseta3 == null) {
+                            iconoseta1 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta1)), (int) (2 * radix), (int) (2 * radix), true);
+                            iconoseta2 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta2)), (int) (2 * radix), (int) (2 * radix), true);
+                            iconoseta3 = Bitmap.createScaledBitmap(drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.iconoseta3)), (int) (2 * radix), (int) (2 * radix), true);
+                        }
+                        float iconoX = aux2.getActualX();
+                        float iconoY = aux2.getActualY();
+                        if (i == 0) {
+                            if (aux2.isSelected()) {
+                                canvas.drawBitmap(iconoseta1, iconoX-radix, iconoY-radix, pincell);
+                            } else {
+                                canvas.drawBitmap(iconoseta1, iconoX-radix, iconoY-radix, pincell);
+                                pincell.setARGB(100, 100, 100, 100);
+                                canvas.drawCircle(iconoX, iconoY, radix, pincell);
+                            }
+                        } else if (i == 1) {
+                            if (aux2.isSelected()) {
+                                canvas.drawBitmap(iconoseta2, iconoX-radix, iconoY-radix, pincell);
+                            } else {
+                                canvas.drawBitmap(iconoseta2, iconoX-radix, iconoY-radix, pincell);
+                                pincell.setARGB(100, 100, 100, 100);
+                                canvas.drawCircle(iconoX, iconoY, radix, pincell);
+                            }
+                        } else if (i == 2) {
+                            if (aux2.isSelected()) {
+                                canvas.drawBitmap(iconoseta3, iconoX-radix, iconoY-radix, pincell);
+                            } else {
+                                canvas.drawBitmap(iconoseta3, iconoX-radix, iconoY-radix, pincell);
+                                pincell.setARGB(100, 100, 100, 100);
+                                canvas.drawCircle(iconoX, iconoY, radix, pincell);
+                            }
+                        } else {
+                            if (aux2.isCircular()) {
+                                canvas.drawCircle(iconoX, iconoY, radix, pincell);
+                            } else {
+                                canvas.drawRect(iconoX-radix, iconoY-radix, iconoX + radix, iconoY + radix, pincell);
+                            }
+                        }
+                    }
+                    InterfaceButton moreInfo = burbujitaInterface.getMoreInfoButton();
+                    float radix = moreInfo.getRadix();
+                    float iconoX = moreInfo.getActualX();
+                    float iconoY = moreInfo.getActualY();
+                    if (moreInfo.isSelected()) {
+                        pincell.setARGB(255, 0, 255, 0);
+                    } else {
+                        pincell.setARGB(255, 255, 0, 0);
+                    }
+                    if (moreInfo.isCircular()) {
+                        canvas.drawCircle(iconoX, iconoY, radix, pincell);
+                    } else {
+                        canvas.drawRect(iconoX-radix, iconoY-radix, iconoX + radix, iconoY+radix, pincell);
+                    }
+                }
+            }
+            catch (Exception e) {
+                trace("Ha petado en Interface por: " + e);
+            }
+            burbujitaHolder.unlockCanvasAndPost(canvas);
         }
+    }
+
+
+    private void trace(String str) {
+        Trace.write(" Pintor::" + str);
     }
 
     private Canvas drawCasillas(BurbujitaMap burbujitaMap, Canvas canvas) {
         ArrayList<Casilla> casillas = burbujitaMap.getCasillaMap();
         int size = casillas.size();
         for (int i = 0; i < size; i++) {
-            drawCasilla(canvas, casillas.get(i));
+            canvas = drawCasilla(canvas, casillas.get(i));
         }
         return canvas;
     }
@@ -643,7 +701,11 @@ public class Pintor {
         ArrayList<Turret> turrets = burbujitaMap.getTurrets();
         int size = turrets.size();
         for (int i = 0; i < size; i++) {
-            drawTurret(canvas, turrets.get(i));
+            canvas = drawTurret(canvas, turrets.get(i));
+        }
+        Turret nextTurret = burbujitaMap.getNextTurret();
+        if (nextTurret != null) {
+            canvas = drawPreTurret(canvas, nextTurret);
         }
         return canvas;
     }
@@ -652,7 +714,7 @@ public class Pintor {
         ArrayList<Enemy> enemies = burbujitaMap.getEnemies();
         int size = enemies.size();
         for (int i = 0; i < size; i++) {
-            drawEnemy(canvas, enemies.get(i));
+            canvas = drawEnemy(canvas, enemies.get(i));
         }
         return canvas;
     }
@@ -661,8 +723,15 @@ public class Pintor {
         ArrayList<Bullet> bullets = burbujitaMap.getBullets();
         int size = bullets.size();
         for (int i = 0; i < size; i++) {
-            drawBullet(canvas, bullets.get(i));
+            canvas = drawBullet(canvas, bullets.get(i));
         }
         return canvas;
+    }
+
+    public void setBurbujitaHolder(SurfaceHolder burbujitaHolder) {
+        iconoseta1 = null;
+        iconoseta2 = null;
+        iconoseta3 = null;
+        this.burbujitaHolder = burbujitaHolder;
     }
 }

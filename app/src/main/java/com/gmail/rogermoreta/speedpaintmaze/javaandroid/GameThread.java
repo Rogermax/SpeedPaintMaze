@@ -25,12 +25,15 @@ public class GameThread extends Thread {
     }
 
     // desired fps
-    private final static int 	MAX_FPS = 60;
+    private final static int 	MAX_FPS = 50;
     // maximum number of frames to be skipped
     private final static int	MAX_FRAME_SKIPS = 5;
     // the frame period
     private final static int	FRAME_PERIOD = 1000 / MAX_FPS;
 
+    private void trace(String str) {
+        Trace.write(" GameThread("+this.getId()+")::"+str);
+    }
     @Override
     public void run() {
         //Canvas canvas;
@@ -58,11 +61,13 @@ public class GameThread extends Thread {
                     controller.update();
                     if (i % 30 == 0) {
                         timeWastedInLogic = SystemClock.uptimeMillis() - beginTime;
+                        //trace("tiempo haciendo update = " + timeWastedInLogic);
                         Log.d("GameThread", "LogicTime: " + timeWastedInLogic);
                     }
                     controller.render();
                     if (i % 30 == 0) {
                         timeWastedinDrawing = SystemClock.uptimeMillis() - (beginTime + timeWastedInLogic);
+                        //trace("tiempo haciendo drawing = " + timeWastedinDrawing);
                         Log.d("GameThread", "DrawTime: " + timeWastedinDrawing);
                     }
                     //this.gamePanel.update();
@@ -76,6 +81,7 @@ public class GameThread extends Thread {
 
                     if (sleepTime > 0) {
                         if (i % 30 == 0) {
+                            //trace("tiempo haciendo durmiendo = "+sleepTime);
                             Log.d("GameThread", "sleepTime: " + sleepTime);
                         }
                         // if sleepTime > 0 we're OK

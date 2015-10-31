@@ -6,18 +6,15 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
-import com.gmail.rogermoreta.speedpaintmaze.javaandroid.GameThread;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
+import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaOpenGLActivity;
 
 import java.util.ArrayList;
 
-public class BurbujitaController extends Controller {
-
-    @SuppressWarnings("FieldCanBeLocal")
-    private GameThread gameThread;
+public class BurbujitaControllerOpenGL extends Controller {
 
     private BurbujitaMap burbujitaMap;
     private Interface burbujitaInterface;
@@ -30,13 +27,10 @@ public class BurbujitaController extends Controller {
     private int nextIndexUpdate;
     private int nextIndexDraw;
     private MainManager MM;
-    private int screenSizeWidth = 1;
-    private int screenSizeHeight = 1;
-    private float offsetX;
-    private float offsetY;
-    private float factorDeEscalado;
+    private int screenSizeHeight;
+    private int screenSizeWidth;
 
-    public BurbujitaController(MainManager mm) {
+    public BurbujitaControllerOpenGL(MainManager mm) {
         paused = true;
         MM = mm;
         historicTimeUpdates = new ArrayList<>(5);
@@ -56,7 +50,7 @@ public class BurbujitaController extends Controller {
 
     @Override
     public void mostrarActividad(Activity activity, long miliseconds) {
-        ManagedActivity.changeActivityToIn(activity, BurbujitaActivity.class, miliseconds, false);
+        ManagedActivity.changeActivityToIn(activity, BurbujitaOpenGLActivity.class, miliseconds, false);
     }
 
     private void logic(long milisec) {
@@ -127,9 +121,9 @@ public class BurbujitaController extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
-                burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
             } else {
-                burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
             }
             //burbujitaMap.createNewNextTurret((int) x, (int) y);
         }
@@ -145,9 +139,9 @@ public class BurbujitaController extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
-                burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
             } else {
-                burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
             }
             //burbujitaMap.setNextTurret((int) x, (int) y);
         }
@@ -164,15 +158,15 @@ public class BurbujitaController extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                     burbujitaInterface.highLight(x, y);
-                    burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                    //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
                 }
             } else {
-                burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
                 burbujitaMap.destroyPreBuildTurret();
-                if (burbujitaMap.canBuildTurretOn((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado))) {
+                /*if (burbujitaMap.canBuildTurretOn((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado))) {
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startShowing();
-                }
+                }*/
                 //muestra el interface si es un punto de construcicon
             }
         }
@@ -186,40 +180,17 @@ public class BurbujitaController extends Controller {
         return burbujitaMap;
     }
 
-    public void onViewReady(SurfaceHolder holder) {
-        trace("Creamos GameThread e Interface de 8");
+    private void setSizes(int width, int height) {
+        screenSizeWidth = width;
+        screenSizeHeight = height;
+    }
+
+    public void onViewChanged(int width, int height) {
+        trace("Creamos Interface de 8");
         burbujitaMap = new BurbujitaMap();
-        gameThread = new GameThread(this);
-        gameThread.encender();
-        setSizes(holder);
+        setSizes(width,height);
         burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
         render();
-    }
-
-    public void onViewChanged(SurfaceHolder holder) {
-        setSizes(holder);
-        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
-        render();
-    }
-
-    private void setSizes(SurfaceHolder holder) {
-        Canvas canvas = holder.lockCanvas();
-        screenSizeWidth = canvas.getWidth();
-        screenSizeHeight = canvas.getHeight();
-        int mapWidth = burbujitaMap.getMapWidth() * 100;
-        int mapHeight = burbujitaMap.getMapHeight() * 100;
-        float escaladoX = screenSizeWidth / (float) mapWidth;
-        float escaladoY = screenSizeHeight / (float) mapHeight;
-        if (escaladoX < escaladoY) {
-            factorDeEscalado = escaladoX;
-            offsetX = 0f;
-            offsetY = screenSizeHeight / 2f - factorDeEscalado * mapHeight / 2f;
-        } else {
-            factorDeEscalado = escaladoY;
-            offsetX = screenSizeWidth / 2f - factorDeEscalado * mapWidth / 2f;
-            offsetY = 0f;
-        }
-        holder.unlockCanvasAndPost(canvas);
     }
 }
 

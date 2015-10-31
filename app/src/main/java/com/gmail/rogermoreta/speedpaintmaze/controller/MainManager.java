@@ -18,18 +18,18 @@ public class MainManager {
     private static MenuController menuController;
     private static MazeController mazeController;
     private static BurbujitaController burbujitaController;
+    private static BurbujitaControllerOpenGL burbujitaControllerOpenGL;
     private Section sectionActual;
     private Pintor pintor;
     private Musico musico;
     private Context context;
-    private SurfaceHolder burbujitaHolder;
+    private BurbujitaGLRenderer rendererOpenGL;
 
     private MainManager() {
         sectionActual = Section.NONE;
         menuController = new MenuController();
         mazeController = new MazeController(this);
-        burbujitaController = new BurbujitaController(this);
-        trace("Creados controllers del mainManager");
+        trace("================ I P L ================");
     }
 
     private void trace(String str) {
@@ -55,12 +55,14 @@ public class MainManager {
                 mazeController.mostrarActividad(activity, 500l);
                 break;
             case BURBU:
+                burbujitaController = new BurbujitaController(this);
                 trace("Mostramos actividad burbujitaController en 0.5 segundos.");
                 burbujitaController.mostrarActividad(activity, 500l);
                 break;
             case BURBUOPENGL:
-                trace("Mostramos actividad burbujitaController en 0.5 segundos.");
-                burbujitaController.mostrarActividad(activity, 500l);
+                burbujitaControllerOpenGL = new BurbujitaControllerOpenGL(this);
+                trace("Mostramos actividad burbujitaControllerOpenGL en 0.5 segundos.");
+                burbujitaControllerOpenGL.mostrarActividad(activity, 500l);
             default:
                 Log.d("MainManager", "goToSection value not processed:" + sectionActual);
         }
@@ -85,6 +87,10 @@ public class MainManager {
             trace("Enviamos pause a burbujita");
             burbujitaController.pause();
         }
+        if (burbujitaControllerOpenGL != null) {
+            trace("Enviamos pause a burbujitaOpenGL");
+            burbujitaControllerOpenGL.pause();
+        }
     }
 
 
@@ -92,6 +98,10 @@ public class MainManager {
         if (burbujitaController != null) {
             trace("Enviamos resume a burbujita");
             burbujitaController.resume();
+        }
+        if (burbujitaControllerOpenGL != null) {
+            trace("Enviamos resume a burbujitaOpenGL");
+            burbujitaControllerOpenGL.resume();
         }
     }
 
@@ -179,8 +189,8 @@ public class MainManager {
         if (burbujitaController != null) {
             burbujitaController.sendActionDown(x, y);
         }
-        else {
-            Log.d("MainManager","sendActionDownToBurbujita::fail->burbujitaController es null");
+        if (burbujitaControllerOpenGL != null) {
+            burbujitaControllerOpenGL.sendActionDown(x, y);
         }
     }
 
@@ -188,8 +198,8 @@ public class MainManager {
         if (burbujitaController != null) {
             burbujitaController.sendActionMove(x, y);
         }
-        else {
-            Log.d("MainManager","sendActionMoveToBurbujita::fail->burbujitaController es null");
+        if (burbujitaControllerOpenGL != null) {
+            burbujitaControllerOpenGL.sendActionMove(x, y);
         }
     }
 
@@ -197,15 +207,16 @@ public class MainManager {
         if (burbujitaController != null) {
             burbujitaController.sendActionUp(x, y);
         }
-        else {
-            Log.d("MainManager","sendActionUpToBurbujita::fail->burbujitaController es null");
+        if (burbujitaControllerOpenGL != null) {
+            burbujitaControllerOpenGL.sendActionUp(x, y);
         }
     }
 
     public void burbujitaViewReady(SurfaceHolder holder) {
+        trace("Burbujita view READY!");
         if (burbujitaController != null) {
-            burbujitaHolder = holder;
-            burbujitaController.onViewReady();
+            burbujitaController.onViewReady(holder);
+            pintor.setBurbujitaHolder(holder);
         }
         else {
             Log.d("MainManager", "burbujitaViewReady::fail->burbujitaController es null");
@@ -213,8 +224,10 @@ public class MainManager {
     }
 
     public void burbujitaViewChanged(SurfaceHolder holder) {
+        trace("Burbujita view CHANGE!");
         if (burbujitaController != null) {
-            burbujitaHolder = holder;
+            burbujitaController.onViewChanged(holder);
+            pintor.setBurbujitaHolder(holder);
         }
         else {
             Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaController es null");
@@ -222,18 +235,33 @@ public class MainManager {
     }
 
     public BurbujitaMap getBurbujitaMap() {
-        return burbujitaController.getBurbujitaMap();
+        if (burbujitaController != null) {
+            return burbujitaController.getBurbujitaMap();
+        }
+        if (burbujitaControllerOpenGL != null) {
+            return burbujitaControllerOpenGL.getBurbujitaMap();
+        }
+        else return null;
     }
 
     public Context getContext() {
         return context;
     }
 
-    public void drawBurbujitaMap(BurbujitaMap burbujitaMap) {
-        pintor.drawBurbujitaMapCanvas(burbujitaHolder,burbujitaMap);
+    public void drawBurbujitaMapAndInterface(BurbujitaMap burbujitaMap, Interface burbujitaInterface) {
+        pintor.drawBurbujitaMapAndInterface(burbujitaMap, burbujitaInterface);
     }
 
-    public void drawInterface(Interface burbujitaInterface) {
-        pintor.drawInterface(burbujitaHolder,burbujitaInterface);
+    public void setRendererOpenGL(BurbujitaGLRenderer rendererOpenGL) {
+        this.rendererOpenGL = rendererOpenGL;
+    }
+
+    public void burbujitaOpenGLViewChanged(int width, int height) {
+        if (burbujitaControllerOpenGL != null) {
+            burbujitaControllerOpenGL.onViewChanged(width,height);
+        }
+        else {
+            Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaControllerOpenGL es null");
+        }
     }
 }

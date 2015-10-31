@@ -1,11 +1,14 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
+import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
+
 import java.util.ArrayList;
 
 public class Interface {
 
+    private final float radioButton;
     private int interfaceStepShown;
-    public static final int maxTimeInterfaceShown = 200;
+    public static final int maxTimeInterfaceShown = 250;
     private ArrayList<InterfaceButton> buttons;
     private InterfaceButton moreInfoButton;
     private boolean isStarting;
@@ -14,19 +17,24 @@ public class Interface {
     private InterfaceButton lastSelectedButton;
     private int selectedButton;
 
-    public Interface(int numButtons) {
+    public Interface(int numButtons, int width, int height) {
         interfaceStepShown = 0;
         isStarting = false;
         isRetracting = false;
         isActive = false;
         buttons = new ArrayList<>(numButtons);
-        float radioButton = 1f/(float)(2*(numButtons+2));
-        float offset = 1f/(float)(numButtons+2);
-        moreInfoButton = new InterfaceButton(0,1f+offset,0,1f-offset, radioButton, false);
+        radioButton = width / (float) (2 * (numButtons + 2));
+        float offset = width /(float)(numButtons+2);
+        moreInfoButton = new InterfaceButton(radioButton,height+radioButton,radioButton,height-radioButton, radioButton, false);
         for (int i = 2; i < numButtons+2; i++) {
             //(float initialX, float initialY, float endX, float endY, float radix, boolean isCircular)
-            buttons.add(new InterfaceButton(offset * i+radioButton, 1f + radioButton, offset * i+radioButton, 1f - radioButton, radioButton, true));
+            buttons.add(new InterfaceButton(offset * i+radioButton, height+radioButton, offset * i+radioButton, height-radioButton, radioButton, true));
         }
+    }
+
+
+    private void trace(String str) {
+        Trace.write(" Interface::" + str);
     }
 
     public void logic(long miliseconds) {
@@ -71,11 +79,12 @@ public class Interface {
     }
 
     public void startShowing() {
+        trace("**Se llama a startShowing estado: "+estado());
         moreInfoButton.startShowing();
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).startShowing();
         }
-        if(!isActive && !isStarting) { //caso natural de empezar a iniciar el boton es mientras no este activo y no esta ya iniciandose
+        if(!isActive && !isStarting && !isRetracting) { //caso natural de empezar a iniciar el boton es mientras no este activo y no esta ya iniciandose
             isActive = false;
             isStarting = true;
             isRetracting = false;
@@ -86,10 +95,16 @@ public class Interface {
             isStarting = true;
             isRetracting = false;
         }
+        trace("**Se acaba la llamada a startShowing estado: "+estado());
         //En otro caso (esta activo y no esta en transicion) no ha de hacer nada
     }
 
+    private String estado() {
+        return "isActive: "+isActive+"-isStarting: "+isStarting+"-isRetracting: "+isRetracting+"-interfaceStepShown: "+interfaceStepShown;
+    }
+
     public void startRetracting() {
+        trace("##Se llama a startRetracting estado: "+estado());
         moreInfoButton.startRetracting();
         for (int i = 0; i < buttons.size(); i++) {
             buttons.get(i).startRetracting();
@@ -105,6 +120,7 @@ public class Interface {
             isStarting = false;
             isRetracting = true;
         }
+        trace("##Se acaba la llamada a startRetracting estado: "+estado());
         //En otro caso (no esta activo y no esta en transicion) no debe hacer nada porque ya esta retraido por completo.
     }
 
@@ -162,5 +178,9 @@ public class Interface {
             lastSelectedButton = null;
         }
         selectedButton = -1;
+    }
+
+    public float getRadioButton() {
+        return radioButton;
     }
 }

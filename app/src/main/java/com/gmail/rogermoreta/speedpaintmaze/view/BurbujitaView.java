@@ -20,14 +20,14 @@ public class BurbujitaView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        getHolder().addCallback(this);
-        MM.burbujitaViewReady(getHolder());
+        holder.addCallback(this);
+        MM.burbujitaViewReady(holder);
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        getHolder().addCallback(this);
-        MM.burbujitaViewChanged(getHolder());
+        holder.addCallback(this);
+        MM.burbujitaViewChanged(holder);
     }
 
     @Override

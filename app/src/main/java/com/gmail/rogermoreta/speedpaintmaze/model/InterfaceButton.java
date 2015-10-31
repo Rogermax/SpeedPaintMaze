@@ -77,14 +77,14 @@ public class InterfaceButton {
     }
 
     public void startShowing() {
-        if(!isActive && !isStarting) { //caso natural de empezar a iniciar el boton es mientras no este activo y no esta ya iniciandose
+        if(!isActive && !isStarting && !isRetracting) { //caso natural de empezar a iniciar el boton es mientras no este activo y no esta ya iniciandose
             isActive = false;
             isStarting = true;
             isRetracting = false;
             interfaceStepShown = 1;
             prop = 0f;
-            this.actualX = this.endX;
-            this.actualY = this.endY;
+            this.actualX = this.initialX;
+            this.actualY = this.initialY;
         }
         else if (isRetracting || isStarting) { //En caso de que se llame mientras esta haciendo starting o esta haciendo retracting solo actualiza estado
             isActive = false;
@@ -101,8 +101,8 @@ public class InterfaceButton {
             isRetracting = true;
             interfaceStepShown = maxTimeInterfaceShown - 1;
             prop = 1f;
-            this.actualX = this.initialX;
-            this.actualY = this.initialY;
+            this.actualX = this.endX;
+            this.actualY = this.endY;
         }
         else if (isRetracting || isStarting) { //En caso de que se llame a retraer y ya lo esta haciendo o esta starting, solo cambiamos el estado.
             isActive = false;
@@ -114,10 +114,10 @@ public class InterfaceButton {
 
     public boolean isInside(float x, float y) {
         if (isCircular) {
-            return (actualX-x)*(actualX-x)+(actualY-y)*(actualY-y) <= radix*radix;
+            return (actualX-x)*(actualX-x)+(actualY-y)*(actualY-y) < radix*radix;
         }
         else {
-            return (actualX)<x&&x<(actualX+2*radix)&&(actualY)<y&&y<(actualY+2*radix);
+            return (actualX-radix)<x&&x<(actualX+radix)&&(actualY-radix)<y&&y<(actualY+radix);
         }
     }
 
