@@ -15,8 +15,6 @@ public class BurbujitaOpenGLView extends GLSurfaceView{
 
     private MainManager MM = MainManager.getInstance();
 
-    private BurbujitaGLRenderer mRenderer;
-
     public BurbujitaOpenGLView(Context context)
     {
         super(context);
@@ -24,8 +22,6 @@ public class BurbujitaOpenGLView extends GLSurfaceView{
 
         // Create an OpenGL ES 3.0 context
         setEGLContextClientVersion(3);
-
-        MM.setRendererOpenGL(mRenderer);
     }
 
     public BurbujitaOpenGLView(Context context, AttributeSet attrs)
@@ -36,7 +32,6 @@ public class BurbujitaOpenGLView extends GLSurfaceView{
     // Hides superclass method.
     public void setRenderer(BurbujitaGLRenderer renderer)
     {
-        mRenderer = renderer;
         super.setRenderer(renderer);
     }
 

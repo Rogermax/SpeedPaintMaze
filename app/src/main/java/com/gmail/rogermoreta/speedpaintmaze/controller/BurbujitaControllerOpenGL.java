@@ -180,6 +180,14 @@ public class BurbujitaControllerOpenGL extends Controller {
         return burbujitaMap;
     }
 
+    public void onViewReady(int width, int height) {
+        trace("Creamos Interface de 8");
+        burbujitaMap = new BurbujitaMap();
+        setSizes(width,height);
+        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
+        render();
+    }
+
     private void setSizes(int width, int height) {
         screenSizeWidth = width;
         screenSizeHeight = height;

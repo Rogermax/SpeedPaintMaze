@@ -32,6 +32,11 @@ public class MainManager {
         trace("================ I P L ================");
     }
 
+    public BurbujitaControllerOpenGL getBurbujitaControllerOpenGL() {
+        return burbujitaControllerOpenGL;
+    }
+
+
     private void trace(String str) {
         Trace.write(" MainManager::"+str);
     }

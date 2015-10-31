@@ -7,6 +7,10 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 
 import com.gmail.rogermoreta.speedpaintmaze.R;
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
+import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
+import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
+import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.RawResourceReader;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.ShaderHelper;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.TextureHelper;
@@ -14,6 +18,7 @@ import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.TextureHelper;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -23,6 +28,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     private static final String TAG = "BurbujitaGLRenderer";
 
     private final Context mActivityContext;
+    private long lasTtime;
 
     /**
      * Store the model matrix. This matrix is used to move models from object space (where each model can be thought
@@ -110,14 +116,18 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
     /** This is a handle to our texture data. */
     private int mTextureDataHandle;
+    private BurbujitaControllerOpenGL burbujitaControllerOpenGL;
+    private MainManager MM = MainManager.getInstance();
+    private int i = 0;
 
     /**
      * Initialize the model data.
      */
     public BurbujitaGLRenderer(final Context activityContext)
     {
+        lasTtime = SystemClock.uptimeMillis();
         mActivityContext = activityContext;
-
+        burbujitaControllerOpenGL = MM.getBurbujitaControllerOpenGL();
     }
 
     protected String getVertexShader()
@@ -133,6 +143,8 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 glUnused, EGLConfig config)
     {
+        lasTtime = SystemClock.uptimeMillis();
+        burbujitaControllerOpenGL = MM.getBurbujitaControllerOpenGL();
         // Set the background clear color to black.
         GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -185,12 +197,16 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
                 new String[] {"a_Position"});
 
         // Load the texture
-        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.grass1);
+        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.tierrahierba);
     }
 
     @Override
     public void onSurfaceChanged(GL10 glUnused, int width, int height)
     {
+        lasTtime = SystemClock.uptimeMillis();
+        burbujitaControllerOpenGL = MM.getBurbujitaControllerOpenGL();
+        MM.burbujitaOpenGLViewChanged(width, height);
+
         // Set the OpenGL viewport to the same size as the surface.
         GLES30.glViewport(0, 0, width, height);
 
@@ -223,18 +239,45 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         Matrix.orthoM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
     }
 
+    @SuppressWarnings("unused")
+    private void trace(String str) {
+        Trace.write(" BurbujitaGLRenderer::" + str);
+    }
+
     @Override
     public void onDrawFrame(GL10 glUnused)
     {
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
+
+
+        i = (i+1)%30;
+        if (i == 0) {
+            trace("tiempo entre draws: "+(SystemClock.uptimeMillis()-lasTtime));
+        }
+
+
         // Do a complete rotation every 10 seconds.
-        long time = SystemClock.uptimeMillis() % 10000L;
-        float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+        lasTtime = SystemClock.uptimeMillis();
+        //float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+
+        burbujitaControllerOpenGL.update();
 
 
-        final short numFilas = 3;
-        final short numColumnas = 4;
+        /*i = (i+1)%30;
+        if (i == 0) {
+            trace("tiempo del update: "+(SystemClock.uptimeMillis()-lasTtime));
+        }*/
+
+
+        lasTtime = SystemClock.uptimeMillis();
+
+        BurbujitaMap burbujitaMap = burbujitaControllerOpenGL.getBurbujitaMap();
+
+        int numFilas = burbujitaMap.getMapHeight();
+        int numColumnas = burbujitaMap.getMapWidth();
+        //numFilas = 10;
+        //numColumnas = 10;
         final float maxFilCol = Math.max(numColumnas, numFilas);
         float[] quadPositionData = new float[6*3*numFilas*numColumnas+6*3*2];
         float[] quadColorData = new float[6*4*numFilas*numColumnas+6*4*2];
@@ -242,51 +285,70 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         float[] quadTextureCoordinateData =  new float[6*2*numFilas*numColumnas+6*2*2];
         float ancho = 2f/maxFilCol;
 
+        ArrayList<Casilla> listaCasillas = burbujitaMap.getCasillaMap();
+
         for (int i = 0; i < numFilas; i++) {
             for (int j = 0; j < numColumnas; j++) {
+                Casilla cas = listaCasillas.get(i*numColumnas+j);
+                if (cas.getTipoCasilla() == TipoCasilla.CESPED) {
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)] = 0f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+1] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+2] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+3] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+4] = 0f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+5] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+6] = 0f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+7] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+8] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+9] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+10] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+11] = 0.5f;
+                }
+                else {
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+1] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+2] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+3] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+4] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+5] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+6] = 0.5f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+7] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+8] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+9] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+10] = 1f;
+                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+11] = 0.5f;
+                }
                 //primer triangulo
                     //primer vertice
                     quadPositionData[6*3*(i*numColumnas+j)] = j*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+1] = i*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+2] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)] = 0f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+1] = 1f;
 
                     //segundo vertice
                     quadPositionData[6*3*(i*numColumnas+j)+3] = j*2/maxFilCol-1+ancho;
                     quadPositionData[6*3*(i*numColumnas+j)+4] = i*2/maxFilCol-1+ancho;
                     quadPositionData[6*3*(i*numColumnas+j)+5] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+2] = 1f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+3] = 0f;
 
                     //tercer vertice
                     quadPositionData[6*3*(i*numColumnas+j)+6] = j*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+7] = i*2/maxFilCol-1+ancho;
                     quadPositionData[6*3*(i*numColumnas+j)+8] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+4] = 0f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+5] = 0f;
 
                 //segundo triangulo
                     //segundo vertice
                     quadPositionData[6*3*(i*numColumnas+j)+9] = j*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+10] = i*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+11] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+6] = 0f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+7] = 1f;
 
                     //cuarto vertice
                     quadPositionData[6*3*(i*numColumnas+j)+12] = j*2/maxFilCol-1+ancho;;
                     quadPositionData[6*3*(i*numColumnas+j)+13] = i*2/maxFilCol-1;
                     quadPositionData[6*3*(i*numColumnas+j)+14] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+8] = 1f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+9] = 1f;
 
                     //tercer vertice
                     quadPositionData[6*3*(i*numColumnas+j)+15] = j*2/maxFilCol-1+ancho;
                     quadPositionData[6*3*(i*numColumnas+j)+16] = i*2/maxFilCol-1+ancho;
                     quadPositionData[6*3*(i*numColumnas+j)+17] = -1;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+10] = 1f;
-                    quadTextureCoordinateData[6*2*(i*numColumnas+j)+11] = 0f;
 
                 for (int k = 0; k < 4*6; ++k) {
                     quadColorData[6*4*(i*numColumnas+j)+k] = 1f;
@@ -543,30 +605,6 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // Set our per-vertex lighting program.
         GLES30.glUseProgram(mProgramHandle);
 
@@ -603,7 +641,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         Matrix.setIdentityM(mModelMatrix, 0);
         //Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
         //Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
-        drawQuad();
+        drawQuad(numColumnas*numFilas);
 
  /*       // Draw some quads.
         Matrix.setIdentityM(mModelMatrix, 0);
@@ -633,8 +671,9 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
     /**
      * Draws a quad.
+     * @param numeroCasillas
      */
-    private void drawQuad()
+    private void drawQuad(int numeroCasillas)
     {
         // Pass in the position information
         mQuadPositions.position(0);
@@ -682,7 +721,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         // GLES30.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
         // Draw the quad.
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6*3*4+6*2); //6 vertices x 3 x 4 caras + 6 vertices * 2 caras
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6*numeroCasillas+6*2); //6 vertices x numeroCasillas caras + 6 vertices * 2 caras
     }
 
     /**
