@@ -125,6 +125,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     private int mProgramHandle;
 
     /** This is a handle to our light point program. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mPointProgramHandle;
 
     /** This is a handle to our texture data. */
@@ -288,7 +289,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
         int numFilas = burbujitaMap.getMapHeight();
         int numColumnas = burbujitaMap.getMapWidth();
-        llenaStructuraConMapa(numFilas, numColumnas, -1f);
+        llenaStructuraConMapa(numFilas, numColumnas, -1.00f);
         drawStructure(numColumnas * numFilas, 0);
 
 
@@ -298,12 +299,12 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
         ArrayList<Turret> listaTorretas = burbujitaMap.getTurrets();
 
-        llenaStructuraConTurrets(listaTorretas, -0.9f);
+        llenaStructuraConTurrets(listaTorretas, -0.99f);
         drawStructure(listaTorretas.size(),1);
         //drawTurrets(listaTorretas);
 
         ArrayList<Enemy> listaEnemigos = burbujitaMap.getEnemies();
-        llenaStructuraConEnemies(listaEnemigos, -0.8f);
+        llenaStructuraConEnemies(listaEnemigos, -0.89f);
         drawStructure(listaEnemigos.size(),2);
         //drawEnemies(listaEnemigos);
 
@@ -534,6 +535,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Enemy enemy = listaEnemigos.get(i);
             float x = enemy.getX()/(burbujitaMap.getMapWidth()*100);
             float y = enemy.getY()/(burbujitaMap.getMapHeight()*100);
+            float vel = enemy.getModuloVelocidadCuadrado(); //Dividimos por un numero mayor que qualquier velocidad.
             quadTextureCoordinateData[6*2*i] = 0.5f;
             quadTextureCoordinateData[6*2*i+1] = 1f;
             quadTextureCoordinateData[6*2*i+2] = 1f;
@@ -551,33 +553,33 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             //primer vertice
             quadPositionData[6*3*i] = y*2-1;
             quadPositionData[6*3*i+1] = x*2-1;
-            quadPositionData[6*3*i+2] = prof;
+            quadPositionData[6*3*i+2] = prof+vel; //vel ha de ser mayhor que un cierto rango.
 
             //segundo vertice
             quadPositionData[6*3*i+3] = y*2-1+ancho;
             quadPositionData[6*3*i+4] = x*2-1+ancho;
-            quadPositionData[6*3*i+5] = prof;
+            quadPositionData[6*3*i+5] = prof+vel;
 
             //tercer vertice
             quadPositionData[6*3*i+6] = y*2-1;
             quadPositionData[6*3*i+7] = x*2-1+ancho;
-            quadPositionData[6*3*i+8] = prof;
+            quadPositionData[6*3*i+8] = prof+vel;
 
             //segundo triangulo
             //segundo vertice
             quadPositionData[6*3*i+9] = y*2-1;
             quadPositionData[6*3*i+10] = x*2-1;
-            quadPositionData[6*3*i+11] = prof;
+            quadPositionData[6*3*i+11] = prof+vel;
 
             //cuarto vertice
             quadPositionData[6*3*i+12] = y*2-1+ancho;
             quadPositionData[6*3*i+13] = x*2-1;
-            quadPositionData[6*3*i+14] = prof;
+            quadPositionData[6*3*i+14] = prof+vel;
 
             //tercer vertice
             quadPositionData[6*3*i+15] = y*2-1+ancho;
             quadPositionData[6*3*i+16] = x*2-1+ancho;
-            quadPositionData[6*3*i+17] = prof;
+            quadPositionData[6*3*i+17] = prof+vel;
 
             for (int k = 0; k < 4*6; ++k) {
                 quadColorData[6*4*i+k] = 1f;

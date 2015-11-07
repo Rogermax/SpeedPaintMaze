@@ -205,6 +205,8 @@ public abstract class Entity implements Serializable {
         return totalLife;
     }
 
+    public float getModuloVelocidadCuadrado() {return velX*velX+velY*velY;}
+
     public boolean isAlive() {
         return isAlive;
     }
