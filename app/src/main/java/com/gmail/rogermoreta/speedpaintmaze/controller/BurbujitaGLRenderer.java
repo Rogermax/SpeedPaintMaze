@@ -179,8 +179,8 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
 
 
-        GLES30.glEnable(GLES30.GL_BLEND);
-        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
+        //GLES30.glEnable(GLES30.GL_BLEND);
+        //GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
         // The below glEnable() call is a holdover from OpenGL ES 1, and is not needed in OpenGL ES 2.
         // Enable texture mapping
         // GLES30.glEnable(GLES30.GL_TEXTURE_2D);
@@ -535,7 +535,6 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Enemy enemy = listaEnemigos.get(i);
             float x = enemy.getX()/(burbujitaMap.getMapWidth()*100);
             float y = enemy.getY()/(burbujitaMap.getMapHeight()*100);
-            float vel = enemy.getModuloVelocidadCuadrado(); //Dividimos por un numero mayor que qualquier velocidad.
             quadTextureCoordinateData[6*2*i] = 0.5f;
             quadTextureCoordinateData[6*2*i+1] = 1f;
             quadTextureCoordinateData[6*2*i+2] = 1f;
@@ -553,33 +552,33 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             //primer vertice
             quadPositionData[6*3*i] = y*2-1;
             quadPositionData[6*3*i+1] = x*2-1;
-            quadPositionData[6*3*i+2] = prof+vel; //vel ha de ser mayhor que un cierto rango.
+            quadPositionData[6*3*i+2] = prof; //vel ha de ser mayhor que un cierto rango.
 
             //segundo vertice
             quadPositionData[6*3*i+3] = y*2-1+ancho;
             quadPositionData[6*3*i+4] = x*2-1+ancho;
-            quadPositionData[6*3*i+5] = prof+vel;
+            quadPositionData[6*3*i+5] = prof;
 
             //tercer vertice
             quadPositionData[6*3*i+6] = y*2-1;
             quadPositionData[6*3*i+7] = x*2-1+ancho;
-            quadPositionData[6*3*i+8] = prof+vel;
+            quadPositionData[6*3*i+8] = prof;
 
             //segundo triangulo
             //segundo vertice
             quadPositionData[6*3*i+9] = y*2-1;
             quadPositionData[6*3*i+10] = x*2-1;
-            quadPositionData[6*3*i+11] = prof+vel;
+            quadPositionData[6*3*i+11] = prof;
 
             //cuarto vertice
             quadPositionData[6*3*i+12] = y*2-1+ancho;
             quadPositionData[6*3*i+13] = x*2-1;
-            quadPositionData[6*3*i+14] = prof+vel;
+            quadPositionData[6*3*i+14] = prof;
 
             //tercer vertice
             quadPositionData[6*3*i+15] = y*2-1+ancho;
             quadPositionData[6*3*i+16] = x*2-1+ancho;
-            quadPositionData[6*3*i+17] = prof+vel;
+            quadPositionData[6*3*i+17] = prof;
 
             for (int k = 0; k < 4*6; ++k) {
                 quadColorData[6*4*i+k] = 1f;
