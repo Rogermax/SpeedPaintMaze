@@ -9,8 +9,11 @@ import android.os.SystemClock;
 import com.gmail.rogermoreta.speedpaintmaze.R;
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
+import com.gmail.rogermoreta.speedpaintmaze.model.Bullet;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Casilla;
+import com.gmail.rogermoreta.speedpaintmaze.model.Enemy;
+import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.RawResourceReader;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.ShaderHelper;
 import com.gmail.rogermoreta.speedpaintmaze.openGLCommons.TextureHelper;
@@ -24,8 +27,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
-    /** Used for debug logs. */
-    private static final String TAG = "BurbujitaGLRenderer";
 
     private final Context mActivityContext;
     private long lasTtime;
@@ -60,42 +61,54 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     private FloatBuffer mQuadTextureCoordinates;
 
     /** This will be used to pass in the transformation matrix. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mMVPMatrixHandle;
 
     /** This will be used to pass in the modelview matrix. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mMVMatrixHandle;
 
     /** This will be used to pass in the light position. */
     //private int mLightPosHandle;
 
     /** This will be used to pass in the texture. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mTextureUniformHandle;
 
     /** This will be used to pass in model position information. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mPositionHandle;
 
     /** This will be used to pass in model color information. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mColorHandle;
 
     /** This will be used to pass in model normal information. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mNormalHandle;
 
     /** This will be used to pass in model texture coordinate information. */
+    @SuppressWarnings("FieldCanBeLocal")
     private int mTextureCoordinateHandle;
 
     /** How many bytes per float. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int mBytesPerFloat = 4;
 
     /** Size of the position data in elements. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int mPositionDataSize = 3;
 
     /** Size of the color data in elements. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int mColorDataSize = 4;
 
     /** Size of the normal data in elements. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int mNormalDataSize = 3;
 
     /** Size of the texture coordinate data in elements. */
+    @SuppressWarnings("FieldCanBeLocal")
     private final int mTextureCoordinateDataSize = 2;
 
     /** Used to hold a light centered on the origin in model space. We need a 4th coordinate so we can get translations to work when
@@ -115,10 +128,20 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     private int mPointProgramHandle;
 
     /** This is a handle to our texture data. */
-    private int mTextureDataHandle;
+    private int[] textures;
     private BurbujitaControllerOpenGL burbujitaControllerOpenGL;
     private MainManager MM = MainManager.getInstance();
     private int i = 0;
+    @SuppressWarnings("FieldCanBeLocal")
+    private float[] quadPositionData;
+    @SuppressWarnings("FieldCanBeLocal")
+    private float[] quadColorData;
+    @SuppressWarnings("FieldCanBeLocal")
+    private float[] quadNormalData;
+    @SuppressWarnings("FieldCanBeLocal")
+    private float[] quadTextureCoordinateData;
+    @SuppressWarnings("FieldCanBeLocal")
+    private BurbujitaMap burbujitaMap;
 
     /**
      * Initialize the model data.
@@ -154,6 +177,9 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         // Enable depth testing
         GLES30.glEnable(GLES30.GL_DEPTH_TEST);
 
+
+        GLES30.glEnable(GLES30.GL_BLEND);
+        GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
         // The below glEnable() call is a holdover from OpenGL ES 1, and is not needed in OpenGL ES 2.
         // Enable texture mapping
         // GLES30.glEnable(GLES30.GL_TEXTURE_2D);
@@ -193,11 +219,18 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
         final int pointVertexShaderHandle = ShaderHelper.compileShader(GLES30.GL_VERTEX_SHADER, pointVertexShader);
         final int pointFragmentShaderHandle = ShaderHelper.compileShader(GLES30.GL_FRAGMENT_SHADER, pointFragmentShader);
-        mPointProgramHandle = ShaderHelper.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle,
-                new String[] {"a_Position"});
+        mPointProgramHandle = ShaderHelper.createAndLinkProgram(pointVertexShaderHandle, pointFragmentShaderHandle, new String[]{"a_Position"});
 
+        textures = new int[5];
         // Load the texture
-        mTextureDataHandle = TextureHelper.loadTexture(mActivityContext, R.drawable.tierrahierba);
+        textures[0] = TextureHelper.loadTexture(mActivityContext, R.drawable.texturemap);
+        textures[1] = TextureHelper.loadTexture(mActivityContext, R.drawable.textureturrets);
+        textures[2] = TextureHelper.loadTexture(mActivityContext, R.drawable.texturebichos);
+        textures[3] = TextureHelper.loadTexture(mActivityContext, R.drawable.texturebullets);
+        textures[4] = TextureHelper.loadTexture(mActivityContext, R.drawable.textureinterface);
+
+        //GLES30.glGenTextures(4, textures, 0);
+
     }
 
     @Override
@@ -247,46 +280,74 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onDrawFrame(GL10 glUnused)
     {
-        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+        burbujitaControllerOpenGL.update();
+        limpiamosPantalla();
+        traceamosFPS();
+        lasTtime = SystemClock.uptimeMillis();
+        burbujitaMap = burbujitaControllerOpenGL.getBurbujitaMap();
+
+        int numFilas = burbujitaMap.getMapHeight();
+        int numColumnas = burbujitaMap.getMapWidth();
+        llenaStructuraConMapa(numFilas, numColumnas, -1f);
+        drawStructure(numColumnas * numFilas, 0);
 
 
+        //llenaStructuraConMapa(numFilas, numColumnas, -0.9f);
+        //drawStructure(numColumnas * numFilas,1);
 
+
+        ArrayList<Turret> listaTorretas = burbujitaMap.getTurrets();
+
+        llenaStructuraConTurrets(listaTorretas, -0.9f);
+        drawStructure(listaTorretas.size(),1);
+        //drawTurrets(listaTorretas);
+
+        ArrayList<Enemy> listaEnemigos = burbujitaMap.getEnemies();
+        llenaStructuraConEnemies(listaEnemigos, -0.8f);
+        drawStructure(listaEnemigos.size(),2);
+        //drawEnemies(listaEnemigos);
+
+        /*ArrayList<Bullet> listaBalas = burbujitaMap.getBullets();
+        llenaStructuraConBullets(listaBalas, -0.7f);
+        drawStructure(listaBalas.size(),3);
+        //drawBullets(listaBalas);
+
+        llenaStructuraConBullets(burbujitaControllerOpenGL.getInterface(), -0.6f);
+        drawStructure(burbujitaControllerOpenGL.getInterface().getButtons().size()+1,4);
+        //drawInterface(burbujitaControllerOpenGL.getInterface());
+*/
+
+    }
+
+
+    private void traceamosFPS() {
         i = (i+1)%30;
         if (i == 0) {
             trace("tiempo entre draws: "+(SystemClock.uptimeMillis()-lasTtime));
         }
+    }
 
+    private void limpiamosPantalla() {
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
+    }
 
-        // Do a complete rotation every 10 seconds.
-        lasTtime = SystemClock.uptimeMillis();
-        //float angleInDegrees = (360.0f / 10000.0f) * ((int) time);
+    @SuppressWarnings("unused")
+    private void drawTurrets(ArrayList<Turret> listaTorretas) {
+        int size = listaTorretas.size();
+        //noinspection StatementWithEmptyBody
+        for (int i = 0; i < size; i++) {
 
-        burbujitaControllerOpenGL.update();
+        }
+    }
 
-
-        /*i = (i+1)%30;
-        if (i == 0) {
-            trace("tiempo del update: "+(SystemClock.uptimeMillis()-lasTtime));
-        }*/
-
-
-        lasTtime = SystemClock.uptimeMillis();
-
-        BurbujitaMap burbujitaMap = burbujitaControllerOpenGL.getBurbujitaMap();
-
-        int numFilas = burbujitaMap.getMapHeight();
-        int numColumnas = burbujitaMap.getMapWidth();
-        //numFilas = 10;
-        //numColumnas = 10;
-        final float maxFilCol = Math.max(numColumnas, numFilas);
-        float[] quadPositionData = new float[6*3*numFilas*numColumnas+6*3*2];
-        float[] quadColorData = new float[6*4*numFilas*numColumnas+6*4*2];
-        float[] quadNormalData = new float[6*3*numFilas*numColumnas+6*3*2];
-        float[] quadTextureCoordinateData =  new float[6*2*numFilas*numColumnas+6*2*2];
-        float ancho = 2f/maxFilCol;
-
+    private void llenaStructuraConMapa(int numFilas, int numColumnas, float prof) {
         ArrayList<Casilla> listaCasillas = burbujitaMap.getCasillaMap();
-
+        quadPositionData = new float[6*3*numFilas*numColumnas];
+        quadColorData = new float[6*4*numFilas*numColumnas];
+        quadNormalData = new float[6*3*numFilas*numColumnas];
+        quadTextureCoordinateData =  new float[6*2*numFilas*numColumnas];
+        final float maxFilCol = Math.max(numColumnas, numFilas);
+        float ancho = 2f/maxFilCol;
         for (int i = 0; i < numFilas; i++) {
             for (int j = 0; j < numColumnas; j++) {
                 Casilla cas = listaCasillas.get(i*numColumnas+j);
@@ -319,36 +380,36 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
                     quadTextureCoordinateData[6*2*(i*numColumnas+j)+11] = 0.5f;
                 }
                 //primer triangulo
-                    //primer vertice
-                    quadPositionData[6*3*(i*numColumnas+j)] = j*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+1] = i*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+2] = -1;
+                //primer vertice
+                quadPositionData[6*3*(i*numColumnas+j)] = j*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+1] = i*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+2] = prof;
 
-                    //segundo vertice
-                    quadPositionData[6*3*(i*numColumnas+j)+3] = j*2/maxFilCol-1+ancho;
-                    quadPositionData[6*3*(i*numColumnas+j)+4] = i*2/maxFilCol-1+ancho;
-                    quadPositionData[6*3*(i*numColumnas+j)+5] = -1;
+                //segundo vertice
+                quadPositionData[6*3*(i*numColumnas+j)+3] = j*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+4] = i*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+5] = prof;
 
-                    //tercer vertice
-                    quadPositionData[6*3*(i*numColumnas+j)+6] = j*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+7] = i*2/maxFilCol-1+ancho;
-                    quadPositionData[6*3*(i*numColumnas+j)+8] = -1;
+                //tercer vertice
+                quadPositionData[6*3*(i*numColumnas+j)+6] = j*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+7] = i*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+8] = prof;
 
                 //segundo triangulo
-                    //segundo vertice
-                    quadPositionData[6*3*(i*numColumnas+j)+9] = j*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+10] = i*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+11] = -1;
+                //segundo vertice
+                quadPositionData[6*3*(i*numColumnas+j)+9] = j*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+10] = i*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+11] = prof;
 
-                    //cuarto vertice
-                    quadPositionData[6*3*(i*numColumnas+j)+12] = j*2/maxFilCol-1+ancho;;
-                    quadPositionData[6*3*(i*numColumnas+j)+13] = i*2/maxFilCol-1;
-                    quadPositionData[6*3*(i*numColumnas+j)+14] = -1;
+                //cuarto vertice
+                quadPositionData[6*3*(i*numColumnas+j)+12] = j*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+13] = i*2/maxFilCol-1;
+                quadPositionData[6*3*(i*numColumnas+j)+14] = prof;
 
-                    //tercer vertice
-                    quadPositionData[6*3*(i*numColumnas+j)+15] = j*2/maxFilCol-1+ancho;
-                    quadPositionData[6*3*(i*numColumnas+j)+16] = i*2/maxFilCol-1+ancho;
-                    quadPositionData[6*3*(i*numColumnas+j)+17] = -1;
+                //tercer vertice
+                quadPositionData[6*3*(i*numColumnas+j)+15] = j*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+16] = i*2/maxFilCol-1+ancho;
+                quadPositionData[6*3*(i*numColumnas+j)+17] = prof;
 
                 for (int k = 0; k < 4*6; ++k) {
                     quadColorData[6*4*(i*numColumnas+j)+k] = 1f;
@@ -361,249 +422,193 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-
-        //primer triangulo
-        //primer vertice
-        quadPositionData[6*3*numFilas*numColumnas] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+1] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+2] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+1] = 1f;
-        quadColorData[6*4*numFilas*numColumnas] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+1] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+2] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+3] = 1f;
-
-        //segundo vertice
-        quadPositionData[6*3*numFilas*numColumnas+3] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+4] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+5] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+2] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+3] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+4] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+5] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+6] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+7] = 1f;
-
-        //tercer vertice
-        quadPositionData[6*3*numFilas*numColumnas+6] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+7] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+8] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+4] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+5] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+8] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+9] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+10] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+11] = 1f;
-
-        //segundo triangulo
-        //segundo vertice
-        quadPositionData[6*3*numFilas*numColumnas+9] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+10] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+11] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+6] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+7] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+12] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+13] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+14] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+15] = 1f;
-
-        //cuarto vertice
-        quadPositionData[6*3*numFilas*numColumnas+12] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+13] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+14] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+8] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+9] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+16] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+17] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+18] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+19] = 1f;
-
-        //tercer vertice
-        quadPositionData[6*3*numFilas*numColumnas+15] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+16] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+17] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+10] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+11] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+20] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+21] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+22] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+23] = 1f;
-
-        for (int k = 0; k < 6; ++k) {
-            quadNormalData[6*3*numFilas*numColumnas+3*k] = 0f;
-            quadNormalData[6*3*numFilas*numColumnas+3*k+1] = 0f;
-            quadNormalData[6*3*numFilas*numColumnas+3*k+2] = 1f;
-        }
-
-        //primer triangulo
-        //primer vertice
-        quadPositionData[6*3*numFilas*numColumnas+18] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+1] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+2] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+1] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+1] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+2] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+3] = 1f;
-
-        //segundo vertice
-        quadPositionData[6*3*numFilas*numColumnas+18+3] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+4] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+5] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+2] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+3] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+4] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+5] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+6] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+7] = 1f;
-
-        //tercer vertice
-        quadPositionData[6*3*numFilas*numColumnas+18+6] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+7] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+8] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+4] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+5] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+8] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+9] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+10] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+11] = 1f;
-
-        //segundo triangulo
-        //segundo vertice
-        quadPositionData[6*3*numFilas*numColumnas+18+9] = -0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+10] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+11] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+6] = 0f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+7] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+12] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+13] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+14] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+15] = 1f;
-
-        //cuarto vertice
-        quadPositionData[6*3*numFilas*numColumnas+18+12] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+13] = -1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+14] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+8] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+9] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+16] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+17] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+18] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+19] = 1f;
-
-        //tercer vertice
-        quadPositionData[6*3*numFilas*numColumnas+18+15] = 0.1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+16] = 1f;
-        quadPositionData[6*3*numFilas*numColumnas+18+17] = -1.1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+10] = 1f;
-        quadTextureCoordinateData[6*2*numFilas*numColumnas+12+11] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+20] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+21] = 0f;
-        quadColorData[6*4*numFilas*numColumnas+24+22] = 1f;
-        quadColorData[6*4*numFilas*numColumnas+24+23] = 1f;
-
-        for (int k = 0; k < 6; ++k) {
-            quadNormalData[6*3*numFilas*numColumnas+18+3*k] = 0f;
-            quadNormalData[6*3*numFilas*numColumnas+18+3*k+1] = 0f;
-            quadNormalData[6*3*numFilas*numColumnas+18+3*k+2] = 1f;
-        }
-
-
-        // Define points for a quad.
-
-
-
-        // X, Y, Z
-        /*final float[] quadPositionData =
-                {
-                        // In OpenGL counter-clockwise winding is default. This means that when we look at a triangle,
-                        // if the points are counter-clockwise we are looking at the "front". If not we are looking at
-                        // the back. OpenGL has an optimization where all back-facing triangles are culled, since they
-                        // usually represent the backside of an object and aren't visible anyways.
-
-                        // Front face
-                        -1.0f, 1.0f, 1.0f,
-                        -1.0f, -1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f,
-                        -1.0f, -1.0f, 1.0f,
-                        1.0f, -1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f,
-
-                };
-
-        // R, G, B, A
-        final float[] quadColorData =
-                {
-                        // Front face (red)
-                        1.0f, 1.0f, 1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f, 1.0f,
-                        1.0f, 1.0f, 1.0f, 1.0f,
-
-
-                };
-
-        // X, Y, Z
-        // The normal is used in light calculations and is a vector which points
-        // orthogonal to the plane of the surface. For a quad model, the normals
-        // should be orthogonal to the points of each face.
-        final float[] quadNormalData =
-                {
-                        // Front face
-                        0.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 1.0f,
-                        0.0f, 0.0f, 1.0f,
-
-
-                };
-
-        // S, T (or X, Y)
-        // Texture coordinate data.
-        // Because images have a Y axis pointing downward (values increase as you move down the image) while
-        // OpenGL has a Y axis pointing upward, we adjust for that here by flipping the Y axis.
-        // What's more is that the texture coordinates are the same for every face.
-        final float[] quadTextureCoordinateData =
-                {
-                        // Front face
-                        0.0f, 0.0f,
-                        0.0f, 1.0f,
-                        1.0f, 0.0f,
-                        0.0f, 1.0f,
-                        1.0f, 1.0f,
-                        1.0f, 0.0f,
-
-
-                };*/
-
         // Initialize the buffers.
-        mQuadPositions = ByteBuffer.allocateDirect(quadPositionData.length * mBytesPerFloat)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadPositions = ByteBuffer.allocateDirect(quadPositionData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mQuadPositions.put(quadPositionData).position(0);
 
-        mQuadColors = ByteBuffer.allocateDirect(quadColorData.length * mBytesPerFloat)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadColors = ByteBuffer.allocateDirect(quadColorData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mQuadColors.put(quadColorData).position(0);
 
-        mQuadNormals = ByteBuffer.allocateDirect(quadNormalData.length * mBytesPerFloat)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadNormals = ByteBuffer.allocateDirect(quadNormalData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mQuadNormals.put(quadNormalData).position(0);
 
-        mQuadTextureCoordinates = ByteBuffer.allocateDirect(quadTextureCoordinateData.length * mBytesPerFloat)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadTextureCoordinates = ByteBuffer.allocateDirect(quadTextureCoordinateData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mQuadTextureCoordinates.put(quadTextureCoordinateData).position(0);
+    }
 
 
+    private void llenaStructuraConTurrets(ArrayList<Turret> listaTorretas, float prof) {
+        int size = listaTorretas.size();
+        quadPositionData = new float[6*3*size];
+        quadColorData = new float[6*4*size];
+        quadNormalData = new float[6*3*size];
+        quadTextureCoordinateData =  new float[6*2*size];
+        float w = burbujitaMap.getMapWidth()*100;
+        float h = burbujitaMap.getMapHeight()*100;
+        final float maxFilCol = Math.max(w, h);
+        float ancho = 2f/maxFilCol;
+        for (int i = 0; i < size; i++) {
+            Turret turret = listaTorretas.get(i);
+            float x = turret.getX()/(burbujitaMap.getMapWidth()*100);
+            float y = turret.getY()/(burbujitaMap.getMapHeight()*100);
+            quadTextureCoordinateData[6*2*i] = 0.5f;
+            quadTextureCoordinateData[6*2*i+1] = 1f;
+            quadTextureCoordinateData[6*2*i+2] = 1f;
+            quadTextureCoordinateData[6*2*i+3] = 0.5f;
+            quadTextureCoordinateData[6*2*i+4] = 0.5f;
+            quadTextureCoordinateData[6*2*i+5] = 0.5f;
+            quadTextureCoordinateData[6*2*i+6] = 0.5f;
+            quadTextureCoordinateData[6*2*i+7] = 1f;
+            quadTextureCoordinateData[6*2*i+8] = 1f;
+            quadTextureCoordinateData[6*2*i+9] = 1f;
+            quadTextureCoordinateData[6*2*i+10] = 1f;
+            quadTextureCoordinateData[6*2*i+11] = 0.5f;
 
+            //primer triangulo
+            //primer vertice
+            quadPositionData[6*3*i] = y*2-1;
+            quadPositionData[6*3*i+1] = x*2-1;
+            quadPositionData[6*3*i+2] = prof;
 
+            //segundo vertice
+            quadPositionData[6*3*i+3] = y*2-1+ancho;
+            quadPositionData[6*3*i+4] = x*2-1+ancho;
+            quadPositionData[6*3*i+5] = prof;
 
+            //tercer vertice
+            quadPositionData[6*3*i+6] = y*2-1;
+            quadPositionData[6*3*i+7] = x*2-1+ancho;
+            quadPositionData[6*3*i+8] = prof;
 
+            //segundo triangulo
+            //segundo vertice
+            quadPositionData[6*3*i+9] = y*2-1;
+            quadPositionData[6*3*i+10] = x*2-1;
+            quadPositionData[6*3*i+11] = prof;
+
+            //cuarto vertice
+            quadPositionData[6*3*i+12] = y*2-1+ancho;
+            quadPositionData[6*3*i+13] = x*2-1;
+            quadPositionData[6*3*i+14] = prof;
+
+            //tercer vertice
+            quadPositionData[6*3*i+15] = y*2-1+ancho;
+            quadPositionData[6*3*i+16] = x*2-1+ancho;
+            quadPositionData[6*3*i+17] = prof;
+
+            for (int k = 0; k < 4*6; ++k) {
+                quadColorData[6*4*i+k] = 1f;
+            }
+
+            for (int k = 0; k < 6; ++k) {
+                quadNormalData[6*3*i+3*k] = 0f;
+                quadNormalData[6*3*i+3*k+1] = 0f;
+                quadNormalData[6*3*i+3*k+2] = 1f;
+            }
+        }
+        // Initialize the buffers.
+        mQuadPositions = ByteBuffer.allocateDirect(quadPositionData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadPositions.put(quadPositionData).position(0);
+
+        mQuadColors = ByteBuffer.allocateDirect(quadColorData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadColors.put(quadColorData).position(0);
+
+        mQuadNormals = ByteBuffer.allocateDirect(quadNormalData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadNormals.put(quadNormalData).position(0);
+
+        mQuadTextureCoordinates = ByteBuffer.allocateDirect(quadTextureCoordinateData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadTextureCoordinates.put(quadTextureCoordinateData).position(0);
+    }
+
+    private void llenaStructuraConEnemies(ArrayList<Enemy> listaEnemigos, float prof) {
+        int size = listaEnemigos.size();
+        quadPositionData = new float[6*3*size];
+        quadColorData = new float[6*4*size];
+        quadNormalData = new float[6*3*size];
+        quadTextureCoordinateData =  new float[6*2*size];
+        float w = burbujitaMap.getMapWidth()*100;
+        float h = burbujitaMap.getMapHeight()*100;
+        final float maxFilCol = Math.max(w, h);
+        float ancho = (2f*100f)/maxFilCol;
+        for (int i = 0; i < size; i++) {
+            Enemy enemy = listaEnemigos.get(i);
+            float x = enemy.getX()/(burbujitaMap.getMapWidth()*100);
+            float y = enemy.getY()/(burbujitaMap.getMapHeight()*100);
+            quadTextureCoordinateData[6*2*i] = 0.5f;
+            quadTextureCoordinateData[6*2*i+1] = 1f;
+            quadTextureCoordinateData[6*2*i+2] = 1f;
+            quadTextureCoordinateData[6*2*i+3] = 0.5f;
+            quadTextureCoordinateData[6*2*i+4] = 0.5f;
+            quadTextureCoordinateData[6*2*i+5] = 0.5f;
+            quadTextureCoordinateData[6*2*i+6] = 0.5f;
+            quadTextureCoordinateData[6*2*i+7] = 1f;
+            quadTextureCoordinateData[6*2*i+8] = 1f;
+            quadTextureCoordinateData[6*2*i+9] = 1f;
+            quadTextureCoordinateData[6*2*i+10] = 1f;
+            quadTextureCoordinateData[6*2*i+11] = 0.5f;
+
+            //primer triangulo
+            //primer vertice
+            quadPositionData[6*3*i] = y*2-1;
+            quadPositionData[6*3*i+1] = x*2-1;
+            quadPositionData[6*3*i+2] = prof;
+
+            //segundo vertice
+            quadPositionData[6*3*i+3] = y*2-1+ancho;
+            quadPositionData[6*3*i+4] = x*2-1+ancho;
+            quadPositionData[6*3*i+5] = prof;
+
+            //tercer vertice
+            quadPositionData[6*3*i+6] = y*2-1;
+            quadPositionData[6*3*i+7] = x*2-1+ancho;
+            quadPositionData[6*3*i+8] = prof;
+
+            //segundo triangulo
+            //segundo vertice
+            quadPositionData[6*3*i+9] = y*2-1;
+            quadPositionData[6*3*i+10] = x*2-1;
+            quadPositionData[6*3*i+11] = prof;
+
+            //cuarto vertice
+            quadPositionData[6*3*i+12] = y*2-1+ancho;
+            quadPositionData[6*3*i+13] = x*2-1;
+            quadPositionData[6*3*i+14] = prof;
+
+            //tercer vertice
+            quadPositionData[6*3*i+15] = y*2-1+ancho;
+            quadPositionData[6*3*i+16] = x*2-1+ancho;
+            quadPositionData[6*3*i+17] = prof;
+
+            for (int k = 0; k < 4*6; ++k) {
+                quadColorData[6*4*i+k] = 1f;
+            }
+
+            for (int k = 0; k < 6; ++k) {
+                quadNormalData[6*3*i+3*k] = 0f;
+                quadNormalData[6*3*i+3*k+1] = 0f;
+                quadNormalData[6*3*i+3*k+2] = 1f;
+            }
+        }
+        // Initialize the buffers.
+        mQuadPositions = ByteBuffer.allocateDirect(quadPositionData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadPositions.put(quadPositionData).position(0);
+
+        mQuadColors = ByteBuffer.allocateDirect(quadColorData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadColors.put(quadColorData).position(0);
+
+        mQuadNormals = ByteBuffer.allocateDirect(quadNormalData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadNormals.put(quadNormalData).position(0);
+
+        mQuadTextureCoordinates = ByteBuffer.allocateDirect(quadTextureCoordinateData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        mQuadTextureCoordinates.put(quadTextureCoordinateData).position(0);
+    }
+
+    /**
+     * Draws a quad.
+     * @param numeroCasillas numero de casillas a pintar
+     */
+    private void drawStructure(int numeroCasillas, int numTexture)
+    {
 
         // Set our per-vertex lighting program.
         GLES30.glUseProgram(mProgramHandle);
@@ -611,7 +616,6 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         // Set program handles for quad drawing.
         mMVPMatrixHandle = GLES30.glGetUniformLocation(mProgramHandle, "u_MVPMatrix");
         mMVMatrixHandle = GLES30.glGetUniformLocation(mProgramHandle, "u_MVMatrix");
-        //mLightPosHandle = GLES30.glGetUniformLocation(mProgramHandle, "u_LightPos");
         mTextureUniformHandle = GLES30.glGetUniformLocation(mProgramHandle, "u_Texture");
         mPositionHandle = GLES30.glGetAttribLocation(mProgramHandle, "a_Position");
         mColorHandle = GLES30.glGetAttribLocation(mProgramHandle, "a_Color");
@@ -622,84 +626,31 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
 
         // Bind the texture to this unit.
-        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mTextureDataHandle);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, textures[numTexture]);
 
         // Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
         GLES30.glUniform1i(mTextureUniformHandle, 0);
 
-        // Calculate position of the light. Rotate and then push into the distance.
-        //Matrix.setIdentityM(mLightModelMatrix, 0);
-        //Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, -5.0f);
-        //Matrix.rotateM(mLightModelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
-        //Matrix.translateM(mLightModelMatrix, 0, 0.0f, 0.0f, 2.0f);
-
-        //Matrix.multiplyMV(mLightPosInWorldSpace, 0, mLightModelMatrix, 0, mLightPosInModelSpace, 0);
-        //Matrix.multiplyMV(mLightPosInEyeSpace, 0, mViewMatrix, 0, mLightPosInWorldSpace, 0);
-
-
-
         Matrix.setIdentityM(mModelMatrix, 0);
-        //Matrix.translateM(mModelMatrix, 0, 0.0f, 0.0f, -5.0f);
-        //Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 1.0f, 0.0f);
-        drawQuad(numColumnas*numFilas);
 
- /*       // Draw some quads.
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, 4.0f, 0.0f, -7.0f);
-        Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 1.0f, 0.0f, 0.0f);
-        drawQuad();
-
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, -4.0f, 0.0f, -7.0f);
-        Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 1.0f, 0.0f);
-        drawQuad();
-
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, 0.0f, 4.0f, -7.0f);
-        Matrix.rotateM(mModelMatrix, 0, angleInDegrees, 0.0f, 0.0f, 1.0f);
-        drawQuad();
-
-        Matrix.setIdentityM(mModelMatrix, 0);
-        Matrix.translateM(mModelMatrix, 0, 0.0f, -4.0f, -7.0f);
-        drawQuad();
-
-*/
-        // Draw a point to indicate the light.
-        GLES30.glUseProgram(mPointProgramHandle);
-        //drawLight();
-    }
-
-    /**
-     * Draws a quad.
-     * @param numeroCasillas
-     */
-    private void drawQuad(int numeroCasillas)
-    {
         // Pass in the position information
         mQuadPositions.position(0);
-        GLES30.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES30.GL_FLOAT, false,
-                0, mQuadPositions);
-
+        GLES30.glVertexAttribPointer(mPositionHandle, mPositionDataSize, GLES30.GL_FLOAT, false, 0, mQuadPositions);
         GLES30.glEnableVertexAttribArray(mPositionHandle);
 
         // Pass in the color information
         mQuadColors.position(0);
-        GLES30.glVertexAttribPointer(mColorHandle, mColorDataSize, GLES30.GL_FLOAT, false,
-                0, mQuadColors);
-
+        GLES30.glVertexAttribPointer(mColorHandle, mColorDataSize, GLES30.GL_FLOAT, false, 0, mQuadColors);
         GLES30.glEnableVertexAttribArray(mColorHandle);
 
         // Pass in the normal information
         mQuadNormals.position(0);
-        GLES30.glVertexAttribPointer(mNormalHandle, mNormalDataSize, GLES30.GL_FLOAT, false,
-                0, mQuadNormals);
-
+        GLES30.glVertexAttribPointer(mNormalHandle, mNormalDataSize, GLES30.GL_FLOAT, false, 0, mQuadNormals);
         GLES30.glEnableVertexAttribArray(mNormalHandle);
 
         // Pass in the texture coordinate information
         mQuadTextureCoordinates.position(0);
-        GLES30.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES30.GL_FLOAT, false,
-                0, mQuadTextureCoordinates);
+        GLES30.glVertexAttribPointer(mTextureCoordinateHandle, mTextureCoordinateDataSize, GLES30.GL_FLOAT, false, 0, mQuadTextureCoordinates);
 
         GLES30.glEnableVertexAttribArray(mTextureCoordinateHandle);
 
@@ -721,14 +672,14 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         // GLES30.glUniform3f(mLightPosHandle, mLightPosInEyeSpace[0], mLightPosInEyeSpace[1], mLightPosInEyeSpace[2]);
 
         // Draw the quad.
-        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6*numeroCasillas+6*2); //6 vertices x numeroCasillas caras + 6 vertices * 2 caras
+        GLES30.glDrawArrays(GLES30.GL_TRIANGLES, 0, 6*numeroCasillas); //6 vertices x numeroCasillas caras + 6 vertices * 2 caras
     }
 
     /**
      * Draws a point representing the position of the light.
      */
-    private void drawLight()
-    {
+    //private void drawLight()
+    //{
         //final int pointMVPMatrixHandle = GLES30.glGetUniformLocation(mPointProgramHandle, "u_MVPMatrix");
         //final int pointPositionHandle = GLES30.glGetAttribLocation(mPointProgramHandle, "a_Position");
 
@@ -745,7 +696,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
         // Draw the point.
         //GLES30.glDrawArrays(GLES30.GL_POINTS, 0, 1);
-    }
+    //}
 }
 
 

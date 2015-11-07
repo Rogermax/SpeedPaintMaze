@@ -200,5 +200,9 @@ public class BurbujitaControllerOpenGL extends Controller {
         burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
         render();
     }
+
+    public Interface getInterface() {
+        return burbujitaInterface;
+    }
 }
 
