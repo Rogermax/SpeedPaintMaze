@@ -29,6 +29,12 @@ public class BurbujitaControllerOpenGL extends Controller {
     private MainManager MM;
     private int screenSizeHeight;
     private int screenSizeWidth;
+    private float m_left;
+    private float m_right;
+    private float m_bottom;
+    private float m_top;
+    private float m_transformedX;
+    private float m_transformedY;
 
     public BurbujitaControllerOpenGL(MainManager mm) {
         paused = true;
@@ -108,6 +114,9 @@ public class BurbujitaControllerOpenGL extends Controller {
     }
 
     public void sendActionDown(float x, float y) {
+        transform(x, y);
+        x = m_transformedX;
+        y = m_transformedY;
         if (paused) {
             lastTimeUpdated = SystemClock.uptimeMillis();
             paused = false;
@@ -121,15 +130,18 @@ public class BurbujitaControllerOpenGL extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
-                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                burbujitaMap.highLight((int) x, (int) y);
             } else {
-                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                burbujitaMap.highLight((int) x, (int) y);
             }
             //burbujitaMap.createNewNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionMove(float x, float y) {
+        transform(x, y);
+        x = m_transformedX;
+        y = m_transformedY;
         if (burbujitaMap != null) {
             if (burbujitaInterface.isActive()) {
                 burbujitaInterface.highLight(x, y);
@@ -139,15 +151,18 @@ public class BurbujitaControllerOpenGL extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
-                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                burbujitaMap.highLight((int) x, (int) y);
             } else {
-                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                burbujitaMap.highLight((int) x, (int) y);
             }
             //burbujitaMap.setNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionUp(float x, float y) {
+        transform(x, y);
+        x = m_transformedX;
+        y = m_transformedY;
         if (burbujitaMap != null) {
             if (burbujitaInterface.isActive()) {
                 int tipo = burbujitaInterface.getSelectedButton();
@@ -158,15 +173,15 @@ public class BurbujitaControllerOpenGL extends Controller {
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                     burbujitaInterface.highLight(x, y);
-                    //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                    burbujitaMap.highLight((int) x, (int) y);
                 }
             } else {
-                //burbujitaMap.highLight((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado));
+                burbujitaMap.highLight((int) x, (int) y);
                 burbujitaMap.destroyPreBuildTurret();
-                /*if (burbujitaMap.canBuildTurretOn((int) ((x - offsetX) / factorDeEscalado), (int) ((y - offsetY) / factorDeEscalado))) {
+                if (burbujitaMap.canBuildTurretOn((int) x, (int) y)) {
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startShowing();
-                }*/
+                }
                 //muestra el interface si es un punto de construcicon
             }
         }
@@ -183,8 +198,8 @@ public class BurbujitaControllerOpenGL extends Controller {
     public void onViewReady(int width, int height) {
         trace("Creamos Interface de 8");
         burbujitaMap = new BurbujitaMap();
-        setSizes(width,height);
-        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
+        setSizes(width, height);
+        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
         render();
     }
 
@@ -196,13 +211,25 @@ public class BurbujitaControllerOpenGL extends Controller {
     public void onViewChanged(int width, int height) {
         trace("Creamos Interface de 8");
         burbujitaMap = new BurbujitaMap();
-        setSizes(width,height);
-        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
+        setSizes(width, height);
+        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
         render();
     }
 
     public Interface getInterface() {
         return burbujitaInterface;
+    }
+
+    public void setTransformation(float left, float right, float bottom, float top) {
+        m_left = left;
+        m_right = right;
+        m_bottom = bottom;
+        m_top = top;
+    }
+
+    private void transform(float x, float y) {
+        m_transformedX = x * (m_right - m_left) / screenSizeWidth + m_left;
+        m_transformedY = (screenSizeHeight - y) * (m_top - m_bottom) / screenSizeHeight + m_bottom;
     }
 }
 

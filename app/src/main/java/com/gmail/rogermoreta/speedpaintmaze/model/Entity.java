@@ -210,4 +210,8 @@ public abstract class Entity implements Serializable {
     public boolean isAlive() {
         return isAlive;
     }
+
+    public float getVelX() {
+        return velX;
+    }
 }

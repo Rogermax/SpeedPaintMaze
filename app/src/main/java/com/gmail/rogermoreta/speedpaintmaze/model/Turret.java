@@ -27,6 +27,10 @@ public class Turret {
         this.tipo = tipo;
     }
 
+    public int getTipo() {
+        return tipo;
+    }
+
     public void logic(long milisegundos) {
         if (attackState > 0 || (!readyToFire && rechargeState == 0)) {
             attackState += milisegundos;

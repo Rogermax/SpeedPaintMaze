@@ -73,7 +73,7 @@ public class Interface {
     public int isSomethingClicked(float x, float y) {
         if (moreInfoButton.isInside(x,y)) return 0;
         for (int i = 0; i < buttons.size(); i++) {
-            if (buttons.get(i).isInside(x,y)) return i+2;
+            if (buttons.get(i).isInside(x,y)) return i;
         }
         return -1;
     }
@@ -155,7 +155,7 @@ public class Interface {
             if (buttons.get(i).isInside(x,y)) {
                 lastSelectedButton = buttons.get(i);
                 buttons.get(i).select();
-                selectedButton = i+2;
+                selectedButton = i;
                 return;
             }
         }
