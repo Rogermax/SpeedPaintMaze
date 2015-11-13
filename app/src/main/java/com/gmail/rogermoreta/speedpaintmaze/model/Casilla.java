@@ -2,7 +2,6 @@ package com.gmail.rogermoreta.speedpaintmaze.model;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 
-@SuppressWarnings("unused")
 public class Casilla {
     public static final int size = 100;
     private int posX;
@@ -14,7 +13,7 @@ public class Casilla {
     private boolean esDeFin;
     private boolean tieneTorreta;
     private boolean estaSeleccionada;
-    private Turret turret;
+    //private Turret turret;
     private TipoCasilla tipoCasilla;
     //private Random r = new Random(SystemClock.uptimeMillis());
 
@@ -52,10 +51,6 @@ public class Casilla {
         return tieneTorreta;
     }
 
-    public boolean estaSeleccionada() {
-        return estaSeleccionada;
-    }
-
     public void seleccionar() {
         estaSeleccionada = true;
     }
@@ -64,15 +59,15 @@ public class Casilla {
         estaSeleccionada = false;
     }
 
-    public void setTurret(Turret turret) {
+    /*public void setTurret(Turret turret) {
         tieneTorreta = true;
         this.turret = turret;
-    }
+    }*/
 
-    public void removeTurret() {
+    /*public void removeTurret() {
         turret = null;
         tieneTorreta = false;
-    }
+    }*/
 
     public boolean esDeFin() {
         return esDeFin;
@@ -96,10 +91,18 @@ public class Casilla {
         return tipoCasilla;
     }
 
+    /**
+     * No es random, se ha cambiado por que creaba solapaciones
+     * @return real position
+     */
     public float getRandomNextX() {
         return posNextX*100/*+r.nextInt(100)*/;
     }
 
+    /**
+     * No es random, se ha cambiado por que creaba solapaciones
+     * @return real position
+     */
     public float getRandomNextY() {
         return posNextY*100/*+r.nextInt(100)*/;
     }

@@ -393,7 +393,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
                     fillTexture(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, 0, false);
                 }
                 if (numFilas > numColumnas) {
-                    fillPosition(quadPositionData, 6 * 3 * (i * numColumnas + j), cas.getPosX(), cas.getPosY(), 100, prof);
+                    fillPosition(quadPositionData, 6 * 3 * (i * numColumnas + j), cas.getPosX()*100, cas.getPosY()*100, 100, prof);
                 }
                 else {
                     fillPosition(quadPositionData, 6 * 3 * (i * numColumnas + j), cas.getPosX()*100, cas.getPosY()*100, 100, prof);
@@ -441,7 +441,12 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Turret turret = listaTorretas.get(i);
             float x = turret.getX();
             float y = turret.getY();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, turret.getTipo(), 0, false);
+            if (turret.getAttackPercentage() > 0.5f) {
+                fillTexture(quadTextureCoordinateData, 6 * 2 * i, 1, turret.getTipo(), false);
+            }
+            else {
+                fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, turret.getTipo(), false);
+            }
             fillPosition(quadPositionData, 6 * 3 * i, x, y, 100, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -459,7 +464,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         if (nextTurret != null) {
             float x = nextTurret.getX();
             float y = nextTurret.getY();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * size, nextTurret.getTipo(), 0, false);
+            fillTexture(quadTextureCoordinateData, 6 * 2 * size, 0, nextTurret.getTipo(), false);
             fillPosition(quadPositionData, 6 * 3 * size, x, y, 100, prof+0.1f);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -511,12 +516,16 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Enemy enemy = listaEnemigos.get(i);
             float x = enemy.getX();
             float y = enemy.getY();
-            float vel = enemy.getModuloVelocidadCuadrado() / 100000;
+            float vel = enemy.getModuloVelocidad() / 100000;
             if (enemy.getDyingState() == 0) { //Si no esta muriendo
-                fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getMovementCycleTime() * 5 / Enemy.cycleTimeMovement) % 5, 0, enemy.getVelX() < 0);
+                if (enemy.getHittedState() > 0) {
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, 1, 2, enemy.getVelX() < 0); //siguiente al muerto
+                } else {
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getMovementCycleTime() * 5 / enemy.getCycleTimeMovement()) % 6, 0, enemy.getVelX() < 0);
+                }
             } else {
                 if (enemy.isAlive()) {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getDyingState() * 5 / enemy.getTimeDying()) % 5, 1, enemy.getVelX() < 0);
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getDyingState() * 5 / enemy.getTimeDying()) % 6, 1, enemy.getVelX() < 0);
                 }
                 else {
                     fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 2, enemy.getVelX() < 0);
@@ -539,15 +548,26 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Enemy enemy = listaEnemigos.get(i-size);
             float x = enemy.getX();
             float y = enemy.getY();
-            float vel = enemy.getModuloVelocidadCuadrado() / 100000;
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 0, false);
-            fillPositionAltura(quadPositionData, 6 * 3 * i, x, y+110, enemy.getLife()*100/enemy.getTotalLife(), 10, prof + vel);
+            float vel = enemy.getModuloVelocidad() / 100000;
+            float lifePercentatge = enemy.getLife()/enemy.getTotalLife();
+            fillTexture(quadTextureCoordinateData, 6 * 2 * i, 2, 7, false);
+            fillPositionAltura(quadPositionData, 6 * 3 * i, x, y+90, lifePercentatge*100, 10, prof + vel);
 
-            for (int k = 0; k < 6; ++k) {
-                quadColorData[6 * 4 * i + 4*k] = 0f;
-                quadColorData[6 * 4 * i + 4*k+1] = 1f;
-                quadColorData[6 * 4 * i + 4*k+2] = 0f;
-                quadColorData[6 * 4 * i + 4*k+3] = 1f;
+            if (lifePercentatge > 0.5f) {
+                for (int k = 0; k < 6; ++k) {
+                    quadColorData[6 * 4 * i + 4*k] = 1f-(lifePercentatge-0.5f)*2;
+                    quadColorData[6 * 4 * i + 4*k+1] = 1f;
+                    quadColorData[6 * 4 * i + 4*k+2] = 0f;
+                    quadColorData[6 * 4 * i + 4*k+3] = 1f;
+                }
+            }
+            else {
+                for (int k = 0; k < 6; ++k) {
+                    quadColorData[6 * 4 * i + 4*k] = 1f;
+                    quadColorData[6 * 4 * i + 4*k+1] = lifePercentatge*2;
+                    quadColorData[6 * 4 * i + 4*k+2] = 0f;
+                    quadColorData[6 * 4 * i + 4*k+3] = 1f;
+                }
             }
 
             for (int k = 0; k < 6; ++k) {
@@ -584,7 +604,18 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             InterfaceButton button = buttons.get(i);
             float x = button.getActualX();
             float y = button.getActualY();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+            if (i == 0) {
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+            }
+            else if (i == 1) {
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+            }
+            else if (i == 2) {
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+            }
+            else {
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 3, 0, false);
+            }
             fillPosition(quadPositionData, 6 * 3 * i, x-radix, y-radix, 100, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -604,7 +635,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         InterfaceButton button = anInterface.getMoreInfoButton();
         float x = button.getActualX();
         float y = button.getActualY();
-        fillTexture(quadTextureCoordinateData, 6 * 2 * size, 0, 1, false);
+        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 3, 0, false);
         fillPosition(quadPositionData, 6 * 3 * size, x-radix, y-radix, 100, prof);
 
         for (int k = 0; k < 4 * 6; ++k) {
@@ -644,7 +675,8 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Bullet bullet = bullets.get(i);
             float x = bullet.getPosX();
             float y = bullet.getPosY();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+
+            fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) bullet.getLifeTime()/100%4, bullet.getType(), false);
             fillPosition(quadPositionData, 6 * 3 * i, x, y, 100, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -676,6 +708,39 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         float texPosX = (float) col / 8;
         float texPosY = (float) row / 8;
         float texWidth = 0.125f;
+        if (flip) {
+            quadTextureCoordinateData[start] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 2] = texPosX;
+            quadTextureCoordinateData[start + 3] = texPosY;
+            quadTextureCoordinateData[start + 4] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 5] = texPosY;
+            quadTextureCoordinateData[start + 6] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 8] = texPosX;
+            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 10] = texPosX;
+            quadTextureCoordinateData[start + 11] = texPosY;
+        }
+        else {
+            quadTextureCoordinateData[start] = texPosX;
+            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 2] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 3] = texPosY;
+            quadTextureCoordinateData[start + 4] = texPosX;
+            quadTextureCoordinateData[start + 5] = texPosY;
+            quadTextureCoordinateData[start + 6] = texPosX;
+            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 8] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+            quadTextureCoordinateData[start + 10] = texPosX + texWidth;
+            quadTextureCoordinateData[start + 11] = texPosY;
+        }
+    }
+    private void fillTextureHighDef(float[] quadTextureCoordinateData, int start, int col, int row, boolean flip) {
+        float texPosX = (float) col / 4;
+        float texPosY = (float) row / 4;
+        float texWidth = 0.250f;
         if (flip) {
             quadTextureCoordinateData[start] = texPosX + texWidth;
             quadTextureCoordinateData[start + 1] = texPosY + texWidth;

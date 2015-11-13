@@ -225,7 +225,7 @@ public class Pintor {
             Paint pincell = new Paint();
             pincell.setARGB(255, 0, 255, 125);
             if (enemy.getDyingState() == 0) {
-                switch ((int) (enemy.getMovementCycleTime() * 5 / Enemy.cycleTimeMovement) % 5) {
+                switch ((int) (enemy.getMovementCycleTime() * 5 / enemy.getCycleTimeMovement()) % 5) {
                     case 0:
                         canvas.drawBitmap(finalmonster0, enemy.getX(), enemy.getY(), pincell);
                         break;
@@ -288,7 +288,7 @@ public class Pintor {
                         Log.d("Pintor", "platanoHurt0 es null, no pinto cuando le pegan");
                     }
                 } else {
-                    switch ((int) (enemy.getMovementCycleTime() * 9 / Enemy.cycleTimeMovement) % 9) {
+                    switch ((int) (enemy.getMovementCycleTime() * 9 / enemy.getCycleTimeMovement()) % 9) {
                         case 0:
                         case 8:
                             canvas.drawBitmap(platano0, enemy.getX(), enemy.getY(), pincell);
@@ -311,7 +311,7 @@ public class Pintor {
                     }
                 }
             } else {
-                if (enemy.isAlive()) {
+                if (enemy.m_isAlive()) {
                     if (platanodie0 != null && platanodie1 != null && platanodie2 != null && platanodie3 != null && platanodie4 != null) {
                         switch ((int) (enemy.getDyingState() * 5 / enemy.getTimeDying()) % 5) {
                             case 0:

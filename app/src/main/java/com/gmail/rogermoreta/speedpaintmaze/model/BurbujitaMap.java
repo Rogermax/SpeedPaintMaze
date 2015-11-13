@@ -32,7 +32,7 @@ public class BurbujitaMap {
     public static final char[] codifiedMap;
 
 
-    static {
+    /*static {
         codifiedMap = ("6x10" +
                 "Ir7******db2.F" +
                 ".......*.*" +
@@ -40,7 +40,7 @@ public class BurbujitaMap {
                 "*........*" +
                 "*........*" +
                 "dr9********dt5").toCharArray();
-    }
+    }*/
 
     /*static {
         codifiedMap = ("3x5" +
@@ -49,7 +49,7 @@ public class BurbujitaMap {
                 "dt1***dl4").toCharArray();
     }*/
 
-    /*static {
+    static {
         codifiedMap = ("18x10" +
                 "Ir7******db2.F" +
                 ".......*.*" +
@@ -69,7 +69,7 @@ public class BurbujitaMap {
                 "*........*" +
                 "*........*" +
                 "dr9********dt17").toCharArray();
-    }*/
+    }
 
 
     public BurbujitaMap() {
@@ -83,19 +83,19 @@ public class BurbujitaMap {
         //Canvas canvas = this.surfaceHolder.lockCanvas();
         //reajustarTamaño(canvas);
         BaseMonster enemy = new BaseMonster();
-        enemy.setVelocity(4f);
+        enemy.init(0f, 0f, 20f, 5f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.setVelocity(3f);
+        enemy.init(0f, 0f, 40f, 4f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.setVelocity(5f);
+        enemy.init(0f, 0f, 60f, 3f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.setVelocity(1f);
+        enemy.init(0f, 0f, 80f, 2f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.setVelocity(2f);
+        enemy.init(0f, 0f, 100f, 1f);
         enemies.add(enemy);
         //pincell = new Paint();
         //pincell.setARGB(175, 0, 0, 0);
@@ -481,7 +481,7 @@ public class BurbujitaMap {
             torretaTratada.logic(milisegundos);
             if (torretaTratada.readyToFire()) {
                 Enemy enemy = torretaTratada.dispara();
-                bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight)));
+                bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight),torretaTratada.getTipo()));
             }
         }
     }

@@ -19,7 +19,7 @@ public class Turret {
     public Turret(int x, int y, float radius, int tipo) {
         this.x = x;
         this.y = y;
-        timeToRecharge = 3000l;
+        timeToRecharge = 50l;
         rechargeState = 0l;
         readyToFire = false;
         this.radius = radius;

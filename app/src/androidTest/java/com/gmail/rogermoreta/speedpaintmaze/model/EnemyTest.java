@@ -8,7 +8,8 @@ public class EnemyTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         enemy = new Enemy();
-        enemy.vel = 1d/20d;
+        enemy.m_velocidad.m_x = 1f/20f;
+        enemy.m_actualLife = 100f;
     }
 
     public void tearDown() throws Exception {
@@ -17,112 +18,112 @@ public class EnemyTest extends TestCase {
 
     public void testLogicStill() throws Exception {
         enemy.logic(40l);
-        assertEquals(0f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(0f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
     }
 
     public void testLogicMove() throws Exception {
         enemy.asignarMoveTarget(10f, 0f);
         enemy.logic(20l);
-        assertEquals(1f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(1f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(15l);
-        assertEquals(1.75f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(1.75f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(60l);
-        assertEquals(4.75f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(4.75f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
     }
 
     public void testLogicTargetTaken() throws Exception {
         enemy.asignarMoveTarget(10f, 0f);
         enemy.logic(20l);
-        assertEquals(1f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(1f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(15l);
-        assertEquals(1.75f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(1.75f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(60l);
-        assertEquals(4.75f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(4.75f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(105);
-        assertEquals(10f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(10f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(105);
-        assertEquals(10f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(10f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
         enemy.logic(105);
-        assertEquals(10f, enemy.posX);
-        assertEquals(0f, enemy.posY);
+        assertEquals(10f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
     }
 
     public void testLogicStop() throws Exception {
         enemy.asignarMoveTarget(10f, 10f);
         enemy.logic(20l);
-        assertEquals(0.707107f, enemy.posX, 0.001f);
-        assertEquals(0.707107f, enemy.posY, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
         enemy.quitarMoveTarget();
         enemy.logic(60l);
-        assertEquals(0.707107f, enemy.posX, 0.001f);
-        assertEquals(0.707107f, enemy.posY, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
     }
 
     public void testDie() throws Exception {
         enemy.receiveDamage(33);
         enemy.logic(15);
-        assertEquals(67f, enemy.life);
-        assertEquals(true, enemy.isAlive);
+        assertEquals(67f, enemy.m_actualLife);
+        assertEquals(true, enemy.m_isAlive);
 
         enemy.receiveDamage(33);
         enemy.logic(15);
-        assertEquals(34f, enemy.life);
-        assertEquals(true, enemy.isAlive);
+        assertEquals(34f, enemy.m_actualLife);
+        assertEquals(true, enemy.m_isAlive);
 
         enemy.receiveDamage(33);
         enemy.logic(15);
-        assertEquals(1f, enemy.life);
-        assertEquals(true, enemy.isAlive);
+        assertEquals(1f, enemy.m_actualLife);
+        assertEquals(true, enemy.m_isAlive);
 
         enemy.receiveDamage(33);
         enemy.logic(15);
-        assertEquals(-32f, enemy.life);
-        assertEquals(true, enemy.isAlive);
+        assertEquals(-32f, enemy.m_actualLife);
+        assertEquals(true, enemy.m_isAlive);
 
 
         enemy.logic(1000);
-        assertEquals(-32f, enemy.life);
-        assertEquals(false, enemy.isAlive);
+        assertEquals(-32f, enemy.m_actualLife);
+        assertEquals(false, enemy.m_isAlive);
     }
 
     public void testLogicAttack() throws Exception {
         enemy.asignarAttackTarget(200f, 200f);
-        enemy.attackDistance = 282f;
+        enemy.m_attackDistance = 282f;
 
         //No ataca porque no llega
         enemy.logic(20l);
-        assertEquals(0f, enemy.posX);
-        assertEquals(0f, enemy.posY);
-        assertEquals(0, enemy.timesShootted);
+        assertEquals(0f, enemy.m_posicion.m_x);
+        assertEquals(0f, enemy.m_posicion.m_y);
+        assertEquals(0, enemy.timesItHasShootted);
         enemy.asignarMoveTarget(200f, 200f);
 
         //Primero se mueve, luego ataca, por tanto ahora ya llega
         enemy.logic(20l);
-        assertEquals(0.707107f, enemy.posX, 0.001f);
-        assertEquals(0.707107f, enemy.posY, 0.001f);
-        assertEquals(1, enemy.timesShootted);
+        assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
+        assertEquals(1, enemy.timesItHasShootted);
         enemy.quitarMoveTarget();
 
         //Ahora no puede atacar porque lo ha hecho hace menos de 3000  milisengundos
         enemy.logic(20l);
-        assertEquals(0.707107f, enemy.posX, 0.001f);
-        assertEquals(0.707107f, enemy.posY, 0.001f);
-        assertEquals(1, enemy.timesShootted);
+        assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
+        assertEquals(1, enemy.timesItHasShootted);
 
         //Aunque pasen 10segundos, solo dispara 1 vez, sino se complica mucho.
         enemy.logic(10000l);
-        assertEquals(0.707107f, enemy.posX, 0.001f);
-        assertEquals(0.707107f, enemy.posY, 0.001f);
-        assertEquals(2,enemy.timesShootted);
+        assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
+        assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
+        assertEquals(2,enemy.timesItHasShootted);
 
 
     }
