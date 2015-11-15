@@ -282,6 +282,9 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
 
         // Create a new perspective projection matrix. The height will stay the same
         // while the width will vary as per aspect ratio.
+
+
+
         final float left;
         final float right;
         final float bottom;
@@ -304,7 +307,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             right = m_width-left;
         }
 
-        burbujitaControllerOpenGL.setTransformation(left, right, bottom, top);
+        burbujitaControllerOpenGL.createInterface(left, right, bottom, top);
 
         final float near = 10.0f;
         final float far = 100.0f;
@@ -616,7 +619,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             else {
                 fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 3, 0, false);
             }
-            fillPosition(quadPositionData, 6 * 3 * i, x-radix, y-radix, 100, prof);
+            fillPosition(quadPositionData, 6 * 3 * i, x-radix, y-radix, button.getRadix()*2, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
                 quadColorData[6 * 4 * i + k] = 1f;

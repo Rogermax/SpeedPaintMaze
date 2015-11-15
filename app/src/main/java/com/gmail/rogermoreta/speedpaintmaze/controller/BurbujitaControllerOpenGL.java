@@ -195,24 +195,20 @@ public class BurbujitaControllerOpenGL extends Controller {
         return burbujitaMap;
     }
 
-    public void onViewReady(int width, int height) {
+    /*public void onViewReady(int width, int height) {
         trace("Creamos Interface de 8");
         burbujitaMap = new BurbujitaMap();
-        setSizes(width, height);
-        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
-        render();
-    }
-
-    private void setSizes(int width, int height) {
         screenSizeWidth = width;
         screenSizeHeight = height;
-    }
+        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
+        render();
+    }*/
 
     public void onViewChanged(int width, int height) {
         trace("Creamos Interface de 8");
         burbujitaMap = new BurbujitaMap();
-        setSizes(width, height);
-        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
+        screenSizeWidth = width;
+        screenSizeHeight = height;
         render();
     }
 
@@ -220,11 +216,12 @@ public class BurbujitaControllerOpenGL extends Controller {
         return burbujitaInterface;
     }
 
-    public void setTransformation(float left, float right, float bottom, float top) {
+    public void createInterface(float left, float right, float bottom, float top) {
         m_left = left;
         m_right = right;
         m_bottom = bottom;
         m_top = top;
+        burbujitaInterface = new Interface(8, m_left, m_bottom, m_right, m_top, true);
     }
 
     private void transform(float x, float y) {

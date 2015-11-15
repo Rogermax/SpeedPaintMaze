@@ -4,6 +4,16 @@ import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 
 import java.util.ArrayList;
 
+/**
+ * Clase Interface, para un juego.
+ * Dado:
+ *      x_min, y_min, x_max, y_max de las coordenadas de vision de pantalla
+ *      numero de botones para la parte inferior (max 8)
+ *      boolean para intercanviar coordenadas y (opengl tiene arriba la coordenada inferior)
+ *
+ * entonces la interfaz crea los botones retractiles en la parte inferior, (8 max)
+ * un icono de herrmanientas arriba a la derecha, y un icono de detalles abajo a la izq.
+ */
 public class Interface {
 
     private final float radioButton;
@@ -17,19 +27,29 @@ public class Interface {
     private InterfaceButton lastSelectedButton;
     private int selectedButton;
 
-    public Interface(int numButtons, int width, int height) {
+    public Interface(int numButtons, float x_min, float y_min, float x_max, float y_max, boolean yInvertida) {
         interfaceStepShown = 0;
         isStarting = false;
         isRetracting = false;
         isActive = false;
         buttons = new ArrayList<>(numButtons);
-        radioButton = width / (float) (2 * (numButtons + 2));
-        float offset = width /(float)(numButtons+2);
-        moreInfoButton = new InterfaceButton(radioButton,height+radioButton,radioButton,height-radioButton, radioButton, false);
-        for (int i = 2; i < numButtons+2; i++) {
-            //(float initialX, float initialY, float endX, float endY, float radix, boolean isCircular)
-            buttons.add(new InterfaceButton(offset * i+radioButton, height+radioButton, offset * i+radioButton, height-radioButton, radioButton, true));
+        radioButton = (x_max-x_min) / (float) (2 * (8 + 2));
+        float offset = (x_max-x_min) /(float)(8+2);
+        if (yInvertida) {
+            moreInfoButton = new InterfaceButton(radioButton, y_min - radioButton, radioButton, y_min + radioButton, radioButton, false);
+            for (int i = 2; i < numButtons + 2; i++) {
+                //(float initialX, float initialY, float endX, float endY, float radix, boolean isCircular)
+                buttons.add(new InterfaceButton(offset * i + radioButton, y_min - radioButton, offset * i + radioButton, y_min + radioButton, radioButton, true));
+            }
         }
+        else {
+            moreInfoButton = new InterfaceButton(radioButton, y_max + radioButton, radioButton, y_max - radioButton, radioButton, false);
+            for (int i = 2; i < numButtons + 2; i++) {
+                //(float initialX, float initialY, float endX, float endY, float radix, boolean isCircular)
+                buttons.add(new InterfaceButton(offset * i + radioButton, y_max + radioButton, offset * i + radioButton, y_max - radioButton, radioButton, true));
+            }
+        }
+
     }
 
 
@@ -68,14 +88,6 @@ public class Interface {
 
         }
         //En otro caso no esta en transicion, no hace nada.
-    }
-
-    public int isSomethingClicked(float x, float y) {
-        if (moreInfoButton.isInside(x,y)) return 0;
-        for (int i = 0; i < buttons.size(); i++) {
-            if (buttons.get(i).isInside(x,y)) return i;
-        }
-        return -1;
     }
 
     public void startShowing() {
@@ -161,17 +173,10 @@ public class Interface {
         }
     }
 
-    @SuppressWarnings("unused")
-    public boolean isClickInside(float x, float y) {
-        return isSomethingClicked(x,y) != -1;
-    }
-
-    @SuppressWarnings("unused")
     public int getSelectedButton() {
         return selectedButton;
     }
 
-    @SuppressWarnings("unused")
     public void desSeleccionar() {
         if (lastSelectedButton != null) {
             lastSelectedButton.unSelect();

@@ -263,7 +263,7 @@ public class MainManager {
 
     public void burbujitaOpenGLViewChanged(int width, int height) {
         if (burbujitaControllerOpenGL != null) {
-            burbujitaControllerOpenGL.onViewChanged(width,height);
+            burbujitaControllerOpenGL.onViewChanged(width, height);
         }
         else {
             Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaControllerOpenGL es null");

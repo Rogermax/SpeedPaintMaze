@@ -192,13 +192,13 @@ public class BurbujitaController extends Controller {
         gameThread = new GameThread(this);
         gameThread.encender();
         setSizes(holder);
-        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
+        //burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
         render();
     }
 
     public void onViewChanged(SurfaceHolder holder) {
         setSizes(holder);
-        burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
+        //burbujitaInterface = new Interface(8, screenSizeWidth, screenSizeHeight);
         render();
     }
 

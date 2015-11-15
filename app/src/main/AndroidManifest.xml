@@ -24,6 +24,7 @@
         </activity>
         <activity
             android:name=".view.BurbujitaOpenGLActivity"
+            android:screenOrientation="landscape"
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
         <activity
