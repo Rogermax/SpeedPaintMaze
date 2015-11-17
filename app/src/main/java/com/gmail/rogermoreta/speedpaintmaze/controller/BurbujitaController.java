@@ -186,7 +186,7 @@ public class BurbujitaController extends Controller {
         return burbujitaMap;
     }
 
-    public void onViewReady(SurfaceHolder holder) {
+    public void onViewReady(SurfaceHolder holder) throws Exception {
         trace("Creamos GameThread e Interface de 8");
         burbujitaMap = new BurbujitaMap();
         gameThread = new GameThread(this);

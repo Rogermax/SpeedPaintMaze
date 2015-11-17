@@ -409,7 +409,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
                 }
                 if (cas.isSelected()) {
                     for (int k = 0; k < 6; ++k) {
-                        quadColorData[6 * 4 * (i * numColumnas + j) + 4*k + 2] = 0f;
+                        quadColorData[6 * 4 * (i * numColumnas + j) + 4*k + 1] = 0f;
                     }
                 }
 
@@ -445,10 +445,10 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             float x = turret.getX();
             float y = turret.getY();
             if (turret.getAttackPercentage() > 0.5f) {
-                fillTexture(quadTextureCoordinateData, 6 * 2 * i, 1, turret.getTipo(), false);
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 1, turret.getTipo(), false);
             }
             else {
-                fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, turret.getTipo(), false);
+                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, turret.getTipo(), false);
             }
             fillPosition(quadPositionData, 6 * 3 * i, x, y, 100, prof);
 
@@ -467,7 +467,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         if (nextTurret != null) {
             float x = nextTurret.getX();
             float y = nextTurret.getY();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * size, 0, nextTurret.getTipo(), false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, nextTurret.getTipo(), false);
             fillPosition(quadPositionData, 6 * 3 * size, x, y, 100, prof+0.1f);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -481,7 +481,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             }
         }
         else {
-            fillTexture(quadTextureCoordinateData, 6 * 2 * size, 0, 0, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 0, false);
             fillPosition(quadPositionData, 6 * 3 * size, 0, 0, 100, -2f);
 
             for (int k = 0; k < 4 * 6; ++k) {

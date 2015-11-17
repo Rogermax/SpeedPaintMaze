@@ -79,8 +79,8 @@ public abstract class Entity implements Serializable {
     }
 
     public void init(float posX, float posY, float life, float vel) {
-        m_velocidad.m_x = posX;
-        m_velocidad.m_y = posY;
+        m_posicion.m_x = posX;
+        m_posicion.m_y = posY;
         m_actualVel = vel/20f;
         m_actualLife = life;
     }
@@ -173,9 +173,9 @@ public abstract class Entity implements Serializable {
     }
 
     public void receiveDamage(float damage) {
-        m_actualLife -= damage;
-        m_hittedState = 1;
         if (m_damagable) {
+            m_actualLife -= damage;
+            m_hittedState = 1;
             if (m_dyingState == 0 && m_actualLife <= 0) {
                 m_dyingState = 1;
             }

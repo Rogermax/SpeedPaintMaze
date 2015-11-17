@@ -219,12 +219,16 @@ public class MainManager {
 
     public void burbujitaViewReady(SurfaceHolder holder) {
         trace("Burbujita view READY!");
-        if (burbujitaController != null) {
-            burbujitaController.onViewReady(holder);
-            pintor.setBurbujitaHolder(holder);
+        try {
+            if (burbujitaController != null) {
+                burbujitaController.onViewReady(holder);
+                pintor.setBurbujitaHolder(holder);
+            } else {
+                Log.d("MainManager", "burbujitaViewReady::fail->burbujitaController es null");
+            }
         }
-        else {
-            Log.d("MainManager", "burbujitaViewReady::fail->burbujitaController es null");
+        catch (Exception e) {
+            trace("excepcion en burbujitaViewReady: "+e.toString());
         }
     }
 
@@ -262,11 +266,16 @@ public class MainManager {
     }
 
     public void burbujitaOpenGLViewChanged(int width, int height) {
+        try {
         if (burbujitaControllerOpenGL != null) {
             burbujitaControllerOpenGL.onViewChanged(width, height);
         }
         else {
             Log.d("MainManager", "burbujitaViewChanged::fail->burbujitaControllerOpenGL es null");
         }
+    }
+    catch(Exception e) {
+        trace("Error en onViewChange:"+e.toString());
+    }
     }
 }

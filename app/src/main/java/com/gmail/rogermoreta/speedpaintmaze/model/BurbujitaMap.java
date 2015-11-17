@@ -15,11 +15,11 @@ public class BurbujitaMap {
     private ArrayList<Turret> turrets;
     private ArrayList<Bullet> bullets;
     private ArrayList<Enemy> enemies;
+    private ArrayList<Coin> coins;
     //private Paint pincell;
     private int mapHeight;
     private int mapWidth;
     private int numeroCasillasX;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private int numeroCasillasY;
     private Turret nextTurret;
     private int lastX;
@@ -31,15 +31,15 @@ public class BurbujitaMap {
     public static final char[] codifiedMap;
 
 
-    /*static {
+    static {
         codifiedMap = ("6x10" +
-                "Ir7******db2.F" +
+                "*Ir6*****db2.F" +
                 ".......*.*" +
                 "db3******dl7.*" +
                 "*........*" +
                 "*........*" +
                 "dr9********dt5").toCharArray();
-    }*/
+    }
 
     /*static {
         codifiedMap = ("3x5" +
@@ -48,53 +48,8 @@ public class BurbujitaMap {
                 "dt1***dl4").toCharArray();
     }*/
 
-    static {
-        codifiedMap = ("18x10" +
-                "Ir7******db2.F" +
-                ".......*.*" +
-                "db3******dl7.*" +
-                "*........*" +
-                "*........*" +
-                "dr7******db3.*" +
-                ".......*.*" +
-                ".......*.*" +
-                "db3******dl7.*" +
-                "*........*" +
-                "*........*" +
-                "dr7******db2.*" +
-                ".......*.*" +
-                "db4******dl7.*" +
-                "*........*" +
-                "*........*" +
-                "*........*" +
-                "dr9********dt17").toCharArray();
-    }
-/*
-    static {
-        codifiedMap = ("10x18" +
-                "It7******dr2.F" +
-                ".......*.*" +
-                "dr3******db7.*" +
-                "*........*" +
-                "*........*" +
-                "dt7******dr3.*" +
-                ".......*.*" +
-                ".......*.*" +
-                "dr3******db7.*" +
-                "*........*" +
-                "*........*" +
-                "dt7******dr2.*" +
-                ".......*.*" +
-                "dr4******db7.*" +
-                "*........*" +
-                "*........*" +
-                "*........*" +
-                "dt9********dl17").toCharArray();
-    }
-*/
 
-
-    public BurbujitaMap() {
+    public BurbujitaMap() throws Exception {
         //this.surfaceHolder = surfaceHolder;
         lastX = -1;
         lastY = -1;
@@ -102,30 +57,32 @@ public class BurbujitaMap {
         turrets = new ArrayList<>();
         bullets = new ArrayList<>();
         enemies = new ArrayList<>();
+        coins = new ArrayList<>();
         //Canvas canvas = this.surfaceHolder.lockCanvas();
         //reajustarTamaño(canvas);
+        int indexInici = leerMapa();
+        Casilla inici = mapaEnCasillas.get(indexInici);
         BaseMonster enemy = new BaseMonster();
-        enemy.init(0f, 0f, 20f, 5f);
+        enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 20f, 5f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.init(0f, 0f, 40f, 4f);
+        enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 40f, 4f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.init(0f, 0f, 60f, 3f);
+        enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 60f, 3f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.init(0f, 0f, 80f, 2f);
+        enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 80f, 2f);
         enemies.add(enemy);
         enemy = new BaseMonster();
-        enemy.init(0f, 0f, 100f, 1f);
+        enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 100f, 1f);
         enemies.add(enemy);
         //pincell = new Paint();
         //pincell.setARGB(175, 0, 0, 0);
         //this.surfaceHolder.unlockCanvasAndPost(canvas);
-        leerMapa();
     }
 
-    private void leerMapa() {
+    private int leerMapa() throws Exception {
         int filas = 0;
         int longFilas = 0; //columnas
         int i = 0;
@@ -146,19 +103,15 @@ public class BurbujitaMap {
             }
         }
         mapaEnCasillas = new ArrayList<>(longFilas * filas);
-        if (longFilas < filas) {
-            mapHeight = longFilas * 100;
-            mapWidth = filas*100;
-            numeroCasillasX = filas;
-            numeroCasillasY = longFilas;
-            leerMapaCodificado(true,i);
+        if (filas > longFilas) {
+            throw new Exception("Mapa invalido, mas columnas que filas.");
         }
         else {
             mapWidth = longFilas * 100;
             mapHeight = filas * 100;
             numeroCasillasX = longFilas;
             numeroCasillasY = filas;
-            leerMapaCodificado(false,i);
+            return leerMapaCodificado(i);
         }
 
 
@@ -167,380 +120,195 @@ public class BurbujitaMap {
 
     }
 
-    private void leerMapaCodificado(boolean invertido, int i) {
+    private int leerMapaCodificado(int i) {
         int longFilas = numeroCasillasX;
         int filas = numeroCasillasY;
-        if (invertido) {
-            boolean trobat = false;
-            i--;
-            int casillaX = 0;
-            int casillaY = 0;
-            Casilla casilla;
-            for (; i < codifiedMap.length && !trobat; i++) {
-                boolean trobat2;
-                int numSaltos;
-                switch (codifiedMap[i]) {
-                    case 'I':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, true, false);
-                        i++;
-                        numSaltos = 0;
-                        switch (codifiedMap[i]) {
-                            case 'l':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+        int indexInici = 0;
+        boolean trobat = false;
+        i--;
+        int casillaX = 0;
+        int casillaY = 0;
+        Casilla casilla;
+        for (; i < codifiedMap.length && !trobat; i++) {
+            boolean trobat2;
+            int numSaltos;
+            switch (codifiedMap[i]) {
+                case 'I':
+                    casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, true, false);
+                    i++;
+                    numSaltos = 0;
+                    switch (codifiedMap[i]) {
+                        case 't':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY - numSaltos);
-                                break;
-                            case 't':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX, casillaY - numSaltos);
+                            break;
+                        case 'r':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX + numSaltos, casillaY);
-                                break;
-                            case 'b':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX + numSaltos, casillaY);
+                            break;
+                        case 'l':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX - numSaltos, casillaY);
-                                break;
-                            case 'r':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX - numSaltos, casillaY);
+                            break;
+                        case 'b':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY + numSaltos);
-                        }
-                        i--;
-                        mapaEnCasillas.add(casilla);
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX, casillaY + numSaltos);
+                    }
+                    i--;
+                    mapaEnCasillas.add(casilla);
+                    indexInici = casillaX+casillaY*longFilas;
+                    casillaX++;
+                    if (casillaX >= longFilas) {
+                        casillaX = 0;
                         casillaY++;
                         if (casillaY >= filas) {
-                            casillaY = 0;
-                            casillaX++;
-                            if (casillaX >= longFilas) {
-                                trobat = true;
-                            }
+                            trobat = true;
                         }
-                        break;
-                    case '*':
-                        mapaEnCasillas.add(new Casilla(TipoCasilla.CAMINO, casillaX, casillaY));
+                    }
+                    break;
+                case '*':
+                    mapaEnCasillas.add(new Casilla(TipoCasilla.CAMINO, casillaX, casillaY));
+                    casillaX++;
+                    if (casillaX >= longFilas) {
+                        casillaX = 0;
                         casillaY++;
                         if (casillaY >= filas) {
-                            casillaY = 0;
-                            casillaX++;
-                            if (casillaX >= longFilas) {
-                                trobat = true;
+                            trobat = true;
+                        }
+                    }
+                    break;
+                case 'd':
+                    casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, false);
+                    i++;
+                    numSaltos = 0;
+                    switch (codifiedMap[i]) {
+                        case 't':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
+                                }
                             }
-                        }
-                        break;
-                    case 'd':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, false);
-                        i++;
-                        numSaltos = 0;
-                        switch (codifiedMap[i]) {
-                            case 'l':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            i--;
+                            casilla.setNextPositions(casillaX, casillaY - numSaltos);
+                            break;
+                        case 'r':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY - numSaltos);
-                                break;
-                            case 't':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX + numSaltos, casillaY);
+                            break;
+                        case 'l':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX + numSaltos, casillaY);
-                                break;
-                            case 'b':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX - numSaltos, casillaY);
+                            break;
+                        case 'b':
+                            i++;
+                            trobat2 = false;
+                            for (; i < codifiedMap.length && !trobat2; i++) {
+                                if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
+                                    trobat2 = true;
+                                } else {
+                                    numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
                                 }
-                                i--;
-                                casilla.setNextPositions(casillaX - numSaltos, casillaY);
-                                break;
-                            case 'r':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY + numSaltos);
-                        }
-                        i--;
-                        mapaEnCasillas.add(casilla);
+                            }
+                            i--;
+                            casilla.setNextPositions(casillaX, casillaY + numSaltos);
+                    }
+                    i--;
+                    mapaEnCasillas.add(casilla);
+                    casillaX++;
+                    if (casillaX >= longFilas) {
+                        casillaX = 0;
                         casillaY++;
                         if (casillaY >= filas) {
-                            casillaY = 0;
-                            casillaX++;
-                            if (casillaX >= longFilas) {
-                                trobat = true;
-                            }
+                            trobat = true;
                         }
-                        break;
-                    case '.':
-                        mapaEnCasillas.add(new Casilla(TipoCasilla.CESPED, casillaX, casillaY));
+                    }
+                    break;
+                case '.':
+                    mapaEnCasillas.add(new Casilla(TipoCasilla.CESPED, casillaX, casillaY));
+                    casillaX++;
+                    if (casillaX >= longFilas) {
+                        casillaX = 0;
                         casillaY++;
                         if (casillaY >= filas) {
-                            casillaY = 0;
-                            casillaX++;
-                            if (casillaX >= longFilas) {
-                                trobat = true;
-                            }
+                            trobat = true;
                         }
-                        break;
-                    case 'F':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, true);
-                        mapaEnCasillas.add(casilla);
+                    }
+                    break;
+                case 'F':
+                    casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, true);
+                    mapaEnCasillas.add(casilla);
+                    casillaX++;
+                    if (casillaX >= longFilas) {
+                        casillaX = 0;
                         casillaY++;
                         if (casillaY >= filas) {
-                            casillaY = 0;
-                            casillaX++;
-                            if (casillaX >= longFilas) {
-                                trobat = true;
-                            }
+                            trobat = true;
                         }
-                        break;
-                    default:
-                        Log.d("BurbujitaMapa", "Mapa erroneo!");
-                }
+                    }
+                    break;
+                default:
+                    Log.d("BurbujitaMapa", "Mapa erroneo!");
             }
         }
-        else {
-            boolean trobat = false;
-            i--;
-            int casillaX = 0;
-            int casillaY = 0;
-            Casilla casilla;
-            for (; i < codifiedMap.length && !trobat; i++) {
-                boolean trobat2;
-                int numSaltos;
-                switch (codifiedMap[i]) {
-                    case 'I':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, true, false);
-                        i++;
-                        numSaltos = 0;
-                        switch (codifiedMap[i]) {
-                            case 't':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY - numSaltos);
-                                break;
-                            case 'r':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX + numSaltos, casillaY);
-                                break;
-                            case 'l':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX - numSaltos, casillaY);
-                                break;
-                            case 'b':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY + numSaltos);
-                        }
-                        i--;
-                        mapaEnCasillas.add(casilla);
-                        casillaX++;
-                        if (casillaX >= longFilas) {
-                            casillaX = 0;
-                            casillaY++;
-                            if (casillaY >= filas) {
-                                trobat = true;
-                            }
-                        }
-                        break;
-                    case '*':
-                        mapaEnCasillas.add(new Casilla(TipoCasilla.CAMINO, casillaX, casillaY));
-                        casillaX++;
-                        if (casillaX >= longFilas) {
-                            casillaX = 0;
-                            casillaY++;
-                            if (casillaY >= filas) {
-                                trobat = true;
-                            }
-                        }
-                        break;
-                    case 'd':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, false);
-                        i++;
-                        numSaltos = 0;
-                        switch (codifiedMap[i]) {
-                            case 't':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY - numSaltos);
-                                break;
-                            case 'r':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX + numSaltos, casillaY);
-                                break;
-                            case 'l':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX - numSaltos, casillaY);
-                                break;
-                            case 'b':
-                                i++;
-                                trobat2 = false;
-                                for (; i < codifiedMap.length && !trobat2; i++) {
-                                    if (codifiedMap[i] < 48 || codifiedMap[i] > 57) {
-                                        trobat2 = true;
-                                    } else {
-                                        numSaltos = numSaltos * 10 + (codifiedMap[i] - 48);
-                                    }
-                                }
-                                i--;
-                                casilla.setNextPositions(casillaX, casillaY + numSaltos);
-                        }
-                        i--;
-                        mapaEnCasillas.add(casilla);
-                        casillaX++;
-                        if (casillaX >= longFilas) {
-                            casillaX = 0;
-                            casillaY++;
-                            if (casillaY >= filas) {
-                                trobat = true;
-                            }
-                        }
-                        break;
-                    case '.':
-                        mapaEnCasillas.add(new Casilla(TipoCasilla.CESPED, casillaX, casillaY));
-                        casillaX++;
-                        if (casillaX >= longFilas) {
-                            casillaX = 0;
-                            casillaY++;
-                            if (casillaY >= filas) {
-                                trobat = true;
-                            }
-                        }
-                        break;
-                    case 'F':
-                        casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, true);
-                        mapaEnCasillas.add(casilla);
-                        casillaX++;
-                        if (casillaX >= longFilas) {
-                            casillaX = 0;
-                            casillaY++;
-                            if (casillaY >= filas) {
-                                trobat = true;
-                            }
-                        }
-                        break;
-                    default:
-                        Log.d("BurbujitaMapa", "Mapa erroneo!");
-                }
-            }
-        }
-
+        return indexInici;
     }
 
     /*public void reajustarTamaño(Canvas canvas) {
@@ -669,10 +437,10 @@ public class BurbujitaMap {
         for (int i = 0; i < enemies.size(); i++) {
             Enemy enemigoTratado = enemies.get(i);
             enemigoTratado.logic(milisegundos);
-            lastX = (int) enemies.get(i).getX();
-            lastY = (int) enemies.get(i).getY();
-            int casillaX = (int) (enemies.get(i).getX() / 100);
-            int casillaY = (int) (enemies.get(i).getY() / 100);
+            lastX = (int) enemigoTratado.getX();
+            lastY = (int) enemigoTratado.getY();
+            int casillaX = (int) (enemigoTratado.getX() / 100);
+            int casillaY = (int) (enemigoTratado.getY() / 100);
             int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
             Casilla casillaDelBicho = mapaEnCasillas.get(indexOfCasilla);
             if (casillaDelBicho.esDeFin()) {
@@ -693,6 +461,11 @@ public class BurbujitaMap {
                     }
                 }
             }
+            if (enemigoTratado.getDyingState() > enemigoTratado.m_timeDying) {
+                enemies.remove(i);
+                coins.add(new Coin(50));
+                i--;
+            }
             /*
             if (lastX >= 0.9 * canvasWidth && lastY >= 0.9 * canvasHeight) {
                 enemigoTratado.asignarMoveTarget(0, 0);
@@ -709,7 +482,9 @@ public class BurbujitaMap {
             torretaTratada.logic(milisegundos);
             if (torretaTratada.readyToFire()) {
                 Enemy enemy = torretaTratada.dispara();
-                bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight),torretaTratada.getTipo()));
+                if (enemy.isAlive()) {
+                    bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight), torretaTratada.getTipo()));
+                }
             }
         }
     }

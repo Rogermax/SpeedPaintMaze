@@ -1,15 +1,12 @@
 package com.gmail.rogermoreta.speedpaintmaze.controller;
 
 import android.app.Activity;
-import android.graphics.Canvas;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
 
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
-import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaActivity;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaOpenGLActivity;
 
 import java.util.ArrayList;
@@ -35,9 +32,11 @@ public class BurbujitaControllerOpenGL extends Controller {
     private float m_top;
     private float m_transformedX;
     private float m_transformedY;
+    private long m_money;
 
     public BurbujitaControllerOpenGL(MainManager mm) {
         paused = true;
+        m_money = 0l;
         MM = mm;
         historicTimeUpdates = new ArrayList<>(5);
         historicTimeDraws = new ArrayList<>(5);
@@ -125,7 +124,7 @@ public class BurbujitaControllerOpenGL extends Controller {
             if (burbujitaInterface.isActive()) {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
-                if (tipo > -1) {
+                if (-1 < tipo && tipo < 9) {
                     burbujitaMap.buildPreTurret(tipo);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
@@ -146,7 +145,7 @@ public class BurbujitaControllerOpenGL extends Controller {
             if (burbujitaInterface.isActive()) {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
-                if (tipo > -1) {
+                if (-1 < tipo && tipo < 9) {
                     burbujitaMap.buildPreTurret(tipo);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
@@ -164,20 +163,20 @@ public class BurbujitaControllerOpenGL extends Controller {
         x = m_transformedX;
         y = m_transformedY;
         if (burbujitaMap != null) {
+            burbujitaMap.destroyPreBuildTurret();
             if (burbujitaInterface.isActive()) {
                 int tipo = burbujitaInterface.getSelectedButton();
-                if (tipo > -1) {
+                if (-1 < tipo && tipo < 9) {
                     burbujitaMap.buildTurret(tipo);
+                    burbujitaMap.destroyPreBuildTurret();
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startRetracting();
                 } else {
-                    burbujitaMap.destroyPreBuildTurret();
                     burbujitaInterface.highLight(x, y);
                     burbujitaMap.highLight((int) x, (int) y);
                 }
             } else {
                 burbujitaMap.highLight((int) x, (int) y);
-                burbujitaMap.destroyPreBuildTurret();
                 if (burbujitaMap.canBuildTurretOn((int) x, (int) y)) {
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startShowing();
@@ -204,12 +203,12 @@ public class BurbujitaControllerOpenGL extends Controller {
         render();
     }*/
 
-    public void onViewChanged(int width, int height) {
+    public void onViewChanged(int width, int height) throws Exception {
         trace("Creamos Interface de 8");
-        burbujitaMap = new BurbujitaMap();
-        screenSizeWidth = width;
-        screenSizeHeight = height;
-        render();
+            burbujitaMap = new BurbujitaMap();
+            screenSizeWidth = width;
+            screenSizeHeight = height;
+            render();
     }
 
     public Interface getInterface() {
@@ -221,7 +220,7 @@ public class BurbujitaControllerOpenGL extends Controller {
         m_right = right;
         m_bottom = bottom;
         m_top = top;
-        burbujitaInterface = new Interface(8, m_left, m_bottom, m_right, m_top, true);
+        burbujitaInterface = new Interface(3, m_left, m_bottom, m_right, m_top, m_money, true);
     }
 
     private void transform(float x, float y) {
