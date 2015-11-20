@@ -44,7 +44,7 @@ public class Bullet {
                 if (faseExplosion > tiempoDeExplosion) existe = false;
             } else {
                 faseDeDisparo += milisegundos;
-                if (faseDeDisparo > tiempoDeVida) explota();
+                if (faseDeDisparo > tiempoDeVida || m_enemyTarget == null) explota();
                 else {
                     double distanciaAobjetivo = Math.sqrt((m_enemyTarget.getX()-posX)*(m_enemyTarget.getX()-posX)+(m_enemyTarget.getY()-posY)*(m_enemyTarget.getY()-posY));
                     velX = (float) ((m_enemyTarget.getX()-posX)*vel/distanciaAobjetivo);
@@ -85,5 +85,9 @@ public class Bullet {
     }
     public long getMaxLifeTime() {
         return tiempoDeVida;
+    }
+
+    public Enemy getEnemy() {
+        return m_enemyTarget;
     }
 }

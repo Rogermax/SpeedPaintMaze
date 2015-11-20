@@ -29,6 +29,8 @@ public class BurbujitaMap {
     //private Interface interfaceInstance;
     private int lastSelectedCasilla;
     public static final char[] codifiedMap;
+    private long money;
+    private int lifes;
 
 
     static {
@@ -51,6 +53,8 @@ public class BurbujitaMap {
 
     public BurbujitaMap() throws Exception {
         //this.surfaceHolder = surfaceHolder;
+        money = 0;
+        lifes = 3;
         lastX = -1;
         lastY = -1;
         lastSelectedCasilla = -1;
@@ -394,7 +398,18 @@ public class BurbujitaMap {
         actualizarEstadoBichos(milisegundos);
         actualizarEstadoTorretas(milisegundos);
         actualizarEstadoDisparos(milisegundos);
+        actualizarEstadoMonedas(milisegundos);
         //actualizarEstadoInterface(milisegundos);
+    }
+
+    private void actualizarEstadoMonedas(long milisegundos) {
+        for (int i =  0; i < coins.size(); i++) {
+            coins.get(i).logic(milisegundos);
+            if (coins.get(i).mustDisappear()) {
+                coins.remove(i);
+                i--;
+            }
+        }
     }
 
     /*private void actualizarEstadoInterface(long milisegundos) {
@@ -406,14 +421,21 @@ public class BurbujitaMap {
             Bullet disparo = bullets.get(i);
             if (!disparo.existe()) {
                 bullets.remove(i);
+                i--;
             } else {
                 if (!disparo.estaExplotando()) {
-                    for (int j = 0; j < enemies.size(); ++j) {
-                        if (colisionaConEnemigo(disparo, (BaseMonster) enemies.get(j))) {
-                            disparo.explota();
-                            enemies.get(j).receiveDamage(1);
+                    boolean trobat = false;
+                    for (int j = 0; j < enemies.size() && !trobat; ++j) {
+                        Enemy enemyActual = enemies.get(j);
+                        if (disparo.getEnemy().equals(enemyActual)) {
+                            trobat = true;
+                            if (colisionaConEnemigo(disparo, (BaseMonster) enemies.get(j))) {
+                                disparo.explota();
+                                enemies.get(j).receiveDamage(1);
+                            }
                         }
                     }
+                    if (!trobat) disparo.explota();
                     /*for (int j = 0; j < turrets.size(); ++j) {
                         if (colisionaConTurret(disparo, turrets.get(j))) {
                             disparo.explota();
@@ -462,8 +484,9 @@ public class BurbujitaMap {
                 }
             }
             if (enemigoTratado.getDyingState() > enemigoTratado.m_timeDying) {
+                money += 50;
+                coins.add(new Coin(50,enemigoTratado.getX(),enemigoTratado.getY()));
                 enemies.remove(i);
-                coins.add(new Coin(50));
                 i--;
             }
             /*
@@ -630,5 +653,17 @@ public class BurbujitaMap {
 
     public void destroyPreBuildTurret() {
         nextTurret = null;
+    }
+
+    public ArrayList<Coin> getCoins() {
+        return coins;
+    }
+
+    public long getMoney() {
+        return money;
+    }
+
+    public int getLifes() {
+        return lifes;
     }
 }
