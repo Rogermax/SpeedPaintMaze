@@ -53,7 +53,7 @@ public class BurbujitaMap {
 
     public BurbujitaMap() throws Exception {
         //this.surfaceHolder = surfaceHolder;
-        money = 0;
+        money = 300;
         lifes = 3;
         lastX = -1;
         lastY = -1;
@@ -427,7 +427,7 @@ public class BurbujitaMap {
                     boolean trobat = false;
                     for (int j = 0; j < enemies.size() && !trobat; ++j) {
                         Enemy enemyActual = enemies.get(j);
-                        if (disparo.getEnemy().equals(enemyActual)) {
+                        if (disparo.getObjectiveEntity().equals(enemyActual)) {
                             trobat = true;
                             if (colisionaConEnemigo(disparo, (BaseMonster) enemies.get(j))) {
                                 disparo.explota();
@@ -466,6 +466,8 @@ public class BurbujitaMap {
             int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
             Casilla casillaDelBicho = mapaEnCasillas.get(indexOfCasilla);
             if (casillaDelBicho.esDeFin()) {
+                lifes--;
+                if (lifes == 0) lifes = 3;
                 enemigoTratado.setPosX(0);
                 enemigoTratado.setPosY(0);
             }
@@ -504,9 +506,9 @@ public class BurbujitaMap {
             Turret torretaTratada = turrets.get(i);
             torretaTratada.logic(milisegundos);
             if (torretaTratada.readyToFire()) {
-                Enemy enemy = torretaTratada.dispara();
+                Entity enemy = torretaTratada.dispara();
                 if (enemy.isAlive()) {
-                    bullets.add(new Bullet(torretaTratada.getX(), torretaTratada.getY(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight), torretaTratada.getTipo()));
+                    bullets.add(new Bullet(torretaTratada.getPosition(), 0.40f, enemy, 0.015f * Math.max(mapWidth, mapHeight), torretaTratada.getTipo()));
                 }
             }
         }
@@ -540,16 +542,17 @@ public class BurbujitaMap {
         }
     }*/
 
-    public void buildTurret(int tipo) {
-        if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
+    public void buildTurret(int tipo, int price) {
+        if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta() && money >= price) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
             //int selectedOption = burbujitaController.getSelectedButton();
             if (tipo > -1) {
-               nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, tipo);
+               nextTurret = new Turret(Vector2D.multipicaPorEscalar(cas.getPosition(),100), tipo, price);
             }
             if (nextTurret != null) {
                 mapaEnCasillas.get(lastSelectedCasilla).ponTorreta();
                 turrets.add(nextTurret);
+                money -= nextTurret.getPrice();
             }
             //interfaceInstance.desSeleccionar();
             //hideConstructorInterface();
@@ -637,12 +640,12 @@ public class BurbujitaMap {
         return bullets;
     }
 
-    public void buildPreTurret(int tipo) {
+    public void buildPreTurret(int tipo, long price) {
         if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
             //int selectedOption = burbujitaController.getSelectedButton();
             if (tipo > -1) {
-                nextTurret = new Turret(cas.getPosX()*100, cas.getPosY()*100, 300, tipo);
+                nextTurret = new Turret(Vector2D.multipicaPorEscalar(cas.getPosition(),100), tipo, price);
             }
         }
     }

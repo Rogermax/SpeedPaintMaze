@@ -123,7 +123,7 @@ public class BurbujitaController extends Controller {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (tipo > -1) {
-                    burbujitaMap.buildPreTurret(tipo);
+                    burbujitaMap.buildPreTurret(tipo, 100);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
@@ -141,7 +141,7 @@ public class BurbujitaController extends Controller {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (tipo > -1) {
-                    burbujitaMap.buildPreTurret(tipo);
+                    burbujitaMap.buildPreTurret(tipo, 100);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
@@ -158,7 +158,7 @@ public class BurbujitaController extends Controller {
             if (burbujitaInterface.isActive()) {
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (tipo > -1) {
-                    burbujitaMap.buildTurret(tipo);
+                    burbujitaMap.buildTurret(tipo,100);
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startRetracting();
                 } else {

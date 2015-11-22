@@ -744,6 +744,21 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
+        for (; i < numberOfDigits+size; i++) {
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 0, false);
+            fillPosition(quadPositionData, 6 * 3 * i, m_right-50*(1+i-numberOfDigits), m_top-50, 50, prof);
+
+            for (int k = 0; k < 4 * 6; ++k) {
+                quadColorData[6 * 4 * i + k] = 1f;
+            }
+
+            for (int k = 0; k < 6; ++k) {
+                quadNormalData[6 * 3 * i + 3 * k] = 0f;
+                quadNormalData[6 * 3 * i + 3 * k + 1] = 0f;
+                quadNormalData[6 * 3 * i + 3 * k + 2] = 1f;
+            }
+        }
+
         // Initialize the buffers.
         mQuadPositions = ByteBuffer.allocateDirect(quadPositionData.length * mBytesPerFloat).order(ByteOrder.nativeOrder()).asFloatBuffer();
         mQuadPositions.put(quadPositionData).position(0);

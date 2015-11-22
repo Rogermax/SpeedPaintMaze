@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.opengl.GLES30;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -22,10 +21,6 @@ import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.model.InterfaceButton;
 import com.gmail.rogermoreta.speedpaintmaze.model.Turret;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 public class Pintor {
@@ -142,7 +137,7 @@ public class Pintor {
             Paint pincell = new Paint();
             pincell.setARGB(255, 255, 125, 0);
             if (t.getAttackPercentage() > 0.5f) {
-                switch (t.tipo) {
+                switch (t.m_type) {
                     case 3:
                         canvas.drawBitmap(torretasetaattack2, t.getX(), t.getY(), pincell);
                         break;
@@ -154,7 +149,7 @@ public class Pintor {
                 }
             }
             else {
-                switch (t.tipo) {
+                switch (t.m_type) {
                     case 3:
                         canvas.drawBitmap(torretaseta2, t.getX(), t.getY(), pincell);
                         break;
@@ -177,7 +172,7 @@ public class Pintor {
             Paint pincell = new Paint();
             pincell.setARGB(100, 255, 125, 0);
             if (t.getAttackPercentage() > 0.5f) {
-                switch (t.tipo) {
+                switch (t.m_type) {
                     case 3:
                         canvas.drawBitmap(torretasetaattack2, t.getX(), t.getY(), pincell);
                         break;
@@ -189,7 +184,7 @@ public class Pintor {
                 }
             }
             else {
-                switch (t.tipo) {
+                switch (t.m_type) {
                     case 3:
                         canvas.drawBitmap(torretaseta2, t.getX(), t.getY(), pincell);
                         break;

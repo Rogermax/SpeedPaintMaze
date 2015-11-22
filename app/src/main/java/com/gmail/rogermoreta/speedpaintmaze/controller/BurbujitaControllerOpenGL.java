@@ -125,7 +125,7 @@ public class BurbujitaControllerOpenGL extends Controller {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildPreTurret(tipo);
+                    burbujitaMap.buildPreTurret(tipo, 100);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
@@ -146,7 +146,7 @@ public class BurbujitaControllerOpenGL extends Controller {
                 burbujitaInterface.highLight(x, y);
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildPreTurret(tipo);
+                    burbujitaMap.buildPreTurret(tipo,100);
                 } else {
                     burbujitaMap.destroyPreBuildTurret();
                 }
@@ -167,7 +167,7 @@ public class BurbujitaControllerOpenGL extends Controller {
             if (burbujitaInterface.isActive()) {
                 int tipo = burbujitaInterface.getSelectedButton();
                 if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildTurret(tipo);
+                    burbujitaMap.buildTurret(tipo,100);
                     burbujitaMap.destroyPreBuildTurret();
                     burbujitaInterface.desSeleccionar();
                     burbujitaInterface.startRetracting();

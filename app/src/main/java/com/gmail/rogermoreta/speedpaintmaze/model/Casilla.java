@@ -4,22 +4,18 @@ import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
 
 public class Casilla {
     public static final int size = 100;
-    private int posX;
-    private int posY;
-    private int posNextX;
-    private int posNextY;
+    private Vector2D m_position;
+    private Vector2D m_nextPosition;
     private boolean esDeDireccionamiento;
     private boolean esDeInicio;
     private boolean esDeFin;
     private boolean tieneTorreta;
     private boolean estaSeleccionada;
-    //private Turret turret;
     private TipoCasilla tipoCasilla;
     //private Random r = new Random(SystemClock.uptimeMillis());
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY) {
-        this.posX = posX;
-        this.posY = posY;
+        m_position = new Vector2D(posX, posY);
         this.tipoCasilla = tipoCasilla;
         esDeDireccionamiento = false;
         esDeInicio = false;
@@ -29,8 +25,7 @@ public class Casilla {
     }
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY, boolean esDeInicio, boolean esDeFin) {
-        this.posX = posX;
-        this.posY = posY;
+        m_position = new Vector2D(posX, posY);
         this.tipoCasilla = tipoCasilla;
         this.esDeInicio = esDeInicio;
         this.esDeFin = esDeFin;
@@ -74,17 +69,16 @@ public class Casilla {
     }
 
     public int getPosX() {
-        return posX;
+        return Math.round(m_position.m_x);
     }
 
     public int getPosY() {
-        return posY;
+        return Math.round(m_position.m_y);
     }
 
     public void setNextPositions(int x, int y) {
         esDeDireccionamiento = true;
-        posNextX = x;
-        posNextY = y;
+        m_nextPosition = new Vector2D(x,y);
     }
 
     public TipoCasilla getTipoCasilla() {
@@ -96,7 +90,7 @@ public class Casilla {
      * @return real position
      */
     public float getRandomNextX() {
-        return posNextX*100/*+r.nextInt(100)*/;
+        return m_nextPosition.m_x*100f/*+r.nextInt(100)*/;
     }
 
     /**
@@ -104,7 +98,7 @@ public class Casilla {
      * @return real position
      */
     public float getRandomNextY() {
-        return posNextY*100/*+r.nextInt(100)*/;
+        return m_nextPosition.m_y*100f/*+r.nextInt(100)*/;
     }
 
     public void ponTorreta() {
@@ -113,5 +107,9 @@ public class Casilla {
 
     public boolean isSelected() {
         return estaSeleccionada;
+    }
+
+    public Vector2D getPosition() {
+        return m_position;
     }
 }

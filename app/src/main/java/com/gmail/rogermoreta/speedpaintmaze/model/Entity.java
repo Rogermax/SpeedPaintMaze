@@ -247,4 +247,8 @@ public abstract class Entity implements Serializable {
     public long getCycleTimeMovement() {
         return m_cycleTimeMovement;
     }
+
+    public Vector2D getPosition() {
+        return m_posicion;
+    }
 }
