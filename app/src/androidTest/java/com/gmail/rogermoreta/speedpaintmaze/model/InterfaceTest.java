@@ -22,18 +22,18 @@ public class InterfaceTest extends TestCase {
         assertFalse(anInterface.isActive());
         assertEquals(0, anInterface.stepShowing());
 
-        //Pondremos que aparezca y que passen 198 milisec, no deberia mostrarse del to do.
+        //Pondremos que aparezca y que passen 98 milisec, no deberia mostrarse del to do.
         anInterface.startShowing();
         anInterface.logic(98);
         assertFalse(anInterface.isActive());
         assertEquals(99, anInterface.stepShowing());
 
-        //ahora hacemos que pase lo que quede milisegundos, ya se deberia mostrar y el step deberia quedarse maximizado a 2.
+        //ahora hacemos que pase lo que quede milisegundos, ya se deberia mostrar y el step deberia quedarse maximizado.
         anInterface.logic(Interface.maxTimeInterfaceShown-99);
         assertTrue(anInterface.isActive());
         assertEquals(Interface.maxTimeInterfaceShown, anInterface.stepShowing());
 
-        //ahora le volvemos a dar start (nada deberia canviar
+        //ahora le volvemos a dar start (nada deberia canviar)
         anInterface.startShowing();
         anInterface.logic(1898);
         assertTrue(anInterface.isActive());

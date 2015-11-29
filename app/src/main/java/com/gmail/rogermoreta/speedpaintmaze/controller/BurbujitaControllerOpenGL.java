@@ -51,6 +51,7 @@ public class BurbujitaControllerOpenGL extends Controller {
         if (!paused) {
             try {
                 logic(SystemClock.uptimeMillis() - lastTimeUpdated);
+                lastTimeUpdated = SystemClock.uptimeMillis();
             } catch (Exception ignored) {
             }
         }
@@ -157,9 +158,10 @@ public class BurbujitaControllerOpenGL extends Controller {
 
     public void onViewChanged(int width, int height) throws Exception {
         trace("Creamos Interface de 8");
-            burbujitaMap = new BurbujitaMap();
-            screenSizeWidth = width;
-            screenSizeHeight = height;
+        burbujitaMap = new BurbujitaMap();
+        screenSizeWidth = width;
+        screenSizeHeight = height;
+        lastTimeUpdated = SystemClock.uptimeMillis();
     }
 
     public Interface getInterface() {
