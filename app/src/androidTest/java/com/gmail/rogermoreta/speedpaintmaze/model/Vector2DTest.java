@@ -1,7 +1,5 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
-import android.os.Build;
-
 import junit.framework.TestCase;
 
 public class Vector2DTest extends TestCase {
@@ -31,16 +29,16 @@ public class Vector2DTest extends TestCase {
         v1.resta(v3);
         v1.invertir();
         v1.resta(v2);
-        assertEquals(1f, v1.m_x, 0001);
-        assertEquals(0f, v1.m_y, 0001);
+        assertEquals(1f, v1.m_x, 0.0001);
+        assertEquals(0f, v1.m_y, 0.0001);
 
         //Multiplicar por escalar y normalizar
         v1.multipicaPorEscalar(2f);
-        assertEquals(2f, v1.m_x, 0001);
-        assertEquals(0f, v1.m_y, 0001);
+        assertEquals(2f, v1.m_x, 0.0001);
+        assertEquals(0f, v1.m_y, 0.0001);
         v1.normaliza();
-        assertEquals(1f, v1.m_x, 0001);
-        assertEquals(0f, v1.m_y, 0001);
+        assertEquals(1f, v1.m_x, 0.0001);
+        assertEquals(0f, v1.m_y, 0.0001);
 
         //Angulos
         assertEquals(45f, Vector2D.anguloEnGradosEntre(v1,v3), 0.0001);

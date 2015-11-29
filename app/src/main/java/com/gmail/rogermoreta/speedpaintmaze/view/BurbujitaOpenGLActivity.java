@@ -1,10 +1,6 @@
 package com.gmail.rogermoreta.speedpaintmaze.view;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 
 import com.gmail.rogermoreta.speedpaintmaze.controller.BurbujitaGLRenderer;
 import com.gmail.rogermoreta.speedpaintmaze.controller.MainManager;
@@ -15,7 +11,6 @@ public class BurbujitaOpenGLActivity extends ManagedActivity {
     private static MainManager MM = MainManager.getInstance();
 
     private BurbujitaOpenGLView mGLSurfaceView;
-    private BurbujitaGLRenderer mRenderer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,10 +19,8 @@ public class BurbujitaOpenGLActivity extends ManagedActivity {
 
         mGLSurfaceView = new BurbujitaOpenGLView(this);
 
-        mRenderer = new BurbujitaGLRenderer(this);
-
         // Set the renderer to our demo renderer, defined below.
-        mGLSurfaceView.setRenderer(mRenderer);
+        mGLSurfaceView.setRenderer(new BurbujitaGLRenderer(this));
 
         setContentView(mGLSurfaceView);
     }

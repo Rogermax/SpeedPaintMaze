@@ -216,7 +216,7 @@ public class Vector2D {
     public static Vector2D suma(Vector2D v1, Vector2D v2) {
         Vector2D aux = new Vector2D(v1);
         aux.suma(v2);
-        return new Vector2D(v1);
+        return aux;
     }
 
     public static Vector2D resta(Vector2D v1, Vector2D v2) {

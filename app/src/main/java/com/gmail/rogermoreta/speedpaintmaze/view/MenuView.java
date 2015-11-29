@@ -1,7 +1,6 @@
 package com.gmail.rogermoreta.speedpaintmaze.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -175,7 +174,7 @@ public class MenuView extends SurfaceView implements SurfaceHolder.Callback {
                                 break;
                             case 2:
                                 MM.playSound(Sound.BEEP);
-                                MM.goToSection(Section.BURBU, BGA);
+                                //MM.goToSection(Section.BURBU, BGA);
                                /* MenuActivity.playSound();
                                 mainIntent = new Intent().setClass(getContext(), GameActivity.class);
                                 mainIntent.putExtra("time", 30000l); //Partida con inc. de 3.0 sec.

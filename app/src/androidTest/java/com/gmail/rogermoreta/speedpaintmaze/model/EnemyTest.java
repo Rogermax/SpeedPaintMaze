@@ -8,8 +8,7 @@ public class EnemyTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         enemy = new Enemy();
-        enemy.m_velocidad.m_x = 1f/20f;
-        enemy.m_actualLife = 100f;
+        enemy.init(0,0,100f,1f);
     }
 
     public void tearDown() throws Exception {
@@ -103,27 +102,23 @@ public class EnemyTest extends TestCase {
         enemy.logic(20l);
         assertEquals(0f, enemy.m_posicion.m_x);
         assertEquals(0f, enemy.m_posicion.m_y);
-        assertEquals(0, enemy.timesItHasShootted);
         enemy.asignarMoveTarget(200f, 200f);
 
         //Primero se mueve, luego ataca, por tanto ahora ya llega
         enemy.logic(20l);
         assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
         assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
-        assertEquals(1, enemy.timesItHasShootted);
         enemy.quitarMoveTarget();
 
         //Ahora no puede atacar porque lo ha hecho hace menos de 3000  milisengundos
         enemy.logic(20l);
         assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
         assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
-        assertEquals(1, enemy.timesItHasShootted);
 
         //Aunque pasen 10segundos, solo dispara 1 vez, sino se complica mucho.
         enemy.logic(10000l);
         assertEquals(0.707107f, enemy.m_posicion.m_x, 0.001f);
         assertEquals(0.707107f, enemy.m_posicion.m_y, 0.001f);
-        assertEquals(2,enemy.timesItHasShootted);
 
 
     }

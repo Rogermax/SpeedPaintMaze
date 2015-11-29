@@ -117,7 +117,7 @@ public abstract class Entity implements Serializable {
         if (!m_posicion.igualA(m_objetivoDeMovimiento)) {
             float distanceToTarget = Vector2D.resta(m_posicion,m_objetivoDeMovimiento).modulo();
             recalculateVelocityVector();
-            if (distanceToTarget < m_velocidad.modulo() * milisenconds) {
+            if (distanceToTarget < m_actualVel * milisenconds) {
                 m_posicion.igualarA(m_objetivoDeMovimiento);
             } else {
                 m_posicion.suma(Vector2D.multipicaPorEscalar(m_velocidad,(float) milisenconds));
@@ -184,7 +184,7 @@ public abstract class Entity implements Serializable {
 
     private void recalculateVelocityVector() {
         Vector2D vectorDirector = Vector2D.resta(m_objetivoDeMovimiento,m_posicion);
-        m_velocidad = Vector2D.multipicaPorEscalar(Vector2D.normalizado(vectorDirector), m_velocidad.modulo());
+        m_velocidad = Vector2D.multipicaPorEscalar(Vector2D.normalizado(vectorDirector), m_actualVel);
     }
 
     private void startMoving() {
@@ -233,7 +233,7 @@ public abstract class Entity implements Serializable {
     }
 
     public float getModuloVelocidad() {
-        return m_velocidad.modulo();
+        return m_actualVel;
     }
 
     public boolean isAlive() {
