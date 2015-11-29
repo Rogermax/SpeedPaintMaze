@@ -9,21 +9,11 @@ import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
 import com.gmail.rogermoreta.speedpaintmaze.view.BurbujitaOpenGLActivity;
 
-import java.util.ArrayList;
-
 public class BurbujitaControllerOpenGL extends Controller {
 
     private BurbujitaMap burbujitaMap;
     private Interface burbujitaInterface;
     private Long lastTimeUpdated;
-    private Long lastTimeDrawed;
-    @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
-    private ArrayList<Long> historicTimeUpdates;
-    @SuppressWarnings({"unused", "MismatchedQueryAndUpdateOfCollection"})
-    private ArrayList<Long> historicTimeDraws;
-    private int nextIndexUpdate;
-    private int nextIndexDraw;
-    private MainManager MM;
     private int screenSizeHeight;
     private int screenSizeWidth;
     private float m_left;
@@ -32,25 +22,14 @@ public class BurbujitaControllerOpenGL extends Controller {
     private float m_top;
     private float m_transformedX;
     private float m_transformedY;
-    private long m_money;
 
-    public BurbujitaControllerOpenGL(MainManager mm) {
+    public BurbujitaControllerOpenGL() {
         paused = true;
-        m_money = 0l;
-        MM = mm;
-        historicTimeUpdates = new ArrayList<>(5);
-        historicTimeDraws = new ArrayList<>(5);
-        for (int i = 0; i < 5; i++) {
-            historicTimeUpdates.add(i, (long) 20);
-            historicTimeDraws.add(i, (long) 20);
-        }
-        nextIndexUpdate = 0;
-        nextIndexDraw = 0;
     }
 
     @SuppressWarnings("unused")
     private void trace(String str) {
-        Trace.write(" BurbujitaController::" + str);
+        Trace.write(" BurbujitaControllerOpenGL::" + str);
     }
 
     @Override
@@ -71,39 +50,21 @@ public class BurbujitaControllerOpenGL extends Controller {
     public void update() {
         if (!paused) {
             try {
-                if (lastTimeUpdated != null) {
-                    historicTimeUpdates.set(nextIndexUpdate, SystemClock.uptimeMillis() - lastTimeUpdated);
-                } else {
-                    lastTimeUpdated = SystemClock.uptimeMillis();
-                }
-                nextIndexUpdate = (nextIndexUpdate + 1) % 5;
                 logic(SystemClock.uptimeMillis() - lastTimeUpdated);
-                lastTimeUpdated = SystemClock.uptimeMillis();
             } catch (Exception ignored) {
             }
         }
     }
 
     @Override
-    public synchronized void render() {
-        if (burbujitaMap != null) {
-            try {
-                if (lastTimeDrawed != null) {
-                    historicTimeDraws.set(nextIndexDraw, SystemClock.uptimeMillis() - lastTimeDrawed);
-                }
-                lastTimeDrawed = SystemClock.uptimeMillis();
-                nextIndexDraw = (nextIndexDraw + 1) % 5;
-                MM.drawBurbujitaMapAndInterface(burbujitaMap, burbujitaInterface);
-            } catch (Exception ignored) {
-            }
-        }
+    public void render() {
+        //Nothing to do, lo trata openGL en su propio Thread.
     }
 
     public void pause() {
-        Log.d("BurbujitaController", "PAUSA ACTIVADA");
+        Log.d("BurbujitaControllOpenGL", "PAUSA ACTIVADA");
         trace("------------- PAUSA ACTIVADA -------------");
         paused = true;
-        render();
     }
 
 
@@ -194,21 +155,11 @@ public class BurbujitaControllerOpenGL extends Controller {
         return burbujitaMap;
     }
 
-    /*public void onViewReady(int width, int height) {
-        trace("Creamos Interface de 8");
-        burbujitaMap = new BurbujitaMap();
-        screenSizeWidth = width;
-        screenSizeHeight = height;
-        burbujitaInterface = new Interface(8, burbujitaMap.getMapWidth() * 100, burbujitaMap.getMapHeight() * 100);
-        render();
-    }*/
-
     public void onViewChanged(int width, int height) throws Exception {
         trace("Creamos Interface de 8");
             burbujitaMap = new BurbujitaMap();
             screenSizeWidth = width;
             screenSizeHeight = height;
-            render();
     }
 
     public Interface getInterface() {
@@ -220,7 +171,7 @@ public class BurbujitaControllerOpenGL extends Controller {
         m_right = right;
         m_bottom = bottom;
         m_top = top;
-        burbujitaInterface = new Interface(3, m_left, m_bottom, m_right, m_top, m_money, true);
+        burbujitaInterface = new Interface(3, m_left, m_bottom, m_right, m_top, true);
     }
 
     private void transform(float x, float y) {

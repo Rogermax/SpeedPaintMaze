@@ -31,9 +31,10 @@ public class GameThread extends Thread {
     // the frame period
     private final static int	FRAME_PERIOD = 1000 / MAX_FPS;
 
-    private void trace(String str) {
+    /*private void trace(String str) {
         Trace.write(" GameThread("+this.getId()+")::"+str);
-    }
+    }*/
+
     @Override
     public void run() {
         //Canvas canvas;

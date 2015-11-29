@@ -7,7 +7,7 @@ public class InterfaceTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        anInterface = new Interface(8,1000,200);
+        anInterface = new Interface(8,0,0,1000,200, false);
         anInterface.logic(100);
     }
 

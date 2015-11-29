@@ -145,7 +145,4 @@ public class InterfaceButton {
         return isSelected;
     }
 
-    public boolean isCircular() {
-        return isCircular;
-    }
 }

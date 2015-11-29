@@ -97,10 +97,6 @@ public class Bullet {
     public long getLifeTime() {
         return m_attackState;
     }
-    
-    public long getMaxLifeTime() {
-        return m_maxTimeLivig;
-    }
 
     public Entity getObjectiveEntity() {
         return m_entityTarget;

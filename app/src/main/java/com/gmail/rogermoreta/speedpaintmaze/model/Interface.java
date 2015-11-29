@@ -26,11 +26,9 @@ public class Interface {
     private boolean isActive;
     private InterfaceButton lastSelectedButton;
     private int selectedButton;
-    private long m_money;
 
-    public Interface(int numButtons, float x_min, float y_min, float x_max, float y_max, long money, boolean yInvertida) {
+    public Interface(int numButtons, float x_min, float y_min, float x_max, float y_max, boolean yInvertida) {
         interfaceStepShown = 0;
-        m_money = 0;
         isStarting = false;
         isRetracting = false;
         isActive = false;
