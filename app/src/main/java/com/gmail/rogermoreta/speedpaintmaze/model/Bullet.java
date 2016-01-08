@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoDisparo;
+
 /**
  * Clase que representa una bala con un m_type distintivo (m_type), un radio (m_radius) y una entidad como objetivo (m_entityTarget).
  * Consta de una posicion y velocidad.
@@ -10,7 +12,7 @@ package com.gmail.rogermoreta.speedpaintmaze.model;
  */
 public class Bullet {
     //Caracteristicas de la bala
-    private int m_type;
+    private TipoDisparo m_type;
     private float m_radius;
     private Entity m_entityTarget;
 
@@ -28,7 +30,7 @@ public class Bullet {
     public static final long m_maxTimeExploting = 200l;
     private long m_explosionState;
 
-    public Bullet(Vector2D posicion, float vel, Entity entity, float radius, int type) {
+    public Bullet(Vector2D posicion, float vel, Entity entity, float radius, TipoDisparo type) {
         //Caracteristicas de la bala
         m_type = type;
         m_radius = radius;
@@ -48,7 +50,7 @@ public class Bullet {
 
     }
 
-    public int getType() {
+    public TipoDisparo getType() {
         return m_type;
     }
 

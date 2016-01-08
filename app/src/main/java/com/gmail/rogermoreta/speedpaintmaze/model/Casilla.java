@@ -12,6 +12,7 @@ public class Casilla {
     private boolean tieneTorreta;
     private boolean estaSeleccionada;
     private TipoCasilla tipoCasilla;
+    private int m_giro;
     //private Random r = new Random(SystemClock.uptimeMillis());
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY) {
@@ -22,6 +23,7 @@ public class Casilla {
         esDeFin = false;
         tieneTorreta = false;
         estaSeleccionada = false;
+        m_giro = 0;
     }
 
     public Casilla(TipoCasilla tipoCasilla, int posX, int posY, boolean esDeInicio, boolean esDeFin) {
@@ -32,6 +34,7 @@ public class Casilla {
         esDeDireccionamiento = false;
         tieneTorreta = false;
         estaSeleccionada = false;
+        m_giro = 0;
     }
 
     public boolean esDeDireccionamiento() {
@@ -50,7 +53,7 @@ public class Casilla {
         estaSeleccionada = true;
     }
 
-    public void deselccionar() {
+    public void deseleccionar() {
         estaSeleccionada = false;
     }
 
@@ -111,5 +114,13 @@ public class Casilla {
 
     public Vector2D getPosition() {
         return m_position;
+    }
+
+    public void setGiro(int giro) {
+        m_giro = giro;
+    }
+
+    public int getGiro() {
+        return m_giro;
     }
 }

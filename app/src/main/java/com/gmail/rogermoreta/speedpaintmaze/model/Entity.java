@@ -251,4 +251,5 @@ public abstract class Entity implements Serializable {
     public Vector2D getPosition() {
         return m_posicion;
     }
+
 }

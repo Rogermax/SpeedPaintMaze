@@ -406,10 +406,56 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         for (int i = 0; i < numFilas; i++) {
             for (int j = 0; j < numColumnas; j++) {
                 Casilla cas = listaCasillas.get((numFilas-1-i) * numColumnas + j);
+                int tipoEscenario = 2;
                 if (cas.getTipoCasilla() == TipoCasilla.CESPED) {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 0, 0, false);
+                    fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 0, tipoEscenario, false, false);
                 } else {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, 0, false);
+                    switch (giveDireccionCasilla(burbujitaMap.mapaPosicionesCasillas,(numFilas-1-i),j)) {
+                        case 0: //horizontal
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, false);
+                            break;
+                        case 1: //vertical
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, true);
+                            break;
+                        case 2: //izq-arr
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 2, tipoEscenario, false, false);
+                            break;
+                        case 3: //arr-der
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 2, tipoEscenario, true, false);
+                            break;
+                        case 4: //der-abj
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 3, tipoEscenario, true, false);
+                            break;
+                        case 5: //abj-izq
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 3, tipoEscenario, false, false);
+                            break;
+                        case 10:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, false);
+                            break;
+                        case 11:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, false);
+                            break;
+                        case 12:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, true);
+                            break;
+                        case 13:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, true);
+                            break;
+                        case 20:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, false);
+                            break;
+                        case 21:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, false);
+                            break;
+                        case 22:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, true);
+                            break;
+                        case 23:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 1, tipoEscenario, false, true);
+                            break;
+                        default:
+                            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * (i * numColumnas + j), 0, (tipoEscenario+1)%3, false, false);
+                    }
                 }
                 if (numFilas > numColumnas) {
                     fillPosition(quadPositionData, 6 * 3 * (i * numColumnas + j), cas.getPosX()*100, cas.getPosY()*100, 100, prof);
@@ -450,6 +496,70 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         mQuadTextureCoordinates.put(quadTextureCoordinateData).position(0);
     }
 
+    private int giveDireccionCasilla(Casilla[][] mapaPosicionesCasillas, int i, int j) {
+        Casilla actual,actualDerecha = null,actualIzquierda = null,actualArriba = null,actualAbajo = null;
+        actual = mapaPosicionesCasillas[i][j];
+        if (i+1 < burbujitaMap.getMapHeight()) actualArriba = mapaPosicionesCasillas[i+1][j];
+        if (i > 0) actualAbajo = mapaPosicionesCasillas[i-1][j];
+        if (j+1 < burbujitaMap.getMapWidth()) actualDerecha = mapaPosicionesCasillas[i][j+1];
+        if (j > 0) actualIzquierda = mapaPosicionesCasillas[i][j-1];
+        if (actual.esDeInicio()) {
+            if (actualDerecha != null && actualDerecha.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 10;
+            }
+            if (actualIzquierda != null && actualIzquierda.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 11;
+            }
+            if (actualArriba != null && actualArriba.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 12;
+            }
+            if (actualAbajo != null && actualAbajo.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 13;
+            }
+            return 99;
+        }
+        if (actual.esDeFin()) {
+            if (actualDerecha != null && actualDerecha.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 20;
+            }
+            if (actualIzquierda != null && actualIzquierda.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 21;
+            }
+            if (actualArriba != null && actualArriba.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 22;
+            }
+            if (actualAbajo != null && actualAbajo.getTipoCasilla()==TipoCasilla.CAMINO) {
+                return 23;
+            }
+            return 99;
+        }
+        if (actualDerecha   != null &&   actualDerecha.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualIzquierda != null && actualIzquierda.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 0; //horizontal
+        }
+        if (actualArriba!= null && actualArriba.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualAbajo != null &&  actualAbajo.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 1; //vertical
+        }
+        if (actualArriba!= null && actualArriba.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualIzquierda != null &&  actualIzquierda.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 2; //izq-arr
+        }
+        if (actualArriba!= null && actualArriba.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualDerecha != null &&  actualDerecha.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 3; //arr-der
+        }
+        if (actualAbajo!= null && actualAbajo.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualDerecha != null &&  actualDerecha.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 4; //der-abj
+        }
+        if (actualAbajo!= null && actualAbajo.getTipoCasilla()==TipoCasilla.CAMINO &&
+            actualIzquierda != null &&  actualIzquierda.getTipoCasilla()==TipoCasilla.CAMINO) {
+            return 5; //abj-izq
+        }
+        return 99;
+    }
+
     private void llenaStructuraConTurrets(ArrayList<Turret> listaTorretas, float prof) {
         int size = listaTorretas.size();
         quadPositionData = new float[6 * 3 * (size+1)];
@@ -460,11 +570,32 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Turret turret = listaTorretas.get(i);
             float x = turret.getX();
             float y = turret.getY();
-            if (turret.getAttackPercentage() > 0.5f) {
-                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 1, turret.getTipo(), false);
-            }
-            else {
-                fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, turret.getTipo(), false);
+
+            switch (turret.getTipo()) {
+                case FUEGO:
+                    if (turret.getAttackPercentage() > 0.5f) {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 1, 0, false, false);
+                    }
+                    else {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 0, false, false);
+                    }
+                    break;
+                case VENENO:
+                    if (turret.getAttackPercentage() > 0.5f) {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 1, 1, false, false);
+                    }
+                    else {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 1, false, false);
+                    }
+                    break;
+                case HIELO:
+                    if (turret.getAttackPercentage() > 0.5f) {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 1, 2, false, false);
+                    }
+                    else {
+                        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 2, false, false);
+                    }
+                    break;
             }
             fillPositionAltura(quadPositionData, 6 * 3 * i, x, y, 100, 100 * (1f - turret.getAttackPercentage() / 4f), prof);
 
@@ -483,7 +614,17 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         if (nextTurret != null) {
             float x = nextTurret.getX();
             float y = nextTurret.getY();
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, nextTurret.getTipo(), false);
+            switch (nextTurret.getTipo()) {
+                case FUEGO:
+                    fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 0, false, false);
+                    break;
+                case VENENO:
+                    fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 1, false, false);
+                    break;
+                case HIELO:
+                    fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 2, false, false);
+                    break;
+            }
             fillPosition(quadPositionData, 6 * 3 * size, x, y, 100, prof+0.1f);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -497,7 +638,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             }
         }
         else {
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 0, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * size, 0, 0, false, false);
             fillPosition(quadPositionData, 6 * 3 * size, 0, 0, 100, -2f);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -538,16 +679,16 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             float vel = enemy.getModuloVelocidad() / 100000;
             if (enemy.getDyingState() == 0) { //Si no esta muriendo
                 if (enemy.getHittedState() > 0) {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 0, enemy.getVelX() < 0); //siguiente al muerto
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 0, enemy.getVelX() < 0, false); //siguiente al muerto
                 } else {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getMovementCycleTime() * 5 / enemy.getCycleTimeMovement()) % 6, 0, enemy.getVelX() < 0);
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getMovementCycleTime() * 5 / enemy.getCycleTimeMovement()) % 6, 0, enemy.getVelX() < 0, false);
                 }
             } else {
                 if (enemy.isAlive()) {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getDyingState() * 5 / enemy.getTimeDying()) % 6, 1, enemy.getVelX() < 0);
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) (enemy.getDyingState() * 5 / enemy.getTimeDying()) % 6, 1, enemy.getVelX() < 0, false);
                 }
                 else {
-                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 2, enemy.getVelX() < 0);
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, 0, 2, enemy.getVelX() < 0, false);
                 }
             }
             fillPosition(quadPositionData, 6 * 3 * i, x, y, 100, prof + vel);
@@ -575,7 +716,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             float y = enemy.getY();
             float vel = enemy.getModuloVelocidad() / 100000;
             float lifePercentatge = enemy.getLife()/enemy.getTotalLife();
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, 2, 7, false);
+            fillTexture(quadTextureCoordinateData, 6 * 2 * i, 2, 7, false, false);
             fillPositionAltura(quadPositionData, 6 * 3 * i, x, y + 90, lifePercentatge * 100, 10, prof + vel);
 
             if (lifePercentatge > 0.5f) {
@@ -626,7 +767,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             float x = coin.getX();
             float y = coin.getY();
             float porcentajeTiempo = coin.getTime()/(float)Coin.m_maxTimeShowing;
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 2, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 2, false, false);
             float anchoExtra = 25f*porcentajeTiempo;
             fillPosition(quadPositionData, 6 * 3 * i, (x - anchoExtra / 2f) * (1 - porcentajeTiempo * porcentajeTiempo) + porcentajeTiempo * porcentajeTiempo * m_left, (y - anchoExtra / 2f) * (1 - porcentajeTiempo * porcentajeTiempo) + (m_top - 100) * porcentajeTiempo * porcentajeTiempo, 100 + anchoExtra, prof);
 
@@ -668,7 +809,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             InterfaceButton button = buttons.get(i);
             float x = button.getActualX();
             float y = button.getActualY();
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, i, 0, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, i, 0, false, false);
             fillPosition(quadPositionData, 6 * 3 * i, x-radix, y-radix, button.getRadix()*2, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -688,7 +829,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         InterfaceButton button = anInterface.getMoreInfoButton();
         float x = button.getActualX();
         float y = button.getActualY();
-        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 3, 0, false);
+        fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 3, 0, false, false);
         fillPosition(quadPositionData, 6 * 3 * i, x-radix, y-radix, 100, prof);
 
         for (int k = 0; k < 4 * 6; ++k) {
@@ -730,7 +871,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         int i = 0;
         for (; i < numberOfDigits; i++)  {
             int number = strMoney.charAt(i)-'0';
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, number%4, number/4+1, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, number%4, number/4+1, false, false);
             fillPosition(quadPositionData, 6 * 3 * i, m_left+50*(i), m_top-50, 50, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -745,7 +886,7 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         }
 
         for (; i < numberOfDigits+size; i++) {
-            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 0, false);
+            fillTextureHighDef(quadTextureCoordinateData, 6 * 2 * i, 0, 0, false, false);
             fillPosition(quadPositionData, 6 * 3 * i, m_right-50*(1+i-numberOfDigits), m_top-50, 50, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -783,8 +924,17 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
             Bullet bullet = bullets.get(i);
             float x = bullet.getPosX();
             float y = bullet.getPosY();
-
-            fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) bullet.getLifeTime()/100%4, bullet.getType(), false);
+            switch (bullet.getType()) {
+                case FUEGO:
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) bullet.getLifeTime()/100%4, 0, false, false);
+                    break;
+                case VENENO:
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) bullet.getLifeTime()/100%4, 1, false, false);
+                    break;
+                case HIELO:
+                    fillTexture(quadTextureCoordinateData, 6 * 2 * i, (int) bullet.getLifeTime()/100%4, 2, false, false);
+                    break;
+            }
             fillPosition(quadPositionData, 6 * 3 * i, x, y, 100, prof);
 
             for (int k = 0; k < 4 * 6; ++k) {
@@ -812,70 +962,158 @@ public class BurbujitaGLRenderer implements GLSurfaceView.Renderer {
         mQuadTextureCoordinates.put(quadTextureCoordinateData).position(0);
     }
 
-    private void fillTexture(float[] quadTextureCoordinateData, int start, int col, int row, boolean flip) {
+    private void fillTexture(float[] quadTextureCoordinateData, int start, int col, int row, boolean flip, boolean rotate90) {
         float texPosX = (float) col / 8;
         float texPosY = (float) row / 8;
         float texWidth = 0.125f;
         if (flip) {
-            quadTextureCoordinateData[start] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 2] = texPosX;
-            quadTextureCoordinateData[start + 3] = texPosY;
-            quadTextureCoordinateData[start + 4] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 5] = texPosY;
-            quadTextureCoordinateData[start + 6] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 8] = texPosX;
-            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 10] = texPosX;
-            quadTextureCoordinateData[start + 11] = texPosY;
+            if (!rotate90) {
+                quadTextureCoordinateData[start] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 2] = texPosX;
+                quadTextureCoordinateData[start + 3] = texPosY;
+                quadTextureCoordinateData[start + 4] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 8] = texPosX;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 10] = texPosX;
+                quadTextureCoordinateData[start + 11] = texPosY;
+            }
+            else {
+                quadTextureCoordinateData[start] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 1] = texPosY;
+
+                quadTextureCoordinateData[start + 2] = texPosX;
+                quadTextureCoordinateData[start + 3] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 4] = texPosX;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 7] = texPosY;
+
+                quadTextureCoordinateData[start + 8] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 10] = texPosX;
+                quadTextureCoordinateData[start + 11] = texPosY + texWidth;
+            }
         }
         else {
-            quadTextureCoordinateData[start] = texPosX;
-            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 2] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 3] = texPosY;
-            quadTextureCoordinateData[start + 4] = texPosX;
-            quadTextureCoordinateData[start + 5] = texPosY;
-            quadTextureCoordinateData[start + 6] = texPosX;
-            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 8] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 10] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 11] = texPosY;
+            if (!rotate90) {
+                quadTextureCoordinateData[start] = texPosX;
+                quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 2] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 3] = texPosY;
+                quadTextureCoordinateData[start + 4] = texPosX;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX;
+                quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 8] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 10] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 11] = texPosY;
+            }
+            else {
+                quadTextureCoordinateData[start] = texPosX;
+                quadTextureCoordinateData[start + 1] = texPosY;
+
+                quadTextureCoordinateData[start + 2] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 3] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 4] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX;
+                quadTextureCoordinateData[start + 7] = texPosY;
+
+                quadTextureCoordinateData[start + 8] = texPosX;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 10] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 11] = texPosY + texWidth;
+            }
         }
     }
-    private void fillTextureHighDef(float[] quadTextureCoordinateData, int start, int col, int row, boolean flip) {
+    private void fillTextureHighDef(float[] quadTextureCoordinateData, int start, int col, int row, boolean flip, boolean rotate90) {
         float texPosX = (float) col / 4;
         float texPosY = (float) row / 4;
         float texWidth = 0.250f;
         if (flip) {
-            quadTextureCoordinateData[start] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 2] = texPosX;
-            quadTextureCoordinateData[start + 3] = texPosY;
-            quadTextureCoordinateData[start + 4] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 5] = texPosY;
-            quadTextureCoordinateData[start + 6] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 8] = texPosX;
-            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 10] = texPosX;
-            quadTextureCoordinateData[start + 11] = texPosY;
+            if (!rotate90) {
+                quadTextureCoordinateData[start] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 2] = texPosX;
+                quadTextureCoordinateData[start + 3] = texPosY;
+                quadTextureCoordinateData[start + 4] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 8] = texPosX;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 10] = texPosX;
+                quadTextureCoordinateData[start + 11] = texPosY;
+            }
+            else {
+                quadTextureCoordinateData[start] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 1] = texPosY;
+
+                quadTextureCoordinateData[start + 2] = texPosX;
+                quadTextureCoordinateData[start + 3] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 4] = texPosX;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 7] = texPosY;
+
+                quadTextureCoordinateData[start + 8] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 10] = texPosX;
+                quadTextureCoordinateData[start + 11] = texPosY + texWidth;
+            }
         }
         else {
-            quadTextureCoordinateData[start] = texPosX;
-            quadTextureCoordinateData[start + 1] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 2] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 3] = texPosY;
-            quadTextureCoordinateData[start + 4] = texPosX;
-            quadTextureCoordinateData[start + 5] = texPosY;
-            quadTextureCoordinateData[start + 6] = texPosX;
-            quadTextureCoordinateData[start + 7] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 8] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 9] = texPosY + texWidth;
-            quadTextureCoordinateData[start + 10] = texPosX + texWidth;
-            quadTextureCoordinateData[start + 11] = texPosY;
+            if (!rotate90) {
+                quadTextureCoordinateData[start] = texPosX;
+                quadTextureCoordinateData[start + 1] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 2] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 3] = texPosY;
+                quadTextureCoordinateData[start + 4] = texPosX;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX;
+                quadTextureCoordinateData[start + 7] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 8] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+                quadTextureCoordinateData[start + 10] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 11] = texPosY;
+            }
+            else {
+                quadTextureCoordinateData[start] = texPosX;
+                quadTextureCoordinateData[start + 1] = texPosY;
+
+                quadTextureCoordinateData[start + 2] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 3] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 4] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 5] = texPosY;
+
+                quadTextureCoordinateData[start + 6] = texPosX;
+                quadTextureCoordinateData[start + 7] = texPosY;
+
+                quadTextureCoordinateData[start + 8] = texPosX;
+                quadTextureCoordinateData[start + 9] = texPosY + texWidth;
+
+                quadTextureCoordinateData[start + 10] = texPosX + texWidth;
+                quadTextureCoordinateData[start + 11] = texPosY + texWidth;
+            }
         }
     }
 

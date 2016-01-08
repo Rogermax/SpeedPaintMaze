@@ -1,5 +1,7 @@
 package com.gmail.rogermoreta.speedpaintmaze.model;
 
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoDisparo;
+
 /**
  * Clase que representa una torreta con un m_type distintivo (m_type) y una entidad como objetivo.
  * Consta de una posicion (m_position).
@@ -12,7 +14,7 @@ public class Turret {
 
     //Caracteristicas de la torreta
     public static final float maxDistanceAttack = 200f;
-    public int m_type;
+    private TipoDisparo m_type;
     private long m_price;
     private Entity m_entityTarget;
 
@@ -30,7 +32,7 @@ public class Turret {
     private boolean m_readyToFire;
     private boolean objectiveSetted;
 
-    public Turret(Vector2D position, int tipo, long price) {
+    public Turret(Vector2D position, TipoDisparo tipo, long price) {
         m_type = tipo;
         m_price = price;
         m_entityTarget = null;
@@ -45,7 +47,7 @@ public class Turret {
         objectiveSetted = false;
     }
 
-    public int getTipo() {
+    public TipoDisparo getTipo() {
         return m_type;
     }
 

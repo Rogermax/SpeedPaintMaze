@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoDisparo;
 import com.gmail.rogermoreta.speedpaintmaze.javaandroid.Trace;
 import com.gmail.rogermoreta.speedpaintmaze.model.BurbujitaMap;
 import com.gmail.rogermoreta.speedpaintmaze.model.Interface;
@@ -22,8 +23,12 @@ public class BurbujitaControllerOpenGL extends Controller {
     private float m_top;
     private float m_transformedX;
     private float m_transformedY;
+    private int m_tipo;
+    private int m_interfaceMostrada;
+
 
     public BurbujitaControllerOpenGL() {
+        m_interfaceMostrada = 0;
         paused = true;
     }
 
@@ -76,76 +81,145 @@ public class BurbujitaControllerOpenGL extends Controller {
 
     public void sendActionDown(float x, float y) {
         transform(x, y);
-        x = m_transformedX;
-        y = m_transformedY;
         if (paused) {
             lastTimeUpdated = SystemClock.uptimeMillis();
             paused = false;
         }
-        if (burbujitaMap != null) {
-            if (burbujitaInterface.isActive()) {
-                burbujitaInterface.highLight(x, y);
-                int tipo = burbujitaInterface.getSelectedButton();
-                if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildPreTurret(tipo, 100);
-                } else {
-                    burbujitaMap.destroyPreBuildTurret();
-                }
-                burbujitaMap.highLight((int) x, (int) y);
-            } else {
-                burbujitaMap.highLight((int) x, (int) y);
+        if (burbujitaMap != null && burbujitaInterface != null) {
+            switch (m_interfaceMostrada) {
+                case 0: //juego normal, sin interfaces
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                case 1: //Interface de escoger torreta
+                    pressOnInterface(m_transformedX, m_transformedY);
+                    break;
+                case 2: //Detalles torreta
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                case 3: //Detalle bicho
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                default:
             }
-            //burbujitaMap.createNewNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionMove(float x, float y) {
         transform(x, y);
-        x = m_transformedX;
-        y = m_transformedY;
-        if (burbujitaMap != null) {
-            if (burbujitaInterface.isActive()) {
-                burbujitaInterface.highLight(x, y);
-                int tipo = burbujitaInterface.getSelectedButton();
-                if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildPreTurret(tipo,100);
-                } else {
-                    burbujitaMap.destroyPreBuildTurret();
-                }
-                burbujitaMap.highLight((int) x, (int) y);
-            } else {
-                burbujitaMap.highLight((int) x, (int) y);
+        if (burbujitaMap != null && burbujitaInterface != null) {
+            switch (m_interfaceMostrada) {
+                case 0: //juego normal, sin interfaces
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                case 1: //Interface de escoger torreta
+                    moveOnInterface(m_transformedX, m_transformedY);
+                    break;
+                case 2: //Detalles torreta
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                case 3: //Detalle bicho
+                    //nothing to do (se hace al levantar el dedo)
+                    break;
+                default:
             }
-            //burbujitaMap.setNextTurret((int) x, (int) y);
         }
     }
 
     public void sendActionUp(float x, float y) {
         transform(x, y);
-        x = m_transformedX;
-        y = m_transformedY;
-        if (burbujitaMap != null) {
-            burbujitaMap.destroyPreBuildTurret();
-            if (burbujitaInterface.isActive()) {
-                int tipo = burbujitaInterface.getSelectedButton();
-                if (-1 < tipo && tipo < 9) {
-                    burbujitaMap.buildTurret(tipo,100);
-                    burbujitaMap.destroyPreBuildTurret();
-                    burbujitaInterface.desSeleccionar();
-                    burbujitaInterface.startRetracting();
-                } else {
-                    burbujitaInterface.highLight(x, y);
-                    burbujitaMap.highLight((int) x, (int) y);
-                }
-            } else {
-                burbujitaMap.highLight((int) x, (int) y);
-                if (burbujitaMap.canBuildTurretOn((int) x, (int) y)) {
-                    burbujitaInterface.desSeleccionar();
-                    burbujitaInterface.startShowing();
-                }
-                //muestra el interface si es un punto de construcicon
+        if (burbujitaMap != null && burbujitaInterface != null) {
+            switch (m_interfaceMostrada) {
+                case 0: //juego normal, sin interfaces
+                    clickEnMapa(m_transformedX,m_transformedY);
+                    break;
+                case 1: //Interface de escoger torreta
+                    soltarEnInterface(m_transformedX, m_transformedY);
+                    break;
+                case 2: //Detalles torreta
+                    //TODO, no esta hecha la interface 2
+                    break;
+                case 3: //Detalle bicho
+                    //TODO, no esta hecha la interface 2 prima
+                    break;
             }
         }
+    }
+
+    private void pressOnInterface(float x, float y) {
+        burbujitaMap.highLight((int) x,(int) y);
+        if (burbujitaInterface.highLight(x, y)) {
+            //Si estoy presionando un boton de torreta, la selecciono.
+            m_tipo = burbujitaInterface.getSelectedButton();
+            switch (m_tipo) {
+                case 0:
+                    burbujitaMap.buildPreTurret(TipoDisparo.FUEGO, 100);
+                    break;
+                case 1:
+                    burbujitaMap.buildPreTurret(TipoDisparo.VENENO, 100);;
+                    break;
+                case 2:
+                    burbujitaMap.buildPreTurret(TipoDisparo.HIELO, 100);
+                    break;
+            }
+            burbujitaInterface.startRetracting();
+        }
+        else {
+            //Si no estoy presionando, le dejo ese cometido al move
+            burbujitaMap.unHighLight();
+            burbujitaInterface.desSeleccionar();
+            m_tipo = -1;
+        }
+    }
+
+    private void moveOnInterface(float x, float y) {
+        burbujitaMap.highLight((int) x,(int) y);
+        if (burbujitaMap.canBuildTurretOn((int)x,(int)y)) {
+            switch (m_tipo) {
+                case 0:
+                    burbujitaMap.buildPreTurret(TipoDisparo.FUEGO, 100);
+                    break;
+                case 1:
+                    burbujitaMap.buildPreTurret(TipoDisparo.VENENO, 100);
+                    break;
+                case 2:
+                    burbujitaMap.buildPreTurret(TipoDisparo.HIELO, 100);
+                    break;
+                default:
+                    burbujitaMap.unHighLight();
+                    burbujitaInterface.desSeleccionar();
+                    m_tipo = -1;
+            }
+        }
+        else {
+            //burbujitaMap.unHighLight();
+            //burbujitaInterface.desSeleccionar();
+            //m_tipo = -1;
+        }
+        //burbujitaMap.setNextTurret((int) x, (int) y);
+    }
+
+    private void soltarEnInterface(float x, float y) {
+        switch (m_tipo) {
+            case 0:
+                burbujitaMap.buildTurret(TipoDisparo.FUEGO, 100);
+                break;
+            case 1:
+                burbujitaMap.buildTurret(TipoDisparo.VENENO, 100);
+                break;
+            case 2:
+                burbujitaMap.buildTurret(TipoDisparo.HIELO, 100);
+                break;
+        }
+        m_interfaceMostrada = 0;
+        burbujitaMap.destroyPreBuildTurret();
+        burbujitaMap.unHighLight();
+        burbujitaInterface.desSeleccionar();
+    }
+
+    private void clickEnMapa(float x, float y) {
+        m_interfaceMostrada = 1;
+        burbujitaInterface.desSeleccionar();
+        burbujitaInterface.startShowing();
     }
 
     public boolean isPaused() {

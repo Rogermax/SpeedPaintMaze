@@ -29,6 +29,7 @@ public class Interface {
 
     public Interface(int numButtons, float x_min, float y_min, float x_max, float y_max, boolean yInvertida) {
         interfaceStepShown = 0;
+        selectedButton = -1;
         isStarting = false;
         isRetracting = false;
         isActive = false;
@@ -152,25 +153,23 @@ public class Interface {
         return isActive;
     }
 
-    public void highLight(float x, float y) {
-        if (lastSelectedButton != null) {
-            lastSelectedButton.unSelect();
-            selectedButton = -1;
-        }
+    public boolean highLight(float x, float y) {
+        desSeleccionar();
         if (moreInfoButton.isInside(x,y)) {
             lastSelectedButton = moreInfoButton;
             moreInfoButton.select();
             selectedButton = 9;
-            return;
+            return true;
         }
         for (int i = 0; i < buttons.size(); i++) {
             if (buttons.get(i).isInside(x,y)) {
                 lastSelectedButton = buttons.get(i);
                 buttons.get(i).select();
                 selectedButton = i;
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     public int getSelectedButton() {

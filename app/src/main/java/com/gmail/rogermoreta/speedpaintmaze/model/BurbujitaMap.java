@@ -3,6 +3,7 @@ package com.gmail.rogermoreta.speedpaintmaze.model;
 import android.util.Log;
 
 import com.gmail.rogermoreta.speedpaintmaze.enums.TipoCasilla;
+import com.gmail.rogermoreta.speedpaintmaze.enums.TipoDisparo;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ public class BurbujitaMap {
     private ArrayList<Bullet> bullets;
     private ArrayList<Enemy> enemies;
     private ArrayList<Coin> coins;
+    public Casilla[][] mapaPosicionesCasillas;
     //private Paint pincell;
     private int mapHeight;
     private int mapWidth;
@@ -31,16 +33,19 @@ public class BurbujitaMap {
     public static final char[] codifiedMap;
     private long money;
     private int lifes;
+    private int indexInici;
 
 
     static {
-        codifiedMap = ("6x10" +
-                "*Ir6*****db2.F" +
-                ".......*.*" +
-                "db3******dl7.*" +
-                "*........*" +
-                "*........*" +
-                "dr9********dt5").toCharArray();
+        codifiedMap = ("8x13" +
+                "Ir7******db2.F..." +
+                ".......*.*..." +
+                "db3******dl7.*..." +
+                "*........*..." +
+                "*........*..." +
+                "dr9********dt5..." +
+                "............." +
+                ".............").toCharArray();
     }
 
     /*static {
@@ -64,9 +69,9 @@ public class BurbujitaMap {
         coins = new ArrayList<>();
         //Canvas canvas = this.surfaceHolder.lockCanvas();
         //reajustarTamaño(canvas);
-        int indexInici = leerMapa();
+        indexInici = leerMapa();
         Casilla inici = mapaEnCasillas.get(indexInici);
-        BaseMonster enemy = new BaseMonster();
+        Enemy enemy = new BaseMonster();
         enemy.init(inici.getPosX()*100f, inici.getPosY()*100f, 20f, 5f);
         enemies.add(enemy);
         enemy = new BaseMonster();
@@ -115,6 +120,7 @@ public class BurbujitaMap {
             mapHeight = filas * 100;
             numeroCasillasX = longFilas;
             numeroCasillasY = filas;
+            mapaPosicionesCasillas = new Casilla[filas][longFilas];
             return leerMapaCodificado(i);
         }
 
@@ -127,7 +133,6 @@ public class BurbujitaMap {
     private int leerMapaCodificado(int i) {
         int longFilas = numeroCasillasX;
         int filas = numeroCasillasY;
-        int indexInici = 0;
         boolean trobat = false;
         i--;
         int casillaX = 0;
@@ -197,6 +202,7 @@ public class BurbujitaMap {
                     i--;
                     mapaEnCasillas.add(casilla);
                     indexInici = casillaX+casillaY*longFilas;
+                    mapaPosicionesCasillas[casillaY][casillaX] = casilla;
                     casillaX++;
                     if (casillaX >= longFilas) {
                         casillaX = 0;
@@ -207,7 +213,9 @@ public class BurbujitaMap {
                     }
                     break;
                 case '*':
-                    mapaEnCasillas.add(new Casilla(TipoCasilla.CAMINO, casillaX, casillaY));
+                    casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY);
+                    mapaEnCasillas.add(casilla);
+                    mapaPosicionesCasillas[casillaY][casillaX] = casilla;
                     casillaX++;
                     if (casillaX >= longFilas) {
                         casillaX = 0;
@@ -233,6 +241,12 @@ public class BurbujitaMap {
                                 }
                             }
                             i--;
+                            if (i+1 < codifiedMap.length && i/longFilas == (i+1)/longFilas && codifiedMap[i+1]!='.') {
+                                casilla.setGiro(3);
+                            }
+                            else {
+                                casilla.setGiro(4);
+                            }
                             casilla.setNextPositions(casillaX, casillaY - numSaltos);
                             break;
                         case 'r':
@@ -246,6 +260,12 @@ public class BurbujitaMap {
                                 }
                             }
                             i--;
+                            if (i+longFilas < codifiedMap.length && codifiedMap[i+longFilas]!='.') {
+                                casilla.setGiro(2);
+                            }
+                            else {
+                                casilla.setGiro(3);
+                            }
                             casilla.setNextPositions(casillaX + numSaltos, casillaY);
                             break;
                         case 'l':
@@ -259,6 +279,12 @@ public class BurbujitaMap {
                                 }
                             }
                             i--;
+                            if (i+longFilas < codifiedMap.length && codifiedMap[i+longFilas]!='.') {
+                                casilla.setGiro(1);
+                            }
+                            else {
+                                casilla.setGiro(4);
+                            }
                             casilla.setNextPositions(casillaX - numSaltos, casillaY);
                             break;
                         case 'b':
@@ -272,10 +298,22 @@ public class BurbujitaMap {
                                 }
                             }
                             i--;
+                            if (i+1 < codifiedMap.length && i/longFilas == (i+1)/longFilas && codifiedMap[i+1]!='.') {
+                                casilla.setGiro(1);
+                            }
+                            else {
+                                if (i-1 < codifiedMap.length && i/longFilas == (i-1)/longFilas && codifiedMap[i-1]!='.') {
+                                    casilla.setGiro(1);
+                                }
+                                else {
+                                    casilla.setGiro(2);
+                                }
+                            }
                             casilla.setNextPositions(casillaX, casillaY + numSaltos);
                     }
                     i--;
                     mapaEnCasillas.add(casilla);
+                    mapaPosicionesCasillas[casillaY][casillaX] = casilla;
                     casillaX++;
                     if (casillaX >= longFilas) {
                         casillaX = 0;
@@ -286,7 +324,9 @@ public class BurbujitaMap {
                     }
                     break;
                 case '.':
-                    mapaEnCasillas.add(new Casilla(TipoCasilla.CESPED, casillaX, casillaY));
+                    casilla = new Casilla(TipoCasilla.CESPED, casillaX, casillaY);
+                    mapaEnCasillas.add(casilla);
+                    mapaPosicionesCasillas[casillaY][casillaX] = casilla;
                     casillaX++;
                     if (casillaX >= longFilas) {
                         casillaX = 0;
@@ -299,6 +339,7 @@ public class BurbujitaMap {
                 case 'F':
                     casilla = new Casilla(TipoCasilla.CAMINO, casillaX, casillaY, false, true);
                     mapaEnCasillas.add(casilla);
+                    mapaPosicionesCasillas[casillaY][casillaX] = casilla;
                     casillaX++;
                     if (casillaX >= longFilas) {
                         casillaX = 0;
@@ -429,9 +470,22 @@ public class BurbujitaMap {
                         Enemy enemyActual = enemies.get(j);
                         if (disparo.getObjectiveEntity().equals(enemyActual)) {
                             trobat = true;
-                            if (colisionaConEnemigo(disparo, (BaseMonster) enemies.get(j))) {
+                            if (colisionaConEnemigo(disparo, enemies.get(j))) {
                                 disparo.explota();
-                                enemies.get(j).receiveDamage(1);
+                                Enemy enemigoTocado = enemies.get(j);
+                                switch (disparo.getType()) {
+                                    case FUEGO:
+                                        enemigoTocado.empezarAQuemar(2000l,3*1f/2000f*100f); //Simula durante 2 segundos 3 ostias de 1 de daño
+                                        break;
+                                    case VENENO:
+                                        enemigoTocado.empezarAPlantar(200l);
+                                        break;
+                                    case HIELO:
+                                        enemigoTocado.empezarARelantizar(0.33f);
+                                        break;
+                                    default:
+                                }
+                                enemigoTocado.receiveDamage(1);
                             }
                         }
                     }
@@ -451,14 +505,13 @@ public class BurbujitaMap {
         return (disparo.getPosX() - turret.getX()) * (disparo.getPosX() - turret.getX()) + (disparo.getPosY() - turret.getY()) * (disparo.getPosY() - turret.getY()) < disparo.getRadius() * disparo.getRadius();
     }*/
 
-    private boolean colisionaConEnemigo(Bullet disparo, BaseMonster enemy) {
+    private boolean colisionaConEnemigo(Bullet disparo, Enemy enemy) {
         return (disparo.getPosX() - (enemy.getX())) * (disparo.getPosX() - enemy.getX()) + (disparo.getPosY() - enemy.getY()) * (disparo.getPosY() - enemy.getY()) < disparo.getRadius() * disparo.getRadius();
     }
 
     private void actualizarEstadoBichos(long milisegundos) {
         for (int i = 0; i < enemies.size(); i++) {
             Enemy enemigoTratado = enemies.get(i);
-            enemigoTratado.logic(milisegundos);
             lastX = (int) enemigoTratado.getX();
             lastY = (int) enemigoTratado.getY();
             int casillaX = (int) (enemigoTratado.getX() / 100);
@@ -468,15 +521,13 @@ public class BurbujitaMap {
             if (casillaDelBicho.esDeFin()) {
                 lifes--;
                 if (lifes == 0) lifes = 3;
-                enemigoTratado.setPosX(0);
-                enemigoTratado.setPosY(0);
+                enemigoTratado.setPosX(mapaEnCasillas.get(indexInici).getPosX());
+                enemigoTratado.setPosY(mapaEnCasillas.get(indexInici).getPosX());
             }
-            if (casillaDelBicho.esDeInicio()) {
+            if (casillaDelBicho.esDeDireccionamiento() && (casillaDelBicho.getPosX() * 100 - enemigoTratado.getX()) * (casillaDelBicho.getPosX() * 100 - enemigoTratado.getX()) < 26) {
                 enemigoTratado.asignarMoveTarget(casillaDelBicho.getRandomNextX(), casillaDelBicho.getRandomNextY());
             }
-            if (casillaDelBicho.esDeDireccionamiento() && (casillaDelBicho.getPosX() * 100 - enemigoTratado.getX()) * (casillaDelBicho.getPosX() * 100 - enemigoTratado.getX()) < 5) {
-                enemigoTratado.asignarMoveTarget(casillaDelBicho.getRandomNextX(), casillaDelBicho.getRandomNextY());
-            }
+            enemigoTratado.logic(milisegundos);
             for (int j = 0; j < turrets.size(); ++j) {
                 Turret torretaTratada = turrets.get(j);
                 if (!torretaTratada.estaProvocada()) {
@@ -542,11 +593,11 @@ public class BurbujitaMap {
         }
     }*/
 
-    public void buildTurret(int tipo, int price) {
+    public void buildTurret(TipoDisparo tipo, int price) {
         if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta() && money >= price) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
             //int selectedOption = burbujitaController.getSelectedButton();
-            if (tipo > -1) {
+            if (tipo != TipoDisparo.NULL) {
                nextTurret = new Turret(Vector2D.multipicaPorEscalar(cas.getPosition(),100), tipo, price);
             }
             if (nextTurret != null) {
@@ -556,7 +607,7 @@ public class BurbujitaMap {
             }
             //interfaceInstance.desSeleccionar();
             //hideConstructorInterface();
-            cas.deselccionar();
+            cas.deseleccionar();
             lastSelectedCasilla = -1;
         }
     }
@@ -589,10 +640,16 @@ public class BurbujitaMap {
             int indexOfCasilla = casillaX + casillaY * numeroCasillasX;
             Casilla casilla = mapaEnCasillas.get(indexOfCasilla);
             if (lastSelectedCasilla > -1) {
-                mapaEnCasillas.get(lastSelectedCasilla).deselccionar();
+                mapaEnCasillas.get(lastSelectedCasilla).deseleccionar();
             }
             lastSelectedCasilla = indexOfCasilla;
             casilla.seleccionar();
+        }
+    }
+
+    public void unHighLight() {
+        if (lastSelectedCasilla > -1) {
+            mapaEnCasillas.get(lastSelectedCasilla).deseleccionar();
         }
     }
 
@@ -640,11 +697,11 @@ public class BurbujitaMap {
         return bullets;
     }
 
-    public void buildPreTurret(int tipo, long price) {
+    public void buildPreTurret(TipoDisparo tipo, long price) {
         if (lastSelectedCasilla > -1 && !mapaEnCasillas.get(lastSelectedCasilla).tieneTorreta()) {
             Casilla cas = mapaEnCasillas.get(lastSelectedCasilla);
             //int selectedOption = burbujitaController.getSelectedButton();
-            if (tipo > -1) {
+            if (tipo != TipoDisparo.NULL) {
                 nextTurret = new Turret(Vector2D.multipicaPorEscalar(cas.getPosition(),100), tipo, price);
             }
         }
